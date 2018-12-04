@@ -1,0 +1,35 @@
+{
+  "name": "detherjs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "TESTING=1 jest",
+    "test-coverage": "TESTING=1 jest --coverage",
+    "build": "tsc -p tsconfig.build.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dethertech/detherJS.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dethertech/detherJS/issues"
+  },
+  "homepage": "https://github.com/dethertech/detherJS#readme",
+  "devDependencies": {
+    "@types/dotenv": "^6.1.0",
+    "@types/jest": "^23.3.10",
+    "@types/utf8": "^2.1.6",
+    "@types/web3": "^1.0.12",
+    "dotenv": "^6.1.0",
+    "jest": "^23.6.0",
+    "ts-jest": "^23.10.4",
+    "tslint": "^5.11.0",
+    "tslint-config-airbnb": "^5.11.0",
+    "typescript": "^3.0.3"
+  },
+  "dependencies": {
+    "ethers": "^4.0.15",
+    "web3": "^1.0.0-beta.36"
+  }
+}

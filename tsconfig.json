@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es2018",
+    "outDir": "lib",
+    "lib": ["dom", "es7"],
+    "noImplicitAny": true,
+    "esModuleInterop": true,
+    "sourceMap": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "test/"
+  ]
+}

@@ -1,0 +1,794 @@
+[
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "dth",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "geohash",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bytes7"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "currentAuctionId",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "auctionBids",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "withdrawableDth",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "zoneFactory",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "country",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bytes2"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "control",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "geo",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "withdrawableEth",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "funds",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "users",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "name": "_countryCode",
+        "type": "bytes2"
+      },
+      {
+        "name": "_geohash",
+        "type": "bytes7"
+      },
+      {
+        "name": "_zoneOwner",
+        "type": "address"
+      },
+      {
+        "name": "_dthAmount",
+        "type": "uint256"
+      },
+      {
+        "name": "_dth",
+        "type": "address"
+      },
+      {
+        "name": "_geo",
+        "type": "address"
+      },
+      {
+        "name": "_users",
+        "type": "address"
+      },
+      {
+        "name": "_control",
+        "type": "address"
+      },
+      {
+        "name": "_zoneFactory",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "zoneAddress",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "name": "countryCode",
+        "type": "bytes2"
+      },
+      {
+        "indexed": true,
+        "name": "geohash",
+        "type": "bytes7"
+      },
+      {
+        "indexed": false,
+        "name": "dthAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "ZoneCreated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "zoneAddress",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "name": "oldOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "ZoneOwnerUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "lifeStart",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "lifeEnd",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "taxPaidTotal",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "taxDebtOutstanding",
+        "type": "uint256"
+      }
+    ],
+    "name": "ZoneOwnerForeClosed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "taxStart",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "taxEnd",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "taxAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "ZoneOwnerTaxesPaid",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "oldBalance",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "newBalance",
+        "type": "uint256"
+      }
+    ],
+    "name": "ZoneOwnerTopUp",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "auctionId",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "lifeStart",
+        "type": "uint256"
+      }
+    ],
+    "name": "ZoneAuctionStarted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "auctionId",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "lifeEnd",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "ZoneAuctionEnded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "auctionId",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "name": "bidder",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "bidAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "ZoneAuctionBid",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "owner",
+        "type": "address"
+      }
+    ],
+    "name": "ZoneUpdatedTeller",
+    "type": "event"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_geohash",
+        "type": "bytes7"
+      },
+      {
+        "name": "_addr",
+        "type": "address"
+      }
+    ],
+    "name": "computeCSC",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bytes12"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_startTime",
+        "type": "uint256"
+      },
+      {
+        "name": "_endTime",
+        "type": "uint256"
+      },
+      {
+        "name": "_dthAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "calcHarbergerTax",
+    "outputs": [
+      {
+        "name": "taxAmount",
+        "type": "uint256"
+      },
+      {
+        "name": "keepAmount",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_value",
+        "type": "uint256"
+      }
+    ],
+    "name": "calcEntryFee",
+    "outputs": [
+      {
+        "name": "burnAmount",
+        "type": "uint256"
+      },
+      {
+        "name": "bidAmount",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_auctionId",
+        "type": "uint256"
+      }
+    ],
+    "name": "auctionExists",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getZoneOwner",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      },
+      {
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_auctionId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getAuction",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getLastAuction",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getTeller",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint8"
+      },
+      {
+        "name": "",
+        "type": "bytes16"
+      },
+      {
+        "name": "",
+        "type": "bytes10"
+      },
+      {
+        "name": "",
+        "type": "bytes1"
+      },
+      {
+        "name": "",
+        "type": "int16"
+      },
+      {
+        "name": "",
+        "type": "int16"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_from",
+        "type": "address"
+      },
+      {
+        "name": "_value",
+        "type": "uint256"
+      },
+      {
+        "name": "_data",
+        "type": "bytes"
+      }
+    ],
+    "name": "tokenFallback",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "release",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_auctionId",
+        "type": "uint256"
+      }
+    ],
+    "name": "withdrawFromAuction",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_auctionIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "withdrawFromAuctions",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "prevZoneOwnerWithdraw",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_position",
+        "type": "bytes"
+      },
+      {
+        "name": "_currencyId",
+        "type": "uint8"
+      },
+      {
+        "name": "_messenger",
+        "type": "bytes16"
+      },
+      {
+        "name": "_sellRate",
+        "type": "int16"
+      },
+      {
+        "name": "_buyRate",
+        "type": "int16"
+      },
+      {
+        "name": "_settings",
+        "type": "bytes1"
+      }
+    ],
+    "name": "addTeller",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "addFunds",
+    "outputs": [],
+    "payable": true,
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_to",
+        "type": "address"
+      },
+      {
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "sellEth",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

@@ -1,0 +1,275 @@
+[
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "",
+        "type": "bytes2"
+      }
+    ],
+    "name": "countryIsEnabled",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "enabledCountries",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bytes2"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "",
+        "type": "bytes2"
+      },
+      {
+        "name": "",
+        "type": "bytes3"
+      }
+    ],
+    "name": "level_2",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bytes4"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "control",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "",
+        "type": "bytes2"
+      },
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "countryTierDailyLimit",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "name": "_control",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "country",
+        "type": "bytes2"
+      }
+    ],
+    "name": "GeoRegistryCountryEnabled",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "country",
+        "type": "bytes2"
+      }
+    ],
+    "name": "GeoRegistryCountryDisabled",
+    "type": "event"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_bytes",
+        "type": "bytes"
+      },
+      {
+        "name": "_start",
+        "type": "uint256"
+      }
+    ],
+    "name": "validGeohashChars",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_countryCode",
+        "type": "bytes2"
+      },
+      {
+        "name": "_zone",
+        "type": "bytes7"
+      }
+    ],
+    "name": "zoneInsideCountry",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_countryCode",
+        "type": "bytes2"
+      },
+      {
+        "name": "_tier",
+        "type": "uint256"
+      },
+      {
+        "name": "_limitUsd",
+        "type": "uint256"
+      }
+    ],
+    "name": "setCountryTierDailyLimit",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_countryCode",
+        "type": "bytes2"
+      },
+      {
+        "name": "_letter",
+        "type": "bytes3"
+      },
+      {
+        "name": "_subLetters",
+        "type": "bytes4"
+      }
+    ],
+    "name": "updateLevel2",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_countryCode",
+        "type": "bytes2"
+      },
+      {
+        "name": "_letters",
+        "type": "bytes3[]"
+      },
+      {
+        "name": "_subLetters",
+        "type": "bytes4[]"
+      }
+    ],
+    "name": "updateLevel2batch",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_country",
+        "type": "bytes2"
+      }
+    ],
+    "name": "enableCountry",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_country",
+        "type": "bytes2"
+      }
+    ],
+    "name": "disableCountry",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]
