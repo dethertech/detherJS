@@ -1,3 +1,8 @@
+import {
+  Token, Exchange,
+  IExchangePair,
+} from './types';
+
 export const CRYPTOCOMPARE_URL: string = 'https://min-api.cryptocompare.com/';
 
 export const GAS_PRICE: number = 25000000000;
@@ -52,43 +57,20 @@ export const TICKER: any = {
   },
 };
 
-export const EXCHANGE_PAIRS: any = [
-  { pair: 'ETH-DTH', exchange: 'kyber' },
-  { pair: 'ETH-DAI', exchange: 'kyber' },
-  { pair: 'ETH-BNB', exchange: 'airswap' },
-  { pair: 'ETH-MKR', exchange: 'airswap' },
-  { pair: 'ETH-OMG', exchange: 'kyber' },
-  { pair: 'ETH-ZRX', exchange: 'kyber' },
-  { pair: 'ETH-VEN', exchange: 'kyber' },
-  { pair: 'ETH-AE', exchange: 'kyber' },
-  { pair: 'ETH-REP', exchange: 'kyber' },
+export const EXCHANGE_PAIRS: IExchangePair[] = [
+  { tokens: [Token.ETH, Token.DTH], exchange: Exchange.kyber },
+  { tokens: [Token.ETH, Token.DAI], exchange: Exchange.kyber },
+  { tokens: [Token.ETH, Token.BNB], exchange: Exchange.uniswap },
+  { tokens: [Token.ETH, Token.MKR], exchange: Exchange.uniswap },
+  { tokens: [Token.ETH, Token.OMG], exchange: Exchange.kyber },
+  { tokens: [Token.ETH, Token.ZRX], exchange: Exchange.kyber },
+  { tokens: [Token.ETH, Token.VEN], exchange: Exchange.kyber },
+  { tokens: [Token.ETH, Token.AE], exchange: Exchange.kyber },
+  { tokens: [Token.ETH, Token.REP], exchange: Exchange.kyber },
 ];
-
-export const KYBER_ETH_TOKEN_ADDR: string = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
-
-export const AIRSWAP_WEBSOCKET: object = {
-  rinkeby: 'wss://sandbox.airswap-api.com/websocket',
-  mainnet: 'wss://connect.airswap-api.com/websocket',
-};
 
 // source: https://github.com/OasisDEX/oasis-direct/blob/master/src/settings.json
 export const CONTRACT_ADDRESSES: any = {
-  kovan: {
-    // dether
-    DetherToken: '',
-    Control: '',
-    GeoRegistry: '',
-    KycCertifier: '',
-    SmsCertifier: '',
-    Users: '',
-    ZoneFactory: '',
-    // external
-    oasisProxyCreateExecute: '0xEE419971E63734Fed782Cfe49110b1544ae8a773',
-    oasisDirectProxy: '0xe635f5f52220a114fea0985abf7ec8144710507b',
-    dsProxyFactory: '0x93ffc328d601c4c5e9cc3c8d257e9afdaf5b0ac0',
-    makerProxyRegistry: '0x383a7fc29edde64aec7f776e2517ec8819e147f1',
-    makerOtc: '0x8cf1Cab422A0b6b554077A361f8419cDf122a9F9',
-  },
   ropsten: {
     // dether
     DetherToken: '',
@@ -126,12 +108,18 @@ export const CONTRACT_ADDRESSES: any = {
     Users: '',
     ZoneFactory: '',
     // external
-    oasisProxyCreateExecute: ' 0x793ebbe21607e4f04788f89c7a9b97320773ec59',
-    oasisDirectProxy: ' 0x279594b6843014376a422ebb26a6eab7a30e36f0',
-    dsProxyFactory: ' 0x1043fbd15c10a3234664cbdd944a16a204f945e6',
-    makerProxyRegistry: ' 0xaa63c8683647ef91b3fdab4b4989ee9588da297b',
-    makerOtc: ' 0x14fbca95be7e99c15cc2996c6c9d841e54b79425',
-    airswapExchange: '0x8fd3121013a07c57f0d69646e86e7a4880b467b7',
     kyberNetworkProxy: '0x818E6FECD516Ecc3849DAf6845e3EC868087B755',
+  },
+  development: {
+    // dether
+    DetherToken: '',
+    Control: '',
+    GeoRegistry: '',
+    KycCertifier: '',
+    SmsCertifier: '',
+    Users: '',
+    ZoneFactory: '',
+    // external
+    kyberNetworkProxy: '',
   },
 };

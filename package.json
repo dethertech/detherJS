@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "TESTING=1 jest",
-    "test-coverage": "TESTING=1 jest --coverage",
+    "test": "mocha --require ts-node/register test/**/*.spec.ts",
     "build": "tsc -p tsconfig.build.json"
   },
   "repository": {
@@ -17,19 +16,33 @@
   },
   "homepage": "https://github.com/dethertech/detherJS#readme",
   "devDependencies": {
+    "@types/bignum": "0.0.29",
+    "@types/bignumber.js": "^5.0.0",
+    "@types/bs58": "^4.0.0",
+    "@types/chai": "^4.1.7",
+    "@types/chai-as-promised": "^7.1.0",
     "@types/dotenv": "^6.1.0",
-    "@types/jest": "^23.3.10",
+    "@types/ethereumjs-util": "^5.2.0",
+    "@types/mocha": "^5.2.5",
     "@types/utf8": "^2.1.6",
-    "@types/web3": "^1.0.12",
+    "@types/web3": "^1.0.14",
+    "bignum": "^0.13.0",
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "chai-bignumber": "^3.0.0",
     "dotenv": "^6.1.0",
-    "jest": "^23.6.0",
-    "ts-jest": "^23.10.4",
+    "ethereumjs-util": "^6.0.0",
+    "mocha": "^5.2.0",
+    "ts-node": "^7.0.1",
     "tslint": "^5.11.0",
     "tslint-config-airbnb": "^5.11.0",
-    "typescript": "^3.0.3"
+    "typescript": "^3.0.3",
+    "web3": "^1.0.0-beta.37"
   },
   "dependencies": {
-    "ethers": "^4.0.15",
-    "web3": "^1.0.0-beta.36"
+    "bignumber.js": "^8.0.2",
+    "bs58": "^4.0.1",
+    "buffer": "^5.2.1",
+    "ethers": "^4.0.15"
   }
 }

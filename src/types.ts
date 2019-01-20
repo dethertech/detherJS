@@ -14,7 +14,7 @@ export interface IContractAddresses {
   exchangeRateOracleAddress?: string;
 }
 
-export interface IConnect {
+export interface IEthersOptions {
   // provider related
   network?: string;
   rpcURL?: string;
@@ -117,6 +117,7 @@ export enum DetherContract {
   Zone = 'Zone',
   ZoneFactory = 'ZoneFactory',
   ExchangeRateOracle = 'ExchangeRateOracle',
+  Shop = 'Shop',
 }
 
 export enum TransactionStatus {
@@ -130,16 +131,6 @@ export enum Tier {
   sms = 'sms',
   kyc = 'kyc',
   uncertified = 'uncertified',
-}
-
-export enum Exchange {
-  kyber = 'kyber',
-  airswap = 'airswap',
-}
-
-export interface IExchangePair {
-  pair: string;
-  exchange: Exchange;
 }
 
 export interface IWeb3 {
@@ -176,4 +167,77 @@ export enum Network {
   rinkeby = 'rinkeby',
   ropsten = 'ropsten',
   kovan = 'kovan',
+}
+
+export interface IShop {
+  shopGeohash: string;
+  zoneGeohash: string;
+  category: string;
+  name: string;
+  description: string;
+  opening: string;
+  staked: string;
+  hasDispute: boolean;
+  disputeID: number;
+}
+
+export enum ShopDisputeStatus {
+  Waiting = 'Waiting',
+  Appealable = 'Appealable',
+  Solved = 'Solved',
+}
+
+export enum ShopDisputeRuling {
+  NoRuling = 'NoRuling',
+  ShopWins = 'ShopWins',
+  ChallengerWins = 'ChallengerWins',
+}
+
+export interface IShopDispute {
+  shop: string;
+  challenger: string;
+  disputeType: number;
+  ruling: ShopDisputeRuling;
+  status: ShopDisputeStatus;
+}
+
+export interface IShopArgs {
+  country: string; // TODO: create enum
+  position: string;
+  category?: string;
+  name?: string;
+  description?: string;
+  opening?: string;
+}
+
+export enum Exchange {
+  kyber = 'kyber',
+  uniswap = 'uniswap',
+}
+
+export interface IExchangePair {
+  tokens: Token[];
+  exchange: Exchange;
+}
+
+export interface IExchange {
+  sellToken: Token;
+  buyToken: Token;
+  name: Exchange;
+  estimate: Function;
+  trade: Function;
+}
+
+export interface IExchangeEstimation {
+  buyAmount: string;
+  buyRate?: string;
+}
+
+export enum DisputeType {
+  firstOne = 0,
+}
+
+export interface ITxOptions {
+  gasPrice: number;
+  gasLimit: number;
 }
