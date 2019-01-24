@@ -1,23 +1,22 @@
-import Web3 from 'web3';
 import { ethers } from 'ethers';
 
+import * as constants from './constants';
+
 import * as providers from './helpers/providers';
-import * as contract from './helpers/contracts';
 
-import {
-  Unit, Token, TransactionStatus, Tier,
-  IEthersOptions, ITeller, IBalances, ITellerArgs, IShop, IShopArgs, IShopDispute,
-} from './types';
-
-import * as exchange from './core/exchange';
 import * as teller from './core/teller';
 import * as shop from './core/shop';
 import * as shopDispute from './core/shopDispute';
 import * as wallet from './core/wallet';
+import * as util from './core/util';
 import * as user from './core/user';
-import * as zoneAuction from './core/zoneAuction';
 
-const EMPTY_MESSENGER_FIELD = '0x00000000000000000000000000000000';
+import {
+  Unit, Token, TransactionStatus, Tier, DetherContract,
+  IEthersOptions, ITeller, IBalances, ITellerArgs, IShop, IShopArgs, IShopDispute, ITxOptions,
+} from './types';
+
+// import * as zoneAuction from './core/zoneAuction';
 
 export default class DetherJS {
   usingMetamask: boolean;
@@ -35,6 +34,19 @@ export default class DetherJS {
   async init(connectOptions?: IEthersOptions) : Promise<void> {
     this.provider = this.usingMetamask ? await providers.connectMetamask() : await providers.connectEthers(connectOptions);
     this.network = await this.provider.getNetwork();
+
+  }
+
+  async setCustomContractAddresses(contractAddresses: any) {
+    constants.TICKER.custom.DTH = contractAddresses[DetherContract.DetherToken];
+
+    constants.CONTRACT_ADDRESSES.custom.DetherToken = contractAddresses[DetherContract.DetherToken];
+    constants.CONTRACT_ADDRESSES.custom.Control = contractAddresses[DetherContract.DetherToken];
+    constants.CONTRACT_ADDRESSES.custom.GeoRegistry = contractAddresses[DetherContract.DetherToken];
+    constants.CONTRACT_ADDRESSES.custom.KycCertifier = contractAddresses[DetherContract.DetherToken];
+    constants.CONTRACT_ADDRESSES.custom.SmsCertifier = contractAddresses[DetherContract.DetherToken];
+    constants.CONTRACT_ADDRESSES.custom.Users = contractAddresses[DetherContract.DetherToken];
+    constants.CONTRACT_ADDRESSES.custom.ZoneFactory = contractAddresses[DetherContract.DetherToken];
   }
 
   loadUser(encryptedWallet: string) {
@@ -52,13 +64,12 @@ export default class DetherJS {
       return signer;
     }
 
-    if (this.encryptedWallet) {
-      if (!password) throw new Error('need to pass in password as arg 1');
-      console.log('this.encryptedWallet, is it json or a string?', this.encryptedWallet);
-      const disconnectedWallet = await ethers.Wallet.fromEncryptedJson(this.encryptedWallet, password);
-      const connectedWallet: ethers.Wallet = new ethers.Wallet(disconnectedWallet.privateKey, this.provider);
-      return connectedWallet;
-    }
+    if (!this.encryptedWallet) throw new Error('did find no encrypted wallet');
+    if (!password) throw new Error('need to pass in password as arg 1');
+    console.log('this.encryptedWallet, is it json or a string?', this.encryptedWallet);
+    const disconnectedWallet = await ethers.Wallet.fromEncryptedJson(this.encryptedWallet, password);
+    const connectedWallet: ethers.Wallet = new ethers.Wallet(disconnectedWallet.privateKey, this.provider);
+    return connectedWallet;
   }
 
   // -------------------- //
@@ -82,25 +93,16 @@ export default class DetherJS {
     return wallet.getAllBalance(address, tickers, this.provider);
   }
 
-  async getTransactionStatus(txHash: string) : Promise<TransactionStatus> {
-    this.hasProvider();
-    return wallet.getTransactionStatus(txHash, this.provider);
-  }
-
-  // -------------------- //
-  //       Exchange       //
-  // -------------------- //
-
   async getExchangeEstimation(sellToken: Token, buyToken: Token, sellAmount: string) : Promise<string> {
     this.hasProvider();
-    return exchange.getExchangeEstimation(sellToken, buyToken, sellAmount, this.provider);
+    return wallet.getExchangeEstimation(sellToken, buyToken, sellAmount, this.provider);
   }
 
   async execExchange(password: string, sellToken: Token, buyToken: Token, sellAmount: string, buyAmount: string, options?: { gasPrice: number }) : Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
-    const wallet = await this.loadWallet(password);
-    return exchange.execTrade(sellToken, buyToken, sellAmount, buyAmount, wallet, options);
+    const userWallet = await this.loadWallet(password);
+    return wallet.execTrade(sellToken, buyToken, sellAmount, buyAmount, userWallet, options);
   }
 
   // -------------------- //
@@ -121,18 +123,46 @@ export default class DetherJS {
     this.hasProvider();
     this.hasWallet();
     const wallet = await this.loadWallet(password);
-    return teller.add(zoneAddress, tellerData, wallet);
+    return teller.addTeller(zoneAddress, tellerData, wallet);
   }
 
   async removeTeller(password: string, zoneAddress: string) : Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
     const wallet = await this.loadWallet(password);
-    return teller.remove(zoneAddress, wallet);
+    return teller.removeTeller(zoneAddress, wallet);
+  }
+
+  async addFunds(password: string, zoneAddress: string, ethAmount: string) : Promise<ethers.ContractTransaction> {
+    this.hasProvider();
+    this.hasWallet();
+    const wallet = await this.loadWallet(password);
+    return teller.addFunds(zoneAddress, ethAmount, wallet);
+  }
+
+  async sellEth(password: string, zoneAddress: string, recipient: string, ethAmount: string) : Promise<ethers.ContractTransaction> {
+    this.hasProvider();
+    this.hasWallet();
+    const wallet = await this.loadWallet(password);
+    return teller.sellEth(zoneAddress, recipient, ethAmount, wallet);
+  }
+
+  async addComment(password: string, zoneAddress: string, commentHash: string) : Promise<ethers.ContractTransaction> {
+    this.hasProvider();
+    this.hasWallet();
+    const wallet = await this.loadWallet(password);
+    return teller.addComment(zoneAddress, commentHash, wallet);
+  }
+
+  async addCertifiedComment(password: string, zoneAddress: string, commentHash: string) : Promise<ethers.ContractTransaction> {
+    this.hasProvider();
+    this.hasWallet();
+    const wallet = await this.loadWallet(password);
+    return teller.addCertifiedComment(zoneAddress, commentHash, wallet);
   }
 
   // -------------------- //
-  //        Shop        //
+  //         Shop         //
   // -------------------- //
 
   async shopExists(shopAddress: string) : Promise<boolean> {
@@ -189,20 +219,19 @@ export default class DetherJS {
     return shopDispute.getDisputeAppealCost(disputeID, this.provider);
   }
 
-  async createDispute(password: string, shopAddress: string) : Promise<ethers.ContractTransaction> {
+  async createDispute(password: string, shopAddress: string, evidenceHash: string, txOptions: ITxOptions) : Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
     const wallet = await this.loadWallet(password);
-    // TODO: check that user is allowed to perform this action
-    return shopDispute.createDispute(shopAddress, wallet);
+    return shopDispute.createDispute(shopAddress, evidenceHash, wallet, txOptions);
   }
 
-  async appealDispute(password: string, shopAddress: string) : Promise<ethers.ContractTransaction> {
+  // NOTE: disputeID is created by kleros and should be unique?!
+  async appealDispute(password: string, disputeID: number, evidenceHash: string, txOptions: ITxOptions) : Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
     const wallet = await this.loadWallet(password);
-    // TODO: check that user is allowed to perform this action
-    return shopDispute.appealDispute(shopAddress, wallet);
+    return shopDispute.appealDispute(disputeID, evidenceHash, wallet, txOptions);
   }
 
   // -------------------- //
@@ -214,12 +243,26 @@ export default class DetherJS {
     return user.getTier(address, this.provider);
   }
 
+  async getAvailableSellAmountToday(userAddress: string, country: string, unit: Unit = Unit.eth) : Promise<string> {
+    this.hasProvider();
+    return user.getAvailableSellAmountToday(userAddress, country, unit, this.provider);
+  }
+
   // -------------------- //
   //     Zone Auction     //
   // -------------------- //
 
-  async calcBidAmount(zoneAddress: string, walletAddress: string, zoneAuctionId: number, bidAmount: string) : Promise<ethers.utils.BigNumber> {
+  // async calcBidAmount(zoneAddress: string, walletAddress: string, zoneAuctionId: number, bidAmount: string) : Promise<ethers.utils.BigNumber> {
+  //   this.hasProvider();
+  //   return zoneAuction.calcBidAmount(zoneAddress, zoneAuctionId, bidAmount, this.provider);
+  // }
+
+  // -------------------- //
+  //        Util        //
+  // -------------------- //
+
+  async getTransactionStatus(txHash: string) : Promise<TransactionStatus> {
     this.hasProvider();
-    return zoneAuction.calcBidAmount(zoneAddress, zoneAuctionId, bidAmount, this.provider);
+    return util.getTransactionStatus(txHash, this.provider);
   }
 }

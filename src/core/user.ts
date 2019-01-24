@@ -1,4 +1,4 @@
-import ethers from 'ethers';
+import { ethers } from 'ethers';
 
 import * as util from '../helpers/util';
 import * as validate from '../helpers/validate';
@@ -42,7 +42,7 @@ export const getTier = async (userAddress: string, provider: ethers.providers.Pr
 };
 
 // saved in users contract but only applies to tellers
-export const getAvailableSellAmountToday = async (userAddress: string, country: string, unit: Unit = Unit.eth, provider: ethers.providers.Provider) : Promise<string> => {
+export const getAvailableSellAmountToday = async (userAddress: string, country: string, unit: Unit, provider: ethers.providers.Provider) : Promise<string> => {
   validate.ethAddress(userAddress);
   validate.countryCode(country);
   validate.sellAmountUnit(unit);

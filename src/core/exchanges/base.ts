@@ -1,4 +1,4 @@
-import ethers from 'ethers';
+import { ethers } from 'ethers';
 
 import * as contract from '../../helpers/contracts';
 import * as util from '../../helpers/util';

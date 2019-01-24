@@ -55,6 +55,9 @@ export const TICKER: any = {
     PNK: '0x93ed3fbe21207ec2e8f2d3c3de6e058cb73bc04d',
     CAN: '0x1d462414fe14cf489c7a21cac78509f4bf8cd7c0',
   },
+  custom: {
+    DTH: '',
+  },
 };
 
 export const EXCHANGE_PAIRS: IExchangePair[] = [
@@ -110,7 +113,7 @@ export const CONTRACT_ADDRESSES: any = {
     // external
     kyberNetworkProxy: '0x818E6FECD516Ecc3849DAf6845e3EC868087B755',
   },
-  development: {
+  custom: {
     // dether
     DetherToken: '',
     Control: '',

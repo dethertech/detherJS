@@ -1,4 +1,4 @@
-import ethers from 'ethers';
+import { ethers } from 'ethers';
 import BigNumber from 'bignumber.js';
 
 import * as constants from '../../constants';

@@ -33,6 +33,10 @@ export const geohash = (str: string, len: number) : void => {
 
 // source: https://ethereum.stackexchange.com/a/1379
 export const ethAddress = (address: string) : void => {
+  // TODO: reove this
+  // @ts-ignore
+  address = address.toLowerCase();
+
   if (!/^(0x)?[0-9a-f]{40}$/i.test(address)) {
     // check if it has the basic requirements of an address
     throw new Error(`invalid ethereum address: ${address}`);
@@ -44,12 +48,12 @@ export const ethAddress = (address: string) : void => {
   }
 
   // Otherwise check each case
-  address = address.replace('0x', ''); // tslint:disable-line
-  const addressHash = ethers.utils.keccak256(address.toLowerCase());
+  const addressHash = ethers.utils.keccak256(address.toLowerCase()).replace('0x', '');
+  const addressNo0x = address.replace('0x', '');
   for (let i = 0; i < 40; i += 1) {
     // the nth letter should be uppercase if the nth digit of casemap is 1
-    if ((parseInt(addressHash[i], 16) > 7 && address[i].toUpperCase() !== address[i]) ||
-        (parseInt(addressHash[i], 16) <= 7 && address[i].toLowerCase() !== address[i])) {
+    if ((parseInt(addressHash[i], 16) > 7 && addressNo0x[i].toUpperCase() !== addressNo0x[i]) ||
+        (parseInt(addressHash[i], 16) <= 7 && addressNo0x[i].toLowerCase() !== addressNo0x[i])) {
       throw new Error(`invalid ethereum address: ${address}`);
     }
   }

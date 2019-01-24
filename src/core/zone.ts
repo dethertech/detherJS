@@ -1,4 +1,4 @@
-import ethers from 'ethers';
+import { ethers } from 'ethers';
 
 import * as util from '../helpers/util';
 import * as validate from '../helpers/validate';
@@ -12,6 +12,7 @@ import {
 // -------------------- //
 //      ??????????      //
 // -------------------- //
+
 
 export const getLiveZoneState = (zoneAuction: IZoneAuction, zoneOwner: IZoneOwner) : [IZoneAuction, IZoneOwner] => {
   if (zoneAuction.state === ZoneAuctionState.started) {
@@ -28,6 +29,18 @@ export const getLiveZoneState = (zoneAuction: IZoneAuction, zoneOwner: IZoneOwne
   return [zoneAuction, zoneOwner];
 };
 
+export const getLiveZoneOwner = async (zoneAddress: string) : Promise<IZoneOwner> => {
+  const zoneInstance = await contract.get(wallet.provider, DetherContract.ZoneFactory, zoneAddress);
+
+  const [, liveZoneOwner] = await getLiveZoneState();
+
+};
+
+// -------------------- //
+//      Formatters      //
+// -------------------- //
+
+
 export const zoneOwnerArrToObj = (onchainZoneOwner: any[]) : IZoneOwner => ({
   address: onchainZoneOwner[0].toNumber(), // positive incrementing integer
   startTime: onchainZoneOwner[1].toNumber(), // timestamp
@@ -35,10 +48,6 @@ export const zoneOwnerArrToObj = (onchainZoneOwner: any[]) : IZoneOwner => ({
   balance: onchainZoneOwner[3].toString(), // eth amount in wei (18 decimals)
   lastTaxTime: onchainZoneOwner[4], // timestamp
 });
-
-// -------------------- //
-//      Formatters      //
-// -------------------- //
 
 export const zoneAuctionArrToObj = (onchainZoneAuction: any[]) : IZoneAuction => {
   const hasEnded = util.timestampNow() >= onchainZoneAuction[3].toNumber();
@@ -57,12 +66,7 @@ export const zoneAuctionArrToObj = (onchainZoneAuction: any[]) : IZoneAuction =>
 //        Getters       //
 // -------------------- //
 
-export const getLiveZoneOwner = async (zoneAddress: string) : Promise<IZoneOwner> => {
-  const zoneInstance = await contract.get(wallet.provider, DetherContract.ZoneFactory, zoneAddress);
 
-  const [, liveZoneOwner] = await getLiveZoneState();
-
-};
 
 export const calcBidAmount = async (zoneAddress: string, zoneAuctionId: number, bidAmount: string, wallet: ethers.Wallet) : Promise<ethers.utils.BigNumber> => {
   const zoneInstance = await contract.get(wallet.provider, DetherContract.ZoneFactory, zoneAddress);

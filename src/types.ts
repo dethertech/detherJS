@@ -118,6 +118,8 @@ export enum DetherContract {
   ZoneFactory = 'ZoneFactory',
   ExchangeRateOracle = 'ExchangeRateOracle',
   Shop = 'Shop',
+  SmsCertifier = 'SmsCertifier',
+  KycCertifier = 'KycCertifier',
 }
 
 export enum TransactionStatus {

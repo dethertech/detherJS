@@ -1,4 +1,4 @@
-import ethers from 'ethers';
+import { ethers } from 'ethers';
 
 import * as util from '../helpers/util';
 import * as validate from '../helpers/validate';

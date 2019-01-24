@@ -1,4 +1,4 @@
-import ethers from 'ethers';
+import { ethers } from 'ethers';
 
 import * as util from '../helpers/util';
 import * as validate from '../helpers/validate';
@@ -18,7 +18,7 @@ const EMPTY_MESSENGER_FIELD = '0x00000000000000000000000000000000';
 export const tellerArrToObj = (geohash7: string, zoneAddr: string, tellerArr: any[]) : ITeller => {
   const isSeller = tellerArr[3][7] === '1';
   const isBuyer = tellerArr[3][6] === '1';
-  console.log({ tellerArr });
+
   return {
     isSeller,
     isBuyer,
@@ -54,21 +54,6 @@ export const getTellerInZone = async (geohash7: string, provider: ethers.provide
   const zoneAddress = await zoneFactoryInstance.geohashToZone(util.stringToBytes(geohash7, 7));
   const zoneInstance = await contract.get(provider, DetherContract.Zone, zoneAddress);
   const teller = tellerArrToObj(geohash7, zoneAddress, await zoneInstance.getTeller());
-  return teller;
-};
-
-export const getTellerByPosition = async (geohash12: string, provider: ethers.providers.Provider) : Promise<ITeller> => {
-  validate.geohash(geohash12, 12);
-  const geohashZone = geohash12.slice(0, 7);
-  const geohashTeller = geohash12;
-
-  const teller = await getTellerInZone(geohashZone, provider);
-  if (teller.tellerGeohash !== geohashTeller) throw new Error('teller with that position does not exist');
-  // TODO:
-  // - check if zone owner is still the owner:,
-  //   he might've run out of dth balance to pay his taxes and thereby losing his zone ownership
-  // - if we allow multiple tellers in one zone this function needs to be updated
-
   return teller;
 };
 
