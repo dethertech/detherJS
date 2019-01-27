@@ -83,6 +83,8 @@ export const CONTRACT_ADDRESSES: any = {
     SmsCertifier: '',
     Users: '',
     ZoneFactory: '',
+    Zone: '',
+    Shops: '',
     // external
     // Mkr/Oasis is not on ropsten
     // AirSwap is not on ropsten
@@ -97,6 +99,8 @@ export const CONTRACT_ADDRESSES: any = {
     SmsCertifier: '',
     Users: '',
     ZoneFactory: '',
+    Zone: '',
+    Shops: '',
     // external
     // Mkr/Oasis is not on rinkeby
     airswapExchange: '0x07fc7c43d8168a2730344e5cf958aaecc3b42b41',
@@ -110,6 +114,8 @@ export const CONTRACT_ADDRESSES: any = {
     SmsCertifier: '',
     Users: '',
     ZoneFactory: '',
+    Zone: '',
+    Shops: '',
     // external
     kyberNetworkProxy: '0x818E6FECD516Ecc3849DAf6845e3EC868087B755',
   },
@@ -122,7 +128,17 @@ export const CONTRACT_ADDRESSES: any = {
     SmsCertifier: '',
     Users: '',
     ZoneFactory: '',
+    Zone: '',
+    Shops: '',
     // external
     kyberNetworkProxy: '',
   },
+};
+
+export const MIN_ZONE_STAKE = 100;
+export const BYTES16_ZERO = '0x00000000000000000000000000000000';
+export const BYTES32_ZERO = '0x0000000000000000000000000000000000000000000000000000000000000000';
+
+export const DEFAULT_TX_OPTIONS = {
+  gasPrice: 2,
 };

@@ -6,10 +6,9 @@ export const saveState = async (provider: ethers.providers.JsonRpcProvider) : Pr
   return snapshotId;
 };
 
-export const revertState = async (provider: ethers.providers.JsonRpcProvider, snapshotId: any) : Promise<void> => {
-  console.log({ snapshotId });
-  await provider.send('evm_revert', [snapshotId]);
-};
+export const revertState = async (provider: ethers.providers.JsonRpcProvider, snapshotId: any) : Promise<void> => (
+  provider.send('evm_revert', [snapshotId])
+);
 
 export const inSecs = async (provider: ethers.providers.JsonRpcProvider, secs: number) : Promise<any> => {
   await provider.send('evm_increaseTime', secs);

@@ -5,16 +5,16 @@ import { DetherContract, ExternalContract, Token } from '../types';
 
 const ABI: any = {
   // dether
-  [DetherContract.Control]: require('../../abi/dether/Control.json'),
-  [DetherContract.DetherToken]: require('../../abi/dether/DetherToken.json'),
-  [DetherContract.GeoRegistry]: require('../../abi/dether/GeoRegistry.json'),
-  [DetherContract.Users]: require('../../abi/dether/Users.json'),
-  [DetherContract.ZoneFactory]: require('../../abi/dether/ZoneFactory.json'),
-  [DetherContract.ExchangeRateOracle]: require('../../abi/dether/ExchangeRateOracle.json'),
+  [DetherContract.Control]: require('../../abi/dether/Control.json').abi,
+  [DetherContract.DetherToken]: require('../../abi/dether/DetherToken.json').abi,
+  [DetherContract.GeoRegistry]: require('../../abi/dether/GeoRegistry.json').abi,
+  [DetherContract.Users]: require('../../abi/dether/Users.json').abi,
+  [DetherContract.ZoneFactory]: require('../../abi/dether/ZoneFactory.json').abi,
+  [DetherContract.ExchangeRateOracle]: require('../../abi/dether/ExchangeRateOracle.json').abi,
+  [DetherContract.Shops]: require('../../abi/dether/Shops.json').abi,
+  [DetherContract.Zone]: require('../../abi/dether/Zone.json').abi,
   // external
   [ExternalContract.erc20]: require('../../abi/external/erc20.json'),
-  [ExternalContract.weth]: require('../../abi/external/weth.json'),
-  [ExternalContract.airswapExchange]: require('../../abi/external/airswapExchange.json'),
   [ExternalContract.kyberNetworkProxy]: require('../../abi/external/kyberNetworkProxy.json'),
 };
 
@@ -24,7 +24,8 @@ export const get = async (provider: ethers.providers.Provider, contractName: Det
   const abi = ABI[contractName];
   if (!abi) throw new Error(`contract '${contractName}' is unknown`);
   if (!address) { // if no address passed in, load address from constants.js file
-    const { name: networkName } = await provider.getNetwork();
+    let { name: networkName } = await provider.getNetwork();
+    if (networkName === 'unknown') networkName = 'custom';
     address = CONTRACT_ADDRESSES[networkName][contractName]; // tslint:disable-line
     if (!address) throw new Error(`could not find contract address of ${contractName} on ${networkName}`);
   }

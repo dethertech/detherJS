@@ -1,7 +1,12 @@
 /* eslint-disable max-len, no-await-in-loop, guard-for-in, no-restricted-syntax, object-curly-newline */
 import path from 'path';
+
+import { ethers } from 'ethers';
 import ethUtil from 'ethereumjs-util';
 import bignum from 'bignum';
+
+import * as convert from './convert';
+import * as transaction from './transaction';
 
 const BATCH_SIZE = 300;
 
@@ -48,10 +53,8 @@ const toBitMap = (chars: string[]) : string => {
   return ethUtil.bufferToHex(ethUtil.setLengthLeft(res.toNumber(), 4));
 };
 
-export const addCountry = async (from, web3, geoRegistryContract, countryCode) => {
-  const countryFile = require(path.join(__dirname, '..', '..', 'data', 'trees_countries', countryCode));
-
-  const countryMap = Object.keys(countryFile).reduce((memo, level0char) => {
+const parseCountryFile = (countryFile: any) : any => (
+  Object.keys(countryFile).reduce((memo, level0char) => {
     Object.keys(countryFile[level0char]).forEach((level1char) => {
       Object.keys(countryFile[level0char][level1char]).forEach((level2char) => {
         const level4chars = Object.keys(countryFile[level0char][level1char][level2char]);
@@ -60,30 +63,18 @@ export const addCountry = async (from, web3, geoRegistryContract, countryCode) =
       });
     });
     return memo;
-  }, {});
+  }, {})
+);
 
+export const addCountry = async (wallet: ethers.Wallet, geoRegistryContract: ethers.Contract, countryCode: string) => {
+  const countryFile = require(path.join(__dirname, '..', 'data', countryCode));
+  const countryMap = parseCountryFile(countryFile);
   const keys = Object.keys(countryMap);
-
-  let countryGasCost = 0;
-  let txCount = 0;
-  let mostExpensiveTrxGasCost = 0;
 
   for (let batchStartIdx = 0; batchStartIdx < keys.length; batchStartIdx += BATCH_SIZE) {
     const keysBatch = keys.slice(batchStartIdx, batchStartIdx + BATCH_SIZE);
     // @ts-ignore
     const valuesBatch = keysBatch.map(key => countryMap[key]);
-    const receipt = await geoRegistryContract.updateLevel2batch(web3.utils.asciiToHex(countryCode), keysBatch.map(web3.utils.asciiToHex), valuesBatch, { from });
-    const gasCost = receipt.receipt.gasUsed;
-    if (gasCost > mostExpensiveTrxGasCost) {
-      mostExpensiveTrxGasCost = gasCost;
-    }
-    countryGasCost += gasCost;
-    txCount += 1;
+    await transaction.waitForTxMined(geoRegistryContract.connect(wallet).updateLevel2batch(convert.asciiToHex(countryCode), keysBatch.map(convert.asciiToHex), valuesBatch));
   }
-
-  return { countryGasCost, mostExpensiveTrxGasCost, txCount, countryMap };
-};
-
-module.exports = {
-  addCountry,
 };

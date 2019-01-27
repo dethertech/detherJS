@@ -75,6 +75,7 @@ export enum ExternalContract {
   weth = 'weth',
   airswapExchange = 'airswapExchange',
   kyberNetworkProxy = 'kyberNetworkProxy',
+  appealableArbitrator = 'appealableArbitrator',
 }
 
 export interface IBalances {
@@ -117,7 +118,7 @@ export enum DetherContract {
   Zone = 'Zone',
   ZoneFactory = 'ZoneFactory',
   ExchangeRateOracle = 'ExchangeRateOracle',
-  Shop = 'Shop',
+  Shops = 'Shops',
   SmsCertifier = 'SmsCertifier',
   KycCertifier = 'KycCertifier',
 }
@@ -240,6 +241,6 @@ export enum DisputeType {
 }
 
 export interface ITxOptions {
-  gasPrice: number;
-  gasLimit: number;
+  gasPrice?: number;
+  gasLimit?: number;
 }

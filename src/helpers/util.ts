@@ -29,6 +29,10 @@ export const add0x = (txHash: string) : string => (
   txHash.startsWith('0x') ? txHash : `0x${txHash}`
 );
 
+export const remove0x = (val: string) : string => (
+  val.replace('0x', '')
+);
+
 export const toNBytes = (str: string, n: number) : string => {
   let buffer = '';
   for (let i = 0; i < n; i += 1) {

@@ -6,7 +6,7 @@ import * as exchanges from './exchanges';
 
 import {
   Token,
-  IBalances, IExchange,
+  IBalances, IExchange, ITxOptions,
 } from '../types';
 
 // -------------------- //
@@ -45,8 +45,8 @@ export const getExchangeEstimation = async (sellToken: Token, buyToken: Token, s
 };
 
 // NOTE: buyArg
-export const execTrade = async (sellToken: Token, buyToken: Token, sellAmount: string, buyAmount: string, wallet: ethers.Wallet, options?: { gasPrice: number }) : Promise<ethers.ContractTransaction> => {
+export const execTrade = async (sellToken: Token, buyToken: Token, sellAmount: string, buyAmount: string, wallet: ethers.Wallet, txOptions: ITxOptions) : Promise<ethers.ContractTransaction> => {
   const exchange: IExchange = exchanges.load(sellToken, buyToken);
-  const tradeTx = await exchange.trade(sellAmount, buyAmount, wallet, options);
+  const tradeTx = await exchange.trade(sellAmount, buyAmount, wallet, txOptions);
   return tradeTx;
 };

@@ -1,45 +1,19 @@
 import { ethers } from 'ethers';
 
+import * as constants from '../constants';
 import * as util from '../helpers/util';
+import * as convert from '../helpers/convert';
 import * as validate from '../helpers/validate';
 import * as contract from '../helpers/contracts';
 
 import {
-  Network, Unit, Token, TransactionStatus, Tier, DetherContract, ZoneAuctionState,
-  IEthersOptions, IContractAddresses, ITeller, IBalances, IEstimation, ITellerArgs, IZoneAuction, IZoneOwner,
+  DetherContract, ZoneAuctionState,
+  IZoneAuction, IZoneOwner, ITxOptions,
 } from '../types';
-
-// -------------------- //
-//      ??????????      //
-// -------------------- //
-
-
-export const getLiveZoneState = (zoneAuction: IZoneAuction, zoneOwner: IZoneOwner) : [IZoneAuction, IZoneOwner] => {
-  if (zoneAuction.state === ZoneAuctionState.started) {
-    if (util.timestampNow() >= zoneAuction.endTime) {
-      // auction has ended, but chain has not yet been updated with that info (<3 blockchain?)
-      zoneAuction.state = ZoneAuctionState.ended;
-      // update zone owner, could be that highestBidder already is the zone owner, just overwrite with same value
-      zoneOwner.address = zoneAuction.highestBidder;
-      zoneOwner.staked = zoneAuction.highestBid;
-      zoneOwner.startTime = zoneAuction.endTime;
-    }
-    // TODO: if harberger taxes cannot be paid, zone owner will lose his zone ownership, and claimfreeZone can be called
-  }
-  return [zoneAuction, zoneOwner];
-};
-
-export const getLiveZoneOwner = async (zoneAddress: string) : Promise<IZoneOwner> => {
-  const zoneInstance = await contract.get(wallet.provider, DetherContract.ZoneFactory, zoneAddress);
-
-  const [, liveZoneOwner] = await getLiveZoneState();
-
-};
 
 // -------------------- //
 //      Formatters      //
 // -------------------- //
-
 
 export const zoneOwnerArrToObj = (onchainZoneOwner: any[]) : IZoneOwner => ({
   address: onchainZoneOwner[0].toNumber(), // positive incrementing integer
@@ -63,104 +37,94 @@ export const zoneAuctionArrToObj = (onchainZoneAuction: any[]) : IZoneAuction =>
 };
 
 // -------------------- //
-//        Getters       //
+//        Setters       //
 // -------------------- //
 
+export const create = async(country: string, geohash7: string, wallet: ethers.Wallet, txOptions: ITxOptions) : Promise<ethers.ContractTransaction> => {
+  validate.countryCode(country);
+  validate.geohash(geohash7, 7);
 
-
-export const calcBidAmount = async (zoneAddress: string, zoneAuctionId: number, bidAmount: string, wallet: ethers.Wallet) : Promise<ethers.utils.BigNumber> => {
-  const zoneInstance = await contract.get(wallet.provider, DetherContract.ZoneFactory, zoneAddress);
-
-  const bidAmountBN = ethers.utils.parseEther(bidAmount);
-  const existingBidBN = await zoneInstance.bids(zoneAuctionId, wallet.address);
-  const zoneOwnerAddress = await zoneInstance.getZoneOwner();
-
-  if (wallet.address.toLowerCase() === zoneOwnerAddress.toLowerCase()) { // current zoneOwner, need to add his stake to bid
-    return ethers.utils.parseUnits(zoneOwner.staked, 'wei').add(existingBidBN).add(bidAmountBN);
-  }
-
-  if (existingBidBN.gt(0)) { // somebody who already placed a bid is placing another bid
-    return existingBidBN.add(bidAmountBN);
-  }
-
-  // first time this address wants to place bid
-  const bidMinusEntryFee = (await zoneInstance.calcEntryFee(bidAmountBN))[1];
-  return bidMinusEntryFee;
+  const detherTokenContract = await contract.get(wallet.provider, DetherContract.DetherToken);
+  const zoneFactoryContract = await contract.get(wallet.provider, DetherContract.ZoneFactory);
+  const data = `0x40${convert.remove0x(convert.asciiToHex(country))}${convert.remove0x(convert.asciiToHex(geohash7))}`;
+  console.log({ data });
+  const myBalance = await wallet.getBalance();
+  console.log('eth', convert.weiToEth(myBalance.toString()));
+  console.log('dth', convert.weiToEth((await detherTokenContract.balanceOf(wallet.address)).toString()));
+  console.log('cost dth', constants.MIN_ZONE_STAKE);
+  console.log('args', [zoneFactoryContract.address, convert.ethToWei(constants.MIN_ZONE_STAKE), data, data.length, txOptions]);
+  return detherTokenContract.connect(wallet).transfer(zoneFactoryContract.address, convert.ethToWei(constants.MIN_ZONE_STAKE), '0x1337'); // erc223 call
 };
 
-export const getLastAuction = async (zoneAddress: string, provider: ethers.providers.Provider) : Promise<any> => {
-  const zoneInstance = await contract.get(provider, DetherContract.ZoneFactory, zoneAddress);
-  const lastAuctionArr = await zoneInstance.getLastAuction();
-  const lastAuctionObj = format.
+export const claimFree = async(geohash7: string, wallet: ethers.Wallet, txOptions: ITxOptions) : Promise<ethers.ContractTransaction> => {
+  validate.geohash(geohash7, 7);
+
+  const detherTokenContract = await contract.get(wallet.provider, DetherContract.DetherToken);
+  const zoneFactoryContract = await contract.get(wallet.provider, DetherContract.ZoneFactory);
+  const zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(geohash7));
+
+  return detherTokenContract.connect(wallet).transfer(zoneAddress, convert.ethToWei(constants.MIN_ZONE_STAKE), '0x41', txOptions); // erc223 call
 };
 
-private async getLiveZoneOwnerAndAuction(zoneInstance: any) : Promise<[IZoneAuction, IZoneOwner]> {
-  const onchainZoneAuction: IZoneAuction = util.zoneAuctionArrToObj(await zoneInstance.getLastAuction());
-  const onchainZoneOwner: IZoneOwner = util.zoneOwnerArrToObj(await zoneInstance.getZoneOwner());
-  let liveZoneAuction: IZoneAuction;
-  let liveZoneOwner: IZoneOwner;
-  ([liveZoneAuction, liveZoneOwner] = util.toLiveAuction(zoneInstance, onchainZoneAuction, onchainZoneOwner));
-  return [liveZoneAuction, liveZoneOwner];
-}
+export const bid = async(geohash7: string, bidAmount: string, wallet: ethers.Wallet, txOptions: ITxOptions) : Promise<ethers.ContractTransaction> => {
+  validate.geohash(geohash7, 7);
 
-// helper function, throws if for any reason we cannot place a bid, otherwise does nothing
-async canBidOnZone(walletAddress: string, zoneAddress: string, bidAmount: string) {
-  const zoneInstance = await contract.get(this.provider, DetherContract.Zone, zoneAddress);
-  const [zoneAuction, zoneOwner] = await this.getLiveZoneOwnerAndAuction(zoneInstance);
-  if (!zoneOwner.address) throw new Error('zone has no owner, call claimFreeZone()');
-  if (zoneAuction.state === ZoneAuctionState.started) {
-    if (walletAddress === zoneAuction.highestBidder) throw new Error('already highest bidder');
-    const bidAmountBN = ethers.utils.parseEther(bidAmount);
-    const existingBidBN = await zoneInstance.bids(zoneAuctionId, walletAddress);
-    const highestBidBN = ethers.utils.parseEther(zoneAuction.highestBid);
-    const bidBN = walletAddress === zoneOwner.address
-      // current zoneOwner, need to add his stake to bid
-      ? ethers.utils.parseUnits(zoneOwner.staked, 'wei').add(existingBidBN).add(bidAmountBN)
-      : existingBidBN
-        // somebody who already placed a bid is placing another bid
-        ? existingBidBN.add(bidAmountBN)
-        // first time this address wants to place bid
-        : (await zoneInstance.calcEntryFee(bidAmountBN))[1];
-    if (bidBN.lt(highestBidBN)) throw new Error('bid not above current highest');
-    const tx = await this.erc223MethodCall(zoneInstance.address, bidBN, '0x42'); // bid()
-    console.log({ bidTx: tx });
-  } else { // last auction has ended
-    if (zoneOwner.address === walletAddress) throw new Error('zone owner cannot start auction');
-    const bidAmountBn = ethers.utils.parseEther(bidAmount);
+  const detherTokenContract = await contract.get(wallet.provider, DetherContract.DetherToken);
+  const zoneFactoryContract = await contract.get(wallet.provider, DetherContract.ZoneFactory);
+  const zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(geohash7));
+  return detherTokenContract.connect(wallet).transfer(zoneAddress, bidAmount, '0x42', txOptions); // erc223 call
+};
 
-  }
-}
+export const topUp = async(geohash7: string, topUpAmount: string, wallet: ethers.Wallet, txOptions: ITxOptions) : Promise<ethers.ContractTransaction> => {
+  validate.geohash(geohash7, 7);
 
-async bid(zoneAddress: string, bidAmount: string, password?: string) {
-  const wallet = await this.loadWallet(password); // undefined when using metamask
-  validate.ethAddress(zoneAddress);
-  // we need info to check the zone (auction) current state and if requested bid amount is enough to place a valid bid
-  const zoneInstance = await contract.get(this.provider, DetherContract.Zone, zoneAddress);
-  const onchainZoneAuction: IZoneAuction = util.zoneAuctionArrToObj(await zoneInstance.getLastAuction());
-  const onchainZoneOwner: IZoneOwner = util.zoneOwnerArrToObj(await zoneInstance.getZoneOwner());
-  let liveZoneAuction: IZoneAuction;
-  let liveZoneOwner: IZoneOwner;
-  ([liveZoneAuction, liveZoneOwner] = util.toLiveAuction(zoneInstance, onchainZoneAuction, onchainZoneOwner));
-  if (!liveZoneOwner.address) throw new Error('zone has no owner, call claimFreeZone()');
-  if (liveZoneAuction.state === ZoneAuctionState.started) {
-    if (wallet.address === liveZoneAuction.highestBidder) throw new Error('already highest bidder');
-    const bidAmountBN = ethers.utils.parseEther(bidAmount);
-    const existingBidBN = await zoneInstance.bids(liveZoneAuction.id, wallet.address);
-    const highestBidBN = ethers.utils.parseEther(liveZoneAuction.highestBid);
-    const bidBN = wallet.address === liveZoneOwner.address
-      ? ethers.utils.parseUnits(liveZoneOwner.staked, 'wei').add(existingBidBN).add(bidAmountBN)
-      : existingBidBN
-        ? existingBidBN.add(bidAmountBN)
-        : (await zoneInstance.calcEntryFee(bidAmountBN))[1];
-    if (bidBN.lt(highestBidBN)) throw new Error('bid not above current highest');
-    const tx = await this.erc223MethodCall(zoneInstance.address, bidBN, '0x42'); // bid()
-    console.log({ bidTx: tx });
-  } else { // last auction has ended
-    if (liveZoneOwner.address === wallet.address) throw new Error('zone owner cannot start auction');
-    const bidAmountBn = ethers.utils.parseEther(bidAmount);
+  const detherTokenContract = await contract.get(wallet.provider, DetherContract.DetherToken);
+  const zoneFactoryContract = await contract.get(wallet.provider, DetherContract.ZoneFactory);
+  const zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(geohash7));
+  return detherTokenContract.connect(wallet).transfer(zoneAddress, topUpAmount, '0x43', txOptions); // erc223 call
+};
 
-  }
-  // await validate.zoneBidAmount(bidAmount, zone);
-  // validate.currencyId(tellerData.currencyId);
+export const release = async(geohash7: string, wallet: ethers.Wallet, txOptions: ITxOptions) : Promise<ethers.ContractTransaction> => {
+  validate.geohash(geohash7, 7);
 
-}
+  const zoneFactoryContract = await contract.get(wallet.provider, DetherContract.ZoneFactory);
+  const zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(geohash7));
+  const zoneContract = await contract.get(wallet.provider, DetherContract.Zone, zoneAddress);
+  return zoneContract.connect(wallet).release(txOptions);
+};
+
+export const withdrawFromAuction = async(geohash7: string, auctionId: number, wallet: ethers.Wallet, txOptions: ITxOptions) : Promise<ethers.ContractTransaction> => {
+  validate.geohash(geohash7, 7);
+
+  const zoneFactoryContract = await contract.get(wallet.provider, DetherContract.ZoneFactory);
+  const zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(geohash7));
+  const zoneContract = await contract.get(wallet.provider, DetherContract.Zone, zoneAddress);
+  return zoneContract.connect(wallet).withdrawFromAuction(auctionId, txOptions);
+};
+
+export const withdrawFromAuctions = async(geohash7: string, auctionIds: number[], wallet: ethers.Wallet, txOptions: ITxOptions) : Promise<ethers.ContractTransaction> => {
+  validate.geohash(geohash7, 7);
+
+  const zoneFactoryContract = await contract.get(wallet.provider, DetherContract.ZoneFactory);
+  const zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(geohash7));
+  const zoneContract = await contract.get(wallet.provider, DetherContract.Zone, zoneAddress);
+  return zoneContract.connect(wallet).withdrawFromAuctions(auctionIds, txOptions);
+};
+
+export const withdrawDth = async(geohash7: string, wallet: ethers.Wallet, txOptions: ITxOptions) : Promise<ethers.ContractTransaction> => {
+  validate.geohash(geohash7, 7);
+
+  const zoneFactoryContract = await contract.get(wallet.provider, DetherContract.ZoneFactory);
+  const zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(geohash7));
+  const zoneContract = await contract.get(wallet.provider, DetherContract.Zone, zoneAddress);
+  return zoneContract.connect(wallet).withdrawDth(txOptions);
+};
+
+export const withdrawEth = async(geohash7: string, wallet: ethers.Wallet, txOptions: ITxOptions) : Promise<ethers.ContractTransaction> => {
+  validate.geohash(geohash7, 7);
+
+  const zoneFactoryContract = await contract.get(wallet.provider, DetherContract.ZoneFactory);
+  const zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(geohash7));
+  const zoneContract = await contract.get(wallet.provider, DetherContract.Zone, zoneAddress);
+  return zoneContract.connect(wallet).withdrawEth(txOptions);
+};

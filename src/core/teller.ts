@@ -6,7 +6,7 @@ import * as contract from '../helpers/contracts';
 
 import {
   DetherContract,
-  ITeller, ITellerArgs, IDate,
+  ITeller, ITellerArgs, IDate, ITxOptions,
 } from '../types';
 
 const EMPTY_MESSENGER_FIELD = '0x00000000000000000000000000000000';
@@ -66,7 +66,7 @@ export const getTellersInZones = async (geohash7List: string[], provider: ethers
 //        Setters       //
 // -------------------- //
 
-export const addTeller = async (zoneAddress: string, tellerData: ITellerArgs, wallet: ethers.Wallet) : Promise<ethers.ContractTransaction> => {
+export const addTeller = async (zoneAddress: string, tellerData: ITellerArgs, wallet: ethers.Wallet, txOptions: ITxOptions) : Promise<ethers.ContractTransaction> => {
   validate.ethAddress(zoneAddress);
   validate.geohash(tellerData.position, 12);
   validate.currencyId(tellerData.currencyId);
@@ -77,74 +77,67 @@ export const addTeller = async (zoneAddress: string, tellerData: ITellerArgs, wa
   const tellerSettings = settingsToBytes(tellerData.isBuyer, tellerData.isSeller);
 
   const zoneContract = await contract.get(wallet.provider, DetherContract.Zone, zoneAddress);
-  const zoneInstance = zoneContract.connect(wallet);
 
-  return zoneInstance.addTeller(
+  return zoneContract.connect(wallet).addTeller(
     util.stringToBytes(tellerData.position, 10),
     tellerData.currencyId,
     tellerData.messenger ? util.stringToBytes(tellerData.messenger, 16) : EMPTY_MESSENGER_FIELD,
     tellerData.sellRate,
     tellerData.buyRate,
     tellerSettings,
+    txOptions,
   );
 };
 
-export const removeTeller = async (zoneAddress: string, wallet: ethers.Wallet) : Promise<ethers.ContractTransaction> => {
+export const removeTeller = async (zoneAddress: string, wallet: ethers.Wallet, txOptions: ITxOptions) : Promise<ethers.ContractTransaction> => {
   validate.ethAddress(zoneAddress);
 
   const zoneContract = await contract.get(wallet.provider, DetherContract.Zone, zoneAddress);
-  const zoneInstance = zoneContract.connect(wallet);
 
-  return zoneInstance.removeTeller();
+  return zoneContract.connect(wallet).removeTeller(txOptions);
 };
 
-export const addFunds = async (zoneAddress: string, ethAmount: string, wallet: ethers.Wallet) : Promise<ethers.ContractTransaction> => {
+export const addFunds = async (zoneAddress: string, ethAmount: string, wallet: ethers.Wallet, txOptions: ITxOptions) : Promise<ethers.ContractTransaction> => {
   validate.ethAddress(zoneAddress);
 
   const zoneContract = await contract.get(wallet.provider, DetherContract.Zone, zoneAddress);
-  const zoneInstance = zoneContract.connect(wallet);
 
   // TODO: check that wallet address has enough eth balance + is a teller
 
-  const tx = zoneInstance.addFunds({ value: ethers.utils.parseEther(ethAmount) });
-  return tx;
+  return zoneContract.connect(wallet).addFunds({ ...txOptions, value: ethers.utils.parseEther(ethAmount) });
 };
 
-export const sellEth = async (zoneAddress: string, recipient: string, ethAmount: string, wallet: ethers.Wallet) : Promise<ethers.ContractTransaction> => {
+export const sellEth = async (zoneAddress: string, recipient: string, ethAmount: string, wallet: ethers.Wallet, txOptions: ITxOptions) : Promise<ethers.ContractTransaction> => {
   validate.ethAddress(zoneAddress);
   validate.ethAddress(recipient);
 
   const zoneContract = await contract.get(wallet.provider, DetherContract.Zone, zoneAddress);
-  const zoneInstance = zoneContract.connect(wallet);
 
-  const fundsInZone = await zoneInstance.funds(wallet.address);
+  const fundsInZone = await zoneContract.funds(wallet.address);
   if (fundsInZone.lt(ethAmount)) throw new Error('not enough funds in zone');
   // TODO: check that wallet address has enough funds in the zone contract + is a teller
 
-  const tx = zoneInstance.sellEth(recipient, ethAmount);
-  return tx;
+  return zoneContract.connect(wallet).sellEth(recipient, ethAmount, txOptions);
 };
 
 // --- Comments
 
-export const addComment = async (zoneAddress: string, commentHash: string, wallet: ethers.Wallet) : Promise<ethers.ContractTransaction> => {
+export const addComment = async (zoneAddress: string, commentHash: string, wallet: ethers.Wallet, txOptions: ITxOptions) : Promise<ethers.ContractTransaction> => {
   validate.ethAddress(zoneAddress);
 
   const zoneContract = await contract.get(wallet.provider, DetherContract.Zone, zoneAddress);
-  const zoneInstance = zoneContract.connect(wallet);
 
   // TODO: check that wallet address is allowed to place a comment
 
-  return zoneInstance.addComment(util.ipfsHashToBytes32(commentHash));
+  return zoneContract.connect(wallet).addComment(util.ipfsHashToBytes32(commentHash), txOptions);
 };
 
-export const addCertifiedComment = async (zoneAddress: string, commentHash: string, wallet: ethers.Wallet) : Promise<ethers.ContractTransaction> => {
+export const addCertifiedComment = async (zoneAddress: string, commentHash: string, wallet: ethers.Wallet, txOptions: ITxOptions) : Promise<ethers.ContractTransaction> => {
   validate.ethAddress(zoneAddress);
 
   const zoneContract = await contract.get(wallet.provider, DetherContract.Zone, zoneAddress);
-  const zoneInstance = zoneContract.connect(wallet);
 
   // TODO: check that wallet address is allowed to place a certified comment
 
-  return zoneInstance.addCertifiedComment(util.ipfsHashToBytes32(commentHash));
+  return zoneContract.connect(wallet).addCertifiedComment(util.ipfsHashToBytes32(commentHash), txOptions);
 };
