@@ -258,6 +258,7 @@ export default class DetherJS {
     this.hasProvider();
     this.hasWallet();
     const wallet = await this.loadWallet(password);
+    console.log('calling zone.create()');
     return zone.create(country, geohash7, wallet, txOptions);
   }
 

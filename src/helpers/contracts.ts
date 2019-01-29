@@ -18,7 +18,7 @@ const ABI: any = {
   [ExternalContract.kyberNetworkProxy]: require('../../abi/external/kyberNetworkProxy.json'),
 };
 
-export const get = async (provider: ethers.providers.Provider, contractName: DetherContract|ExternalContract, address?: string) : Promise<any> => {
+export const get = async (provider: ethers.providers.Provider, contractName: DetherContract|ExternalContract, address?: string, overwriteAbi?: any) : Promise<any> => {
   if (!provider) throw new Error('missing provider arg');
   if (!contractName) throw new Error('missing contract name');
   const abi = ABI[contractName];
@@ -29,7 +29,7 @@ export const get = async (provider: ethers.providers.Provider, contractName: Det
     address = CONTRACT_ADDRESSES[networkName][contractName]; // tslint:disable-line
     if (!address) throw new Error(`could not find contract address of ${contractName} on ${networkName}`);
   }
-  return new ethers.Contract(address, abi, provider);
+  return new ethers.Contract(address, overwriteAbi || abi, provider);
 };
 
 export const getErc20 = async (provider: ethers.providers.Provider, tokenName: Token) : Promise<any> => {

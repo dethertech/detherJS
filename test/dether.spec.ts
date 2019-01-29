@@ -289,7 +289,7 @@ describe('DetherJS', () => {
     });
     describe('setters', () => {
       describe('create zone', () => {
-        it('should succeed', async () => {
+        it.only('should succeed', async () => {
           detherJs.loadUser(await accounts.user1.encrypt(PASS));
           const tx = await transaction.waitForTxMined(detherJs.createZone(PASS, COUNTRY, ZONE_GEOHASH));
           console.log(tx);

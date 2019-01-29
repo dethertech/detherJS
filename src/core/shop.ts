@@ -30,7 +30,7 @@ export const shopArrToObj = (shopArr: any[]) : IShop => ({
 });
 
 // to send as erc233 call data, which calls shop.tokenFallback
-export const addShopObjToBytes = (shopData: IShopArgs) : string => {
+export const createShopBytes = (shopData: IShopArgs) : string => {
   const data = [
     SHOP_ADD_FN,
     util.toNBytes(shopData.country, 2),
@@ -93,7 +93,7 @@ export const addShop = async (shopData: IShopArgs, wallet: ethers.Wallet, txOpti
   const shopContract = await contract.get(wallet.provider, DetherContract.Shops);
   const detherTokenContract = await contract.get(wallet.provider, DetherContract.DetherToken);
   const licensePrice = await shopContract.countryLicensePrice(util.stringToBytes(shopData.country, 2));
-  return detherTokenContract.connect(wallet).transfer(shopContract.address, licensePrice, addShopObjToBytes(shopData), txOptions); // erc223 call
+  return detherTokenContract.connect(wallet).transfer(shopContract.address, licensePrice, createShopBytes(shopData), txOptions); // erc223 call
 };
 
 // 1 address can only own 1 shop

@@ -26,14 +26,14 @@
     "absolutePath": "/Users/trip/Projects/detherContracts/contracts/oracle/IExchangeRateOracle.sol",
     "exportedSymbols": {
       "IExchangeRateOracle": [
-        5717
+        8083
       ]
     },
-    "id": 5718,
+    "id": 8084,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5711,
+        "id": 8077,
         "literals": [
           "solidity",
           "^",
@@ -41,7 +41,7 @@
           ".24"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:24:16"
+        "src": "0:24:31"
       },
       {
         "baseContracts": [],
@@ -49,9 +49,9 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 5717,
+        "id": 8083,
         "linearizedBaseContracts": [
-          5717
+          8083
         ],
         "name": "IExchangeRateOracle",
         "nodeType": "ContractDefinition",
@@ -59,7 +59,7 @@
           {
             "body": null,
             "documentation": null,
-            "id": 5716,
+            "id": 8082,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": true,
@@ -67,23 +67,23 @@
             "name": "getWeiPriceOneUsd",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5712,
+              "id": 8078,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "85:2:16"
+              "src": "85:2:31"
             },
             "payable": false,
             "returnParameters": {
-              "id": 5715,
+              "id": 8081,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5714,
+                  "id": 8080,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5716,
-                  "src": "108:4:16",
+                  "scope": 8082,
+                  "src": "108:4:31",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -91,10 +91,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5713,
+                    "id": 8079,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
-                    "src": "108:4:16",
+                    "src": "108:4:31",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -104,33 +104,33 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "107:6:16"
+              "src": "107:6:31"
             },
-            "scope": 5717,
-            "src": "59:55:16",
+            "scope": 8083,
+            "src": "59:55:31",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 5718,
-        "src": "26:90:16"
+        "scope": 8084,
+        "src": "26:90:31"
       }
     ],
-    "src": "0:117:16"
+    "src": "0:117:31"
   },
   "legacyAST": {
     "absolutePath": "/Users/trip/Projects/detherContracts/contracts/oracle/IExchangeRateOracle.sol",
     "exportedSymbols": {
       "IExchangeRateOracle": [
-        5717
+        8083
       ]
     },
-    "id": 5718,
+    "id": 8084,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5711,
+        "id": 8077,
         "literals": [
           "solidity",
           "^",
@@ -138,7 +138,7 @@
           ".24"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:24:16"
+        "src": "0:24:31"
       },
       {
         "baseContracts": [],
@@ -146,9 +146,9 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 5717,
+        "id": 8083,
         "linearizedBaseContracts": [
-          5717
+          8083
         ],
         "name": "IExchangeRateOracle",
         "nodeType": "ContractDefinition",
@@ -156,7 +156,7 @@
           {
             "body": null,
             "documentation": null,
-            "id": 5716,
+            "id": 8082,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": true,
@@ -164,23 +164,23 @@
             "name": "getWeiPriceOneUsd",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5712,
+              "id": 8078,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "85:2:16"
+              "src": "85:2:31"
             },
             "payable": false,
             "returnParameters": {
-              "id": 5715,
+              "id": 8081,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5714,
+                  "id": 8080,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5716,
-                  "src": "108:4:16",
+                  "scope": 8082,
+                  "src": "108:4:31",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -188,10 +188,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5713,
+                    "id": 8079,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
-                    "src": "108:4:16",
+                    "src": "108:4:31",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -201,20 +201,20 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "107:6:16"
+              "src": "107:6:31"
             },
-            "scope": 5717,
-            "src": "59:55:16",
+            "scope": 8083,
+            "src": "59:55:31",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 5718,
-        "src": "26:90:16"
+        "scope": 8084,
+        "src": "26:90:31"
       }
     ],
-    "src": "0:117:16"
+    "src": "0:117:31"
   },
   "compiler": {
     "name": "solc",
@@ -222,5 +222,5 @@
   },
   "networks": {},
   "schemaVersion": "2.0.1",
-  "updatedAt": "2019-01-24T12:15:25.525Z"
+  "updatedAt": "2019-01-29T09:58:57.207Z"
 }

@@ -70,11 +70,10 @@ export const addCountry = async (wallet: ethers.Wallet, geoRegistryContract: eth
   const countryFile = require(path.join(__dirname, '..', 'data', countryCode));
   const countryMap = parseCountryFile(countryFile);
   const keys = Object.keys(countryMap);
-
   for (let batchStartIdx = 0; batchStartIdx < keys.length; batchStartIdx += BATCH_SIZE) {
     const keysBatch = keys.slice(batchStartIdx, batchStartIdx + BATCH_SIZE);
     // @ts-ignore
     const valuesBatch = keysBatch.map(key => countryMap[key]);
-    await transaction.waitForTxMined(geoRegistryContract.connect(wallet).updateLevel2batch(convert.asciiToHex(countryCode), keysBatch.map(convert.asciiToHex), valuesBatch));
+    const tx = await transaction.waitForTxMined(geoRegistryContract.connect(wallet).updateLevel2batch(convert.asciiToHex(countryCode), keysBatch.map(convert.asciiToHex), valuesBatch));
   }
 };

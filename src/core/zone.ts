@@ -11,6 +11,8 @@ import {
   IZoneAuction, IZoneOwner, ITxOptions,
 } from '../types';
 
+const ZONE_CREATE_FN = '40';
+
 // -------------------- //
 //      Formatters      //
 // -------------------- //
@@ -36,24 +38,30 @@ export const zoneAuctionArrToObj = (onchainZoneAuction: any[]) : IZoneAuction =>
   };
 };
 
+const createZoneBytes = (country: string, geohash7: string) : string => {
+  const data = [
+    ZONE_CREATE_FN,
+    util.toNBytes(country, 2),
+    util.toNBytes(geohash7, 7),
+  ].join('');
+
+  return `0x${data}`;
+};
+
 // -------------------- //
 //        Setters       //
 // -------------------- //
 
-export const create = async(country: string, geohash7: string, wallet: ethers.Wallet, txOptions: ITxOptions) : Promise<ethers.ContractTransaction> => {
+// @ts-ignore
+export const create = async (country: string, geohash7: string, wallet: ethers.Wallet, txOptions: ITxOptions) : Promise<ethers.ContractTransaction> => {
   validate.countryCode(country);
   validate.geohash(geohash7, 7);
 
-  const detherTokenContract = await contract.get(wallet.provider, DetherContract.DetherToken);
+  const detherTokenContract = await contract.get(wallet.provider, DetherContract.DetherToken, undefined, ['function transfer(address _to, uint _value, bytes _data) returns (bool)']);
   const zoneFactoryContract = await contract.get(wallet.provider, DetherContract.ZoneFactory);
-  const data = `0x40${convert.remove0x(convert.asciiToHex(country))}${convert.remove0x(convert.asciiToHex(geohash7))}`;
-  console.log({ data });
-  const myBalance = await wallet.getBalance();
-  console.log('eth', convert.weiToEth(myBalance.toString()));
-  console.log('dth', convert.weiToEth((await detherTokenContract.balanceOf(wallet.address)).toString()));
-  console.log('cost dth', constants.MIN_ZONE_STAKE);
-  console.log('args', [zoneFactoryContract.address, convert.ethToWei(constants.MIN_ZONE_STAKE), data, data.length, txOptions]);
-  return detherTokenContract.connect(wallet).transfer(zoneFactoryContract.address, convert.ethToWei(constants.MIN_ZONE_STAKE), '0x1337'); // erc223 call
+
+  console.log('calling token.transfer() create zone', detherTokenContract);
+  const tx = await detherTokenContract.connect(wallet).functions.transfer(zoneFactoryContract.address, convert.ethToWei(constants.MIN_ZONE_STAKE), createZoneBytes(country, geohash7)); // erc223 call
 };
 
 export const claimFree = async(geohash7: string, wallet: ethers.Wallet, txOptions: ITxOptions) : Promise<ethers.ContractTransaction> => {
