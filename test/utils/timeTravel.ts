@@ -17,4 +17,29 @@ export default class TimeTravel {
     await this.evmSend('evm_increaseTime', [seconds]);
     await this.evmSend('evm_mine');
   }
+
+  async saveState() : Promise<number> {
+    return new Promise((resolve, reject) => {
+      this.web3.currentProvider.send({
+        jsonrpc: '2.0',
+        method: 'evm_snapshot',
+        id: 0,
+      }, (e: any, snapshotId: number) => (
+        e ? reject(e) : resolve(snapshotId)
+      ));
+    });
+  }
+
+  async revertState(snapshotId: number) {
+    return new Promise((resolve, reject) => {
+      this.web3.currentProvider.send({
+        jsonrpc: '2.0',
+        method: 'evm_revert',
+        params: [snapshotId],
+        id: 0,
+      }, (e: any) => (
+        e ? reject(e) : resolve()
+      ));
+    });
+  }
 }

@@ -34,7 +34,7 @@ export interface ITeller {
   zoneAddress: string;
   funds: string;
   buyRate: number;
-  sellRate: number;  
+  sellRate: number;
   messenger?: string;
   referrer?: string;
 }
@@ -56,7 +56,7 @@ export enum ZoneAuctionState {
 }
 
 export interface IZoneAuction {
-  id: string;
+  id: number;
   state: ZoneAuctionState;
   startTime: number;
   endTime: number;
@@ -70,6 +70,21 @@ export interface IZoneOwner {
   staked: string;
   balance: string;
   lastTaxTime: number;
+  auctionId: number;
+}
+
+export interface IZone {
+  geohash: string;
+  status: ZoneStatus;
+  address?: string;
+  owner?: IZoneOwner;
+  auction?: IZoneAuction;
+}
+
+export enum ZoneStatus {
+  Inexistent = 'Inexistent',
+  Claimable = 'Claimable',
+  Occupied = 'Occupied',
 }
 
 export enum ExternalContract {
@@ -246,9 +261,4 @@ export enum DisputeType {
 export interface ITxOptions {
   gasPrice?: number;
   gasLimit?: number;
-}
-
-
-export interface IZone {
-
 }

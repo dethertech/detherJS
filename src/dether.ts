@@ -254,9 +254,9 @@ export default class DetherJS {
   //         Zone         //
   // -------------------- //
 
-  async getZone(address: string) : Promise<IZone> {
+  async getZone(geohash7: string) : Promise<IZone> {
     this.hasProvider();
-    return zone.getZone(address, this.provider);
+    return zone.getZone(geohash7, this.provider);
   }
   async createZone(password: string, country: string, geohash7: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS) : Promise<ethers.ContractTransaction> {
     this.hasProvider();

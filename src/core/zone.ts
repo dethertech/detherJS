@@ -7,7 +7,7 @@ import * as validate from '../helpers/validate';
 import * as contract from '../helpers/contracts';
 
 import {
-  DetherContract, ZoneAuctionState,
+  DetherContract, ZoneAuctionState, ZoneStatus,
   IZoneAuction, IZoneOwner, ITxOptions, IZone,
 } from '../types';
 
@@ -18,25 +18,24 @@ const ZONE_CREATE_FN = '40';
 // -------------------- //
 
 export const zoneOwnerArrToObj = (onchainZoneOwner: any[]) : IZoneOwner => ({
-  address: onchainZoneOwner[0].toNumber(), // positive incrementing integer
-  startTime: onchainZoneOwner[1].toNumber(), // timestamp
-  staked: onchainZoneOwner[2].toString(), // eth amount in wei (18 decimals)
-  balance: onchainZoneOwner[3].toString(), // eth amount in wei (18 decimals)
-  lastTaxTime: onchainZoneOwner[4], // timestamp
+  address: onchainZoneOwner[0],
+  startTime: onchainZoneOwner[1].toNumber(),
+  staked: onchainZoneOwner[2].toString(),
+  balance: onchainZoneOwner[3].toString(),
+  lastTaxTime: onchainZoneOwner[4].toNumber(),
+  auctionId: onchainZoneOwner[5].toNumber() > 0 ? onchainZoneOwner[5] : undefined,
 });
 
-export const zoneAuctionArrToObj = (onchainZoneAuction: any[]) : IZoneAuction => {
-  const hasEnded = util.timestampNow() >= onchainZoneAuction[3].toNumber();
+// const hasEnded = util.timestampNow() >= onchainZoneAuction[3].toNumber();
 
-  return {
-    id: onchainZoneAuction[0].toNumber(), // positive incrementing integer
-    state: hasEnded ? ZoneAuctionState.ended : ZoneAuctionState.started, // 0 or 1
-    startTime: onchainZoneAuction[2].toNumber(), // timestamp
-    endTime: onchainZoneAuction[3].toNumber(), // timestamp
-    highestBidder: onchainZoneAuction[4], // address
-    highestBid: onchainZoneAuction[5].toString(), // eth amount in wei
-  };
-};
+export const zoneAuctionArrToObj = (onchainZoneAuction: any[]) : IZoneAuction => ({
+  id: onchainZoneAuction[0].toNumber(),
+  state: onchainZoneAuction[1].toNumber(),
+  startTime: onchainZoneAuction[2].toNumber(),
+  endTime: onchainZoneAuction[3].toNumber(),
+  highestBidder: onchainZoneAuction[4] !== constants.ADDRESS_ZERO ? onchainZoneAuction[4] : undefined, 
+  highestBid: onchainZoneAuction[5].toString(), 
+});
 
 const createZoneBytes = (country: string, geohash7: string) : string => {
   const data = [
@@ -48,27 +47,93 @@ const createZoneBytes = (country: string, geohash7: string) : string => {
   return `0x${data}`;
 };
 
+const checkForeclosure = async (beginTime: number, endTime: number, balance: string, zoneContract: ethers.Contract) : Promise<boolean> => {
+  if (beginTime >= endTime) return false;
+  const [, taxesDue] = await zoneContract.calcHarbergerTax(beginTime, endTime, balance);
+  return taxesDue.gte(balance);
+};
+
+export const toLiveZone = async (zoneAddress: string, geohash7: string, zoneContract: ethers.Contract, zoneOwner: IZoneOwner, lastAuction: IZoneAuction) : Promise<any> => {
+  let zoneStatus: ZoneStatus;
+
+  if (zoneOwner.startTime === 0) zoneStatus = ZoneStatus.Claimable;
+  else {
+    const now = util.timestampNow();
+    // TODO: calc harberger tax locally
+    if (lastAuction.id === 0 || lastAuction.state === ZoneAuctionState.ended) { 
+      // there is NO active auction, check zoneowner tax payments
+      if (zoneOwner.lastTaxTime >= now) zoneStatus = ZoneStatus.Occupied;
+      else {
+        const [, taxesDue] = await zoneContract.calcHarbergerTax(zoneOwner.lastTaxTime, now, zoneOwner.balance);
+        if (taxesDue.gte(zoneOwner.balance)) zoneStatus = ZoneStatus.Claimable;
+        else zoneStatus = ZoneStatus.Occupied;
+      }
+    } else {
+      // there is an active auction
+
+      // check if auction is still open
+      if (now < lastAuction.endTime) zoneStatus = ZoneStatus.Occupied;
+      else {  
+        // this auction has actually ended
+        lastAuction.state = ZoneAuctionState.ended;
+
+        if (zoneOwner.address === lastAuction.highestBidder) {
+          // winner is current zone owner
+          zoneOwner.auctionId = lastAuction.id;
+          zoneOwner.staked = ethers.utils.bigNumberify(zoneOwner.staked).add(lastAuction.highestBid).toString();
+          zoneOwner.balance = ethers.utils.bigNumberify(zoneOwner.balance).add(lastAuction.highestBid).toString();
+          if (zoneOwner.lastTaxTime >= now) zoneStatus = ZoneStatus.Occupied;
+          else {
+            const [, taxesDue] = await zoneContract.calcHarbergerTax(lastAuction.endTime, now, zoneOwner.balance);
+            // zone owner needs to pay harberger taxes, but dows not have enough balance
+            if (taxesDue.gte(zoneOwner.balance)) zoneStatus = ZoneStatus.Claimable;
+            else zoneStatus = ZoneStatus.Occupied;
+          }
+          // zone owner can pay for his taxes
+        } else {
+          // winner is NOT the current zone owner
+          zoneOwner.address = lastAuction.highestBidder;
+          zoneOwner.startTime = lastAuction.endTime;
+          zoneOwner.staked = lastAuction.highestBid;
+          zoneOwner.balance = lastAuction.highestBid;
+          zoneOwner.lastTaxTime = now;
+          zoneOwner.auctionId = lastAuction.id;
+          if (zoneOwner.lastTaxTime >= now) zoneStatus = ZoneStatus.Occupied;
+          else {
+            const [, taxesDue] = await zoneContract.calcHarbergerTax(lastAuction.endTime, now, zoneOwner.balance);
+            // zone owner needs to pay harberger taxes, but dows not have enough balance
+            if (taxesDue.gte(zoneOwner.balance)) zoneStatus = ZoneStatus.Claimable;
+            else zoneStatus = ZoneStatus.Occupied;
+          }
+        } 
+      }
+    }
+  }
+  return { 
+    geohash: geohash7,
+    status: zoneStatus, 
+    address: zoneAddress,
+    owner: zoneOwner.address !== constants.ADDRESS_ZERO ? zoneOwner : undefined,
+    auction: lastAuction.id !== 0 ? lastAuction : undefined,
+  }
+};
+
 // -------------------- //
 //        Getters       //
 // -------------------- //
 
 export const getZone = async (geohash7: string, provider: ethers.providers.Provider) : Promise<IZone> => {
   validate.geohash(geohash7, 7);
-
   const zoneFactoryContract = await contract.get(provider, DetherContract.ZoneFactory);
+  const zoneExists = await zoneFactoryContract.zoneExists(convert.asciiToHex(geohash7));
+  if (!zoneExists) return { geohash: geohash7, status: ZoneStatus.Inexistent };
+  // there exists a zone contract
   const zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(geohash7));
   const zoneContract = await contract.get(provider, DetherContract.Zone, zoneAddress);
-
-  const [zoneOwner, zoneAuction] = await Promise.all([
-    zoneContract.getZoneOwner(),
-    zoneContract.getLastAuction(),
-  ]);
-  console.log({
-    zoneOwner, zoneAuction,
-  });
-  return true;
-
-  // return zoneContract.getZoneOwner(auctionId, txOptions);
+  console.log('here');
+  const zoneOwner: IZoneOwner = zoneOwnerArrToObj(await zoneContract.getZoneOwner());
+  const lastAuction: IZoneAuction = zoneAuctionArrToObj(await zoneContract.getLastAuction());
+  return toLiveZone(zoneAddress, geohash7, zoneContract, zoneOwner, lastAuction); 
 };
 
 // -------------------- //

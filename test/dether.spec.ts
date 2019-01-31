@@ -8,7 +8,6 @@ import Web3 from 'web3';
 
 import expect from './utils/chai';
 import TimeTravel from './utils/timeTravel';
-// import * as geo from './utils/geo';
 import * as convert from './utils/convert';
 // import * as evmErrors from './utils/evmErrors';
 import * as ipfs from './utils/ipfs';
@@ -32,7 +31,7 @@ import DetherJS from '../src/dether';
 
 import {
   ITellerArgs, IShopArgs,
-  DetherContract, ExternalContract, ShopDisputeRuling, ShopDisputeStatus,
+  DetherContract, ExternalContract, ShopDisputeRuling, ShopDisputeStatus, ZoneStatus,
 } from '../src/types';
 
 const contractJson: any = {
@@ -108,6 +107,7 @@ const TELLER_2: ITellerArgs = {
 
 // eslint-disable-next-line prefer-template
 describe('DetherJS', () => {
+  let rootState: any;
   let detherJs: any;
   const accounts: any = {};
   const deployedContracts: any = {};
@@ -157,11 +157,18 @@ describe('DetherJS', () => {
   before(async () => {
     const detherJs = new DetherJS(false); // default is use ethersjs instead of metamask, pass in true as 1st arg for metamask
     await detherJs.init({ rpcURL: RPC_URL });
-  });
 
+    rootState = await timeTravel.saveState();
+
+  });
+  after(async () => {
+    await timeTravel.revertState(rootState); // to go back to real time
+  })
   beforeEach(async () => {
     detherJs = new DetherJS(false); // default is use ethersjs instead of metamask, pass in true as 1st arg for metamask
     await detherJs.init({ rpcURL: RPC_URL });
+
+    await timeTravel.revertState(rootState); // to go back to real time
 
     // NOTE: create everything new before each test
 
@@ -318,7 +325,23 @@ describe('DetherJS', () => {
     describe('getters', () => {
       describe('get live zone', () => {
         it('should succeed', async () => {
+          detherJs.loadUser(await accounts.user1.encrypt(PASS));
+          await transaction.waitForTxMined(detherJs.createZone(PASS, COUNTRY, ZONE_GEOHASH));
 
+          const zone = await detherJs.getZone(ZONE_GEOHASH);
+          
+          expect(zone).to.deep.include({
+            geohash: ZONE_GEOHASH,
+            status: ZoneStatus.Occupied,
+            auction: undefined,
+          });
+          
+          expect(zone.owner).to.deep.include({
+            address: accounts.user1.address,
+            staked: convert.ethToWei(MIN_ZONE_STAKE),
+            balance: convert.ethToWei(MIN_ZONE_STAKE),
+            auctionId: undefined,
+          });          
         });
       });
     });
@@ -672,7 +695,7 @@ describe('DetherJS', () => {
           await transaction.waitForTxMined(detherJs.addShop(PASS, SHOP));
           detherJs.loadUser(await accounts.user2.encrypt(PASS));
           await transaction.waitForTxMined(detherJs.createShopDispute(PASS, accounts.user1.address, ipfs.getRandomIpfsHash()));
-          await deployedContracts.appealableArbitrator.connect(accounts.deployer).functions.giveRuling('0', KLEROS_CHALLENGER_WINS); // dispute 0, shop wins
+          await deployedContracts.appealableArbitrator.connect(accounts.deployer).functions.giveRuling('0', KLEROS_CHALLENGER_WINS);
           const result = await detherJs.getShopDispute(accounts.user1.address);
 
           expect(result).to.deep.equal({
@@ -688,7 +711,7 @@ describe('DetherJS', () => {
       describe('get dispute create cost', () => {
         it('should succeed', async () => {
           const costWei = await detherJs.getShopDisputeCreateCost();
-          expect(costWei).to.equal(convert.ethToWei(KLEROS_ARBITRATION_PRICE * 2));
+          expect(costWei.toString()).to.equal(convert.ethToWei(KLEROS_ARBITRATION_PRICE * 2));
         });
       });
       describe('get dispute appeal cost', () => {
@@ -697,8 +720,9 @@ describe('DetherJS', () => {
           await transaction.waitForTxMined(detherJs.addShop(PASS, SHOP));
           detherJs.loadUser(await accounts.user2.encrypt(PASS));
           await transaction.waitForTxMined(detherJs.createShopDispute(PASS, accounts.user1.address, ipfs.getRandomIpfsHash()));
+          await deployedContracts.appealableArbitrator.connect(accounts.deployer).functions.giveRuling('0', KLEROS_CHALLENGER_WINS);
           const costWei = await detherJs.getShopDisputeAppealCost(accounts.user1.address);
-          expect(costWei).to.equal(convert.ethToWei(KLEROS_ARBITRATION_PRICE));
+          expect(costWei.toString()).to.equal(convert.ethToWei(KLEROS_ARBITRATION_PRICE));
         });
       });
     });
@@ -730,7 +754,7 @@ describe('DetherJS', () => {
           await transaction.waitForTxMined(detherJs.addShop(PASS, SHOP));
           detherJs.loadUser(await accounts.user2.encrypt(PASS));
           await transaction.waitForTxMined(detherJs.createShopDispute(PASS, accounts.user1.address, ipfs.getRandomIpfsHash()));
-          await deployedContracts.appealableArbitrator.connect(accounts.deployer).functions.giveRuling('0', KLEROS_CHALLENGER_WINS); // dispute 0, shop wins
+          await deployedContracts.appealableArbitrator.connect(accounts.deployer).functions.giveRuling('0', KLEROS_CHALLENGER_WINS);
           detherJs.loadUser(await accounts.user1.encrypt(PASS));
           await transaction.waitForTxMined(detherJs.appealShopDispute(PASS, accounts.user1.address, ipfs.getRandomIpfsHash()));
         });
