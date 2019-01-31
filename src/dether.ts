@@ -14,7 +14,7 @@ import * as zone from './core/zone';
 
 import {
   Unit, Token, TransactionStatus, Tier, DetherContract,
-  IEthersOptions, ITeller, IBalances, ITellerArgs, IShop, IShopArgs, IShopDispute, ITxOptions,
+  IEthersOptions, ITeller, IBalances, ITellerArgs, IShop, IShopArgs, IShopDispute, ITxOptions, IZone,
 } from './types';
 
 // import * as zoneAuction from './core/zoneAuction';
@@ -121,53 +121,53 @@ export default class DetherJS {
     return teller.getTellersInZones(geohash7List, this.provider);
   }
 
-  async addTeller(password: string, zoneAddress: string, tellerData: ITellerArgs, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS) : Promise<ethers.ContractTransaction> {
+  async addTeller(password: string, tellerData: ITellerArgs, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS) : Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
     const wallet = await this.loadWallet(password);
-    return teller.addTeller(zoneAddress, tellerData, wallet, txOptions);
+    return teller.addTeller(tellerData, wallet, txOptions);
   }
 
-  async removeTeller(password: string, zoneAddress: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS) : Promise<ethers.ContractTransaction> {
+  async removeTeller(password: string, zoneGeohash: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS) : Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
     const wallet = await this.loadWallet(password);
-    return teller.removeTeller(zoneAddress, wallet, txOptions);
+    return teller.removeTeller(zoneGeohash, wallet, txOptions);
   }
 
-  async addFunds(password: string, zoneAddress: string, ethAmount: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS) : Promise<ethers.ContractTransaction> {
+  async addTellerFunds(password: string, zoneGeohash: string, ethAmount: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS) : Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
     const wallet = await this.loadWallet(password);
-    return teller.addFunds(zoneAddress, ethAmount, wallet, txOptions);
+    return teller.addFunds(zoneGeohash, ethAmount, wallet, txOptions);
   }
 
-  async sellEth(password: string, zoneAddress: string, recipient: string, ethAmount: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS) : Promise<ethers.ContractTransaction> {
+  async sellTellerEth(password: string, zoneGeohash: string, recipient: string, ethAmount: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS) : Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
     const wallet = await this.loadWallet(password);
-    return teller.sellEth(zoneAddress, recipient, ethAmount, wallet, txOptions);
+    return teller.sellEth(zoneGeohash, recipient, ethAmount, wallet, txOptions);
   }
 
-  async addComment(password: string, zoneAddress: string, commentHash: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS) : Promise<ethers.ContractTransaction> {
+  async addTellerComment(password: string, zoneGeohash: string, ipfsHash: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS) : Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
     const wallet = await this.loadWallet(password);
-    return teller.addComment(zoneAddress, commentHash, wallet, txOptions);
+    return teller.addComment(zoneGeohash, ipfsHash, wallet, txOptions);
   }
 
-  async addCertifiedComment(password: string, zoneAddress: string, commentHash: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS) : Promise<ethers.ContractTransaction> {
+  async addTellerCertifiedComment(password: string, zoneGeohash: string, ipfsHash: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS) : Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
     const wallet = await this.loadWallet(password);
-    return teller.addCertifiedComment(zoneAddress, commentHash, wallet, txOptions);
+    return teller.addCertifiedComment(zoneGeohash, ipfsHash, wallet, txOptions);
   }
 
   // -------------------- //
   //         Shop         //
   // -------------------- //
 
-  async shopExists(shopAddress: string) : Promise<boolean> {
+  async shopExistsByAddress(shopAddress: string) : Promise<boolean> {
     this.hasProvider();
     return shop.existsByAddress(shopAddress, this.provider);
   }
@@ -206,22 +206,22 @@ export default class DetherJS {
   //     Shop Dispute     //
   // -------------------- //
 
-  async getDispute(disputeID: number) : Promise<IShopDispute> {
+  async getShopDispute(shopAddress: string) : Promise<IShopDispute> {
     this.hasProvider();
-    return shopDispute.getDispute(disputeID, this.provider);
+    return shopDispute.getDispute(shopAddress, this.provider);
   }
 
-  async getDisputeCreateCost() : Promise<string> {
+  async getShopDisputeCreateCost() : Promise<string> {
     this.hasProvider();
     return shopDispute.getDisputeCreateCost(this.provider);
   }
 
-  async getDisputeAppealCost(disputeID: number) : Promise<string> {
+  async getShopDisputeAppealCost(shopAddress: string) : Promise<string> {
     this.hasProvider();
-    return shopDispute.getDisputeAppealCost(disputeID, this.provider);
+    return shopDispute.getDisputeAppealCost(shopAddress, this.provider);
   }
 
-  async createDispute(password: string, shopAddress: string, evidenceHash: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS) : Promise<ethers.ContractTransaction> {
+  async createShopDispute(password: string, shopAddress: string, evidenceHash: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS) : Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
     const wallet = await this.loadWallet(password);
@@ -229,11 +229,11 @@ export default class DetherJS {
   }
 
   // NOTE: disputeID is created by kleros and should be unique?!
-  async appealDispute(password: string, disputeID: number, evidenceHash: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS) : Promise<ethers.ContractTransaction> {
+  async appealShopDispute(password: string, shopAddress: string, evidenceHash: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS) : Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
     const wallet = await this.loadWallet(password);
-    return shopDispute.appealDispute(disputeID, evidenceHash, wallet, txOptions);
+    return shopDispute.appealDispute(shopAddress, evidenceHash, wallet, txOptions);
   }
 
   // -------------------- //
@@ -254,11 +254,14 @@ export default class DetherJS {
   //         Zone         //
   // -------------------- //
 
+  async getZone(address: string) : Promise<IZone> {
+    this.hasProvider();
+    return zone.getZone(address, this.provider);
+  }
   async createZone(password: string, country: string, geohash7: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS) : Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
     const wallet = await this.loadWallet(password);
-    console.log('calling zone.create()');
     return zone.create(country, geohash7, wallet, txOptions);
   }
 
@@ -280,7 +283,7 @@ export default class DetherJS {
     this.hasProvider();
     this.hasWallet();
     const wallet = await this.loadWallet(password);
-    return zone.bid(geohash7, topUpAmount, wallet, txOptions);
+    return zone.topUp(geohash7, topUpAmount, wallet, txOptions);
   }
 
   async releaseZone(password: string, geohash7: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS) : Promise<ethers.ContractTransaction> {
@@ -290,28 +293,28 @@ export default class DetherJS {
     return zone.release(geohash7, wallet, txOptions);
   }
 
-  async withdrawFromZoneAuction(password: string, geohash7: string, auctionId: number, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS) : Promise<ethers.ContractTransaction> {
+  async withdrawZoneAuctionBid(password: string, geohash7: string, auctionId: number, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS) : Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
     const wallet = await this.loadWallet(password);
     return zone.withdrawFromAuction(geohash7, auctionId, wallet, txOptions);
   }
 
-  async withdrawFromZoneAuctions(password: string, geohash7: string, auctionIds: number[], txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS) : Promise<ethers.ContractTransaction> {
+  async withdrawZoneAuctionsBid(password: string, geohash7: string, auctionIds: number[], txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS) : Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
     const wallet = await this.loadWallet(password);
     return zone.withdrawFromAuctions(geohash7, auctionIds, wallet, txOptions);
   }
 
-  async withdrawZoneDth(password: string, geohash7: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS) : Promise<ethers.ContractTransaction> {
+  async withdrawZoneOwnerDth(password: string, geohash7: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS) : Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
     const wallet = await this.loadWallet(password);
     return zone.withdrawDth(geohash7, wallet, txOptions);
   }
 
-  async withdrawZoneEth(password: string, geohash7: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS) : Promise<ethers.ContractTransaction> {
+  async withdrawZoneOwnerEth(password: string, geohash7: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS) : Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
     const wallet = await this.loadWallet(password);

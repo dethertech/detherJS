@@ -2,6 +2,7 @@ import { ethers } from 'ethers';
 
 import * as constants from '../constants';
 
+import * as convert from '../helpers/convert';
 import * as util from '../helpers/util';
 import * as validate from '../helpers/validate';
 import * as contract from '../helpers/contracts';
@@ -18,15 +19,15 @@ const SHOP_ADD_FN = '30';
 // -------------------- //
 
 export const shopArrToObj = (shopArr: any[]) : IShop => ({
-  shopGeohash: shopArr[0],
-  zoneGeohash: shopArr[0].slice(0, 7),
-  category: shopArr[1],
-  name: shopArr[2],
-  description: shopArr[3],
-  opening: shopArr[4],
+  position: convert.hexToAscii(shopArr[0]),
+  zoneGeohash: convert.hexToAscii(`0x${convert.remove0x(shopArr[0]).slice(0, 14)}`),
+  category: shopArr[1] !== constants.BYTES16_ZERO ? shopArr[1] : undefined,
+  name: shopArr[2] !== constants.BYTES16_ZERO ? shopArr[2] : undefined,
+  description: shopArr[3] !== constants.BYTES32_ZERO ? shopArr[3] : undefined,
+  opening: shopArr[4] !== constants.BYTES16_ZERO ? shopArr[4] : undefined,
   staked: shopArr[5].toString(),
   hasDispute: shopArr[6],
-  disputeID: shopArr[7].toString(),
+  disputeID: shopArr[6] ? shopArr[7].toString() : undefined,
 });
 
 // to send as erc233 call data, which calls shop.tokenFallback
@@ -68,7 +69,7 @@ export const getShopByPosition = async (geohash12: string, provider: ethers.prov
   validate.geohash(geohash12, 12);
 
   const shopInstance = await contract.get(provider, DetherContract.Shops);
-  const shop = shopArrToObj(await shopInstance.getShopByPos(geohash12));
+  const shop = shopArrToObj(await shopInstance.getShopByPos(convert.asciiToHex(geohash12)));
   return shop;
 };
 
@@ -84,19 +85,19 @@ export const getShopsInZone = async (geohash7: string, provider: ethers.provider
 //        Setters       //
 // -------------------- //
 
-// erc223 call
+// ERC223
 export const addShop = async (shopData: IShopArgs, wallet: ethers.Wallet, txOptions: ITxOptions) : Promise<ethers.ContractTransaction> => {
   validate.countryCode(shopData.country);
   validate.geohash(shopData.position, 12);
   // other 4 args are optional strings: category, name, description, opening
 
   const shopContract = await contract.get(wallet.provider, DetherContract.Shops);
-  const detherTokenContract = await contract.get(wallet.provider, DetherContract.DetherToken);
+  const detherTokenContract = await contract.get(wallet.provider, DetherContract.DetherToken, undefined, [constants.ERC223_TRANSFER_ABI]);
   const licensePrice = await shopContract.countryLicensePrice(util.stringToBytes(shopData.country, 2));
   return detherTokenContract.connect(wallet).transfer(shopContract.address, licensePrice, createShopBytes(shopData), txOptions); // erc223 call
 };
 
-// 1 address can only own 1 shop
+// currently 1 address can only own 1 shop
 export const removeShop = async (wallet: ethers.Wallet, txOptions: ITxOptions) : Promise<ethers.ContractTransaction> => {
   const shopContract = await contract.get(wallet.provider, DetherContract.Shops);
   const shopExists = await shopContract.shopByAddrExists(wallet.address);

@@ -8,7 +8,7 @@ import * as contract from '../helpers/contracts';
 
 import {
   DetherContract, ZoneAuctionState,
-  IZoneAuction, IZoneOwner, ITxOptions,
+  IZoneAuction, IZoneOwner, ITxOptions, IZone,
 } from '../types';
 
 const ZONE_CREATE_FN = '40';
@@ -49,44 +49,70 @@ const createZoneBytes = (country: string, geohash7: string) : string => {
 };
 
 // -------------------- //
+//        Getters       //
+// -------------------- //
+
+export const getZone = async (geohash7: string, provider: ethers.providers.Provider) : Promise<IZone> => {
+  validate.geohash(geohash7, 7);
+
+  const zoneFactoryContract = await contract.get(provider, DetherContract.ZoneFactory);
+  const zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(geohash7));
+  const zoneContract = await contract.get(provider, DetherContract.Zone, zoneAddress);
+
+  const [zoneOwner, zoneAuction] = await Promise.all([
+    zoneContract.getZoneOwner(),
+    zoneContract.getLastAuction(),
+  ]);
+  console.log({
+    zoneOwner, zoneAuction,
+  });
+  return true;
+
+  // return zoneContract.getZoneOwner(auctionId, txOptions);
+};
+
+// -------------------- //
 //        Setters       //
 // -------------------- //
 
-// @ts-ignore
+// ERC223
 export const create = async (country: string, geohash7: string, wallet: ethers.Wallet, txOptions: ITxOptions) : Promise<ethers.ContractTransaction> => {
   validate.countryCode(country);
   validate.geohash(geohash7, 7);
 
-  const detherTokenContract = await contract.get(wallet.provider, DetherContract.DetherToken, undefined, ['function transfer(address _to, uint _value, bytes _data) returns (bool)']);
+  const detherTokenContract = await contract.get(wallet.provider, DetherContract.DetherToken, undefined, [constants.ERC223_TRANSFER_ABI]);
   const zoneFactoryContract = await contract.get(wallet.provider, DetherContract.ZoneFactory);
 
-  console.log('calling token.transfer() create zone', detherTokenContract);
-  const tx = await detherTokenContract.connect(wallet).functions.transfer(zoneFactoryContract.address, convert.ethToWei(constants.MIN_ZONE_STAKE), createZoneBytes(country, geohash7)); // erc223 call
+  if (!txOptions.gasLimit) txOptions.gasLimit = 450000;
+  return detherTokenContract.connect(wallet).functions.transfer(zoneFactoryContract.address, convert.ethToWei(constants.MIN_ZONE_STAKE), createZoneBytes(country, geohash7), txOptions); // erc223 call
 };
 
+// ERC223
 export const claimFree = async(geohash7: string, wallet: ethers.Wallet, txOptions: ITxOptions) : Promise<ethers.ContractTransaction> => {
   validate.geohash(geohash7, 7);
 
-  const detherTokenContract = await contract.get(wallet.provider, DetherContract.DetherToken);
+  const detherTokenContract = await contract.get(wallet.provider, DetherContract.DetherToken, undefined, [constants.ERC223_TRANSFER_ABI]);
   const zoneFactoryContract = await contract.get(wallet.provider, DetherContract.ZoneFactory);
   const zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(geohash7));
 
   return detherTokenContract.connect(wallet).transfer(zoneAddress, convert.ethToWei(constants.MIN_ZONE_STAKE), '0x41', txOptions); // erc223 call
 };
 
+// ERC223
 export const bid = async(geohash7: string, bidAmount: string, wallet: ethers.Wallet, txOptions: ITxOptions) : Promise<ethers.ContractTransaction> => {
   validate.geohash(geohash7, 7);
 
-  const detherTokenContract = await contract.get(wallet.provider, DetherContract.DetherToken);
+  const detherTokenContract = await contract.get(wallet.provider, DetherContract.DetherToken, undefined, [constants.ERC223_TRANSFER_ABI]);
   const zoneFactoryContract = await contract.get(wallet.provider, DetherContract.ZoneFactory);
   const zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(geohash7));
   return detherTokenContract.connect(wallet).transfer(zoneAddress, bidAmount, '0x42', txOptions); // erc223 call
 };
 
+// ERC223
 export const topUp = async(geohash7: string, topUpAmount: string, wallet: ethers.Wallet, txOptions: ITxOptions) : Promise<ethers.ContractTransaction> => {
   validate.geohash(geohash7, 7);
 
-  const detherTokenContract = await contract.get(wallet.provider, DetherContract.DetherToken);
+  const detherTokenContract = await contract.get(wallet.provider, DetherContract.DetherToken, undefined, [constants.ERC223_TRANSFER_ABI]);
   const zoneFactoryContract = await contract.get(wallet.provider, DetherContract.ZoneFactory);
   const zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(geohash7));
   return detherTokenContract.connect(wallet).transfer(zoneAddress, topUpAmount, '0x43', txOptions); // erc223 call

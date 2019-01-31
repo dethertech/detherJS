@@ -95,12 +95,12 @@ export const currencyId = (currencyId: number) => {
 
 export const tellerBuyerInfo = (isBuyer: boolean, buyRate: number) => {
   if (!isBuyer && buyRate) throw new Error('cannot set buyRate when not set as buyer');
-  if (buyRate > 99.99 || buyRate < -99.99) throw new Error('buyRate minimum is -99.99, maximum is 99.99');
+  if (buyRate > 9999 || buyRate < -9999) throw new Error('buyRate minimum is -99.99, maximum is 99.99');
 };
 
 export const tellerSellerInfo = (isSeller: boolean, sellRate: number) => {
   if (!isSeller && sellRate) throw new Error('cannot set sellRate when not set as seller');
-  if (sellRate > 99.99 || sellRate < -99.99) throw new Error('sellRate minimum is -99.99, maximum is 99.99');
+  if (sellRate > 9999 || sellRate < -9999) throw new Error('sellRate minimum is -99.99, maximum is 99.99');
 };
 
 // source: https://core.telegram.org/method/account.checkUsername

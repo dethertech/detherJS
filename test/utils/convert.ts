@@ -8,3 +8,4 @@ export const ethToWei = (eth: number) : string => web3.utils.toWei(eth.toString(
 export const ethToWeiBN = (eth: number) : ethers.utils.BigNumber => ethers.utils.bigNumberify(ethToWei(eth));
 export const asciiToHex = (ascii: string) : string => web3.utils.asciiToHex(ascii);
 export const remove0x = (txt: string) : string => txt.startsWith('0x') ? txt.slice(2) : txt;
+export const hexToAscii = (hex: string) : string => ethers.utils.parseBytes32String(hex);

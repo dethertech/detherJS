@@ -1,17 +1,20 @@
-import ethers from 'ethers';
-
-export const saveState = async (provider: ethers.providers.JsonRpcProvider) : Promise<any> => {
+export default class TimeTravel {
+  web3: any;
+  constructor(web3: any) {
+    this.web3 = web3;
+  }
   // @ts-ignore
-  const snapshotId = await provider.send('evm_snapshot');
-  return snapshotId;
-};
+  private evmSend(method, params = []) : Promise<any> {
+    return new Promise((resolve, reject) => {
+      // NOTE: why is this not yet a promise, we're using web3 v1.0?
+      this.web3.currentProvider.send({ method, params, id: '2.0' }, (e: any, d: any) => (
+        e ? reject(e) : resolve(d)
+      ));
+    });
+  }
 
-export const revertState = async (provider: ethers.providers.JsonRpcProvider, snapshotId: any) : Promise<void> => (
-  provider.send('evm_revert', [snapshotId])
-);
-
-export const inSecs = async (provider: ethers.providers.JsonRpcProvider, secs: number) : Promise<any> => {
-  await provider.send('evm_increaseTime', secs);
-  // @ts-ignore
-  await provider.send('evm_mine');
-};
+  async inSecs(seconds: number) : Promise<void> {
+    await this.evmSend('evm_increaseTime', [seconds]);
+    await this.evmSend('evm_mine');
+  }
+}

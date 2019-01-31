@@ -32,10 +32,11 @@ export interface ITeller {
   tellerGeohash: string;
   zoneGeohash: string;
   zoneAddress: string;
-  balance: string;
+  funds: string;
+  buyRate: number;
+  sellRate: number;  
   messenger?: string;
-  buyRate?: number;
-  sellRate?: number;
+  referrer?: string;
 }
 
 export interface ITellerArgs {
@@ -46,6 +47,7 @@ export interface ITellerArgs {
   isBuyer: boolean;
   sellRate?: number;
   buyRate?: number;
+  referrer?: string;
 }
 
 export enum ZoneAuctionState {
@@ -173,7 +175,7 @@ export enum Network {
 }
 
 export interface IShop {
-  shopGeohash: string;
+  position: string;
   zoneGeohash: string;
   category: string;
   name: string;
@@ -197,6 +199,7 @@ export enum ShopDisputeRuling {
 }
 
 export interface IShopDispute {
+  id: number;
   shop: string;
   challenger: string;
   disputeType: number;
@@ -243,4 +246,9 @@ export enum DisputeType {
 export interface ITxOptions {
   gasPrice?: number;
   gasLimit?: number;
+}
+
+
+export interface IZone {
+
 }
