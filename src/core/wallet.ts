@@ -1,19 +1,21 @@
 import { ethers } from 'ethers';
 
+import * as constants from '../constants';
+
 import * as validate from '../helpers/validate';
 import * as contract from '../helpers/contracts';
 import * as exchanges from './exchanges';
 
 import {
   Token,
-  IBalances, IExchange, ITxOptions,
+  IBalances, IExchange, ITxOptions, ITicker,
 } from '../types';
 
 // -------------------- //
 //        Getters       //
 // -------------------- //
 
-export const getAllBalance = async (address: string, tickers: Token[], provider: ethers.providers.Provider) : Promise<IBalances> => {
+export const getAllBalance = async (address: string, tickers: Token[], provider: ethers.providers.Provider): Promise<IBalances> => {
   validate.ethAddress(address);
   tickers.forEach(validate.token);
   let getEthBalance = false;
@@ -36,7 +38,7 @@ export const getAllBalance = async (address: string, tickers: Token[], provider:
   return result;
 };
 
-export const getExchangeEstimation = async (sellToken: Token, buyToken: Token, sellAmount: string, provider: ethers.providers.Provider) : Promise<string> => {
+export const getExchangeEstimation = async (sellToken: Token, buyToken: Token, sellAmount: string, provider: ethers.providers.Provider): Promise<string> => {
   // validate.sellAmount(sellAmount);
 
   const exchange: IExchange = exchanges.load(sellToken, buyToken);
@@ -45,8 +47,18 @@ export const getExchangeEstimation = async (sellToken: Token, buyToken: Token, s
 };
 
 // NOTE: buyArg
-export const execTrade = async (sellToken: Token, buyToken: Token, sellAmount: string, buyAmount: string, wallet: ethers.Wallet, txOptions: ITxOptions) : Promise<ethers.ContractTransaction> => {
+export const execTrade = async (sellToken: Token, buyToken: Token, sellAmount: string, buyAmount: string, wallet: ethers.Wallet, txOptions: ITxOptions): Promise<ethers.ContractTransaction> => {
   const exchange: IExchange = exchanges.load(sellToken, buyToken);
   const tradeTx = await exchange.trade(sellAmount, buyAmount, wallet, txOptions);
   return tradeTx;
 };
+
+export const getAvailableToken = async (provider: ethers.providers.Provider, forLogo?: boolean): Promise<ITicker> => {
+  // forLogo is for returning mainnet ticker in case of testnet, because we use an open library matching
+  // mainnet address to logo
+  if (forLogo) return constants.TICKER['mainnet']
+  else {
+    const network = await provider.getNetwork();
+    return constants.TICKER[network.name];
+  }
+}
