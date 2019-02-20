@@ -1,7 +1,7 @@
 {
   "name": "detherjs",
-  "version": "5.0.0",
-  "main": "index.js",
+  "version": "5.0.4",
+  "main": "lib/dether.js",
   "scripts": {
     "babel-node": "babel-node --presets=latest",
     "test": "mocha --require ts-node/register --timeout 0 test/**/*.spec.ts ",
