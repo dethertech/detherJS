@@ -56,7 +56,7 @@ export const execTrade = async (sellToken: Token, buyToken: Token, sellAmount: s
 export const getAvailableToken = async (provider: ethers.providers.Provider, forLogo?: boolean): Promise<ITicker> => {
   // forLogo is for returning mainnet ticker in case of testnet, because we use an open library matching
   // mainnet address to logo
-  if (forLogo) return constants.TICKER['mainnet']
+  if (forLogo) return constants.TICKER['homestead']
   else {
     const network = await provider.getNetwork();
     return constants.TICKER[network.name];
