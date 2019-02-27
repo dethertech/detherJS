@@ -4,6 +4,7 @@ import * as constants from '../constants';
 
 import * as validate from '../helpers/validate';
 import * as contract from '../helpers/contracts';
+import * as convert from '../helpers/convert';
 import * as exchanges from './exchanges';
 
 import {
@@ -53,6 +54,7 @@ export const execTrade = async (sellToken: Token, buyToken: Token, sellAmount: s
   return tradeTx;
 };
 
+// TO DO get token address call from staking smart contracts
 export const getAvailableToken = async (provider: ethers.providers.Provider, forLogo?: boolean): Promise<ITicker> => {
   // forLogo is for returning mainnet ticker in case of testnet, because we use an open library matching
   // mainnet address to logo
@@ -62,3 +64,22 @@ export const getAvailableToken = async (provider: ethers.providers.Provider, for
     return constants.TICKER[network.name];
   }
 }
+
+// TO DO get token address call from staking smart contracts?
+export const sendCrypto = async (amount: string, toAddress: string, token: Token, wallet: ethers.Wallet, txOptions: ITxOptions): Promise<ethers.ContractTransaction> => {
+  let tsx;
+  if (token === 'ETH') {
+    return wallet.sendTransaction({
+      to: toAddress,
+      value: convert.ethToWeiBN(Number(amount)),
+      ...txOptions,
+    });
+  } else {
+    const erc20instance = await contract.getErc20(wallet.provider, token);
+    return erc20instance.connect(wallet).transfer(
+      toAddress,
+      convert.ethToWeiBN(Number(amount)),
+      txOptions
+    );
+  }
+};

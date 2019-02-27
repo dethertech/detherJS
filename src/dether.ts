@@ -111,6 +111,14 @@ export default class DetherJS {
     this.hasProvider();
     return wallet.getAvailableToken(this.provider, forLogo);
   }
+
+  async sendCrypto(password: string, toAddress: string, token: Token, amount: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<ethers.ContractTransaction> {
+    this.hasProvider();
+    this.hasWallet();
+    const userWallet = await this.loadWallet(password);
+    return wallet.sendCrypto(amount, toAddress, token, userWallet, txOptions);
+  }
+
   // -------------------- //
   //        Teller        //
   // -------------------- //

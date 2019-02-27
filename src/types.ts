@@ -266,4 +266,6 @@ export enum DisputeType {
 export interface ITxOptions {
   gasPrice?: number;
   gasLimit?: number;
+  nonce?: number;
+  value?: number;
 }
