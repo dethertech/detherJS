@@ -52,8 +52,8 @@ export const TICKER: any = {
 export const EXCHANGE_PAIRS: IExchangePair[] = [
   { tokens: [Token.ETH, Token.DTH], exchange: Exchange.kyber },
   { tokens: [Token.ETH, Token.DAI], exchange: Exchange.kyber },
-  { tokens: [Token.ETH, Token.BNB], exchange: Exchange.uniswap },
-  { tokens: [Token.ETH, Token.MKR], exchange: Exchange.uniswap },
+  { tokens: [Token.ETH, Token.BNB], exchange: Exchange.kyber },
+  { tokens: [Token.ETH, Token.MKR], exchange: Exchange.kyber },
   { tokens: [Token.ETH, Token.OMG], exchange: Exchange.kyber },
   { tokens: [Token.ETH, Token.ZRX], exchange: Exchange.kyber },
   { tokens: [Token.ETH, Token.VEN], exchange: Exchange.kyber },
@@ -78,6 +78,22 @@ export const CONTRACT_ADDRESSES: any = {
     // Mkr/Oasis is not on ropsten
     // AirSwap is not on ropsten
     kyberNetworkProxy: '0x818E6FECD516Ecc3849DAf6845e3EC868087B755',
+  },
+  kovan: {
+    // dether
+    DetherToken: '',
+    Control: '',
+    GeoRegistry: '',
+    KycCertifier: '',
+    SmsCertifier: '',
+    Users: '',
+    ZoneFactory: '',
+    Zone: '',
+    Shops: '',
+    // external
+    // Mkr/Oasis is not on ropsten
+    // AirSwap is not on ropsten
+    kyberNetworkProxy: '0x7e6b8b9510D71BF8EF0f893902EbB9C865eEF4Df',
   },
   rinkeby: {
     // dether
