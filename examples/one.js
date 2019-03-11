@@ -3,8 +3,7 @@ import DetherJS from '../lib/dether';
 import BN from 'bignumber.js';
 
 const USER_PASSWORD = '1234';
-const USER_PRIV_KEY = '0x0123456789012345678901234567890123456789012345678901234567890321';
-// // address: 0x391edA1b8D31f891d1653B131779751BdeDA24D3
+
 
 
 
