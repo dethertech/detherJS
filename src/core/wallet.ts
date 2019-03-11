@@ -47,13 +47,6 @@ export const getExchangeEstimation = async (sellToken: Token, buyToken: Token, s
   return buyAmountEstimation.toString();
 };
 
-// NOTE: buyArg
-export const execTrade = async (sellToken: Token, buyToken: Token, sellAmount: string, buyAmount: string, wallet: ethers.Wallet, txOptions: ITxOptions): Promise<ethers.ContractTransaction> => {
-  const exchange: IExchange = exchanges.load(sellToken, buyToken);
-  const tradeTx = await exchange.trade(sellAmount, buyAmount, wallet, txOptions);
-  return tradeTx;
-};
-
 // TO DO get token address call from staking smart contracts
 export const getAvailableToken = async (provider: ethers.providers.Provider, forLogo?: boolean): Promise<ITicker> => {
   // forLogo is for returning mainnet ticker in case of testnet, because we use an open library matching
@@ -64,6 +57,32 @@ export const getAvailableToken = async (provider: ethers.providers.Provider, for
     return constants.TICKER[network.name];
   }
 }
+
+export const hasApproval = async (owner: string, spender: string, sellToken: Token, amount: string, provider: ethers.providers.Provider): Promise<boolean> => {
+  const erc20instance = await contract.getErc20(provider, sellToken);
+  const approve = await erc20instance.allowance(owner, spender);
+  console.log('approve ', typeof approve, approve);
+  if (Number(approve) > Number(amount)) {
+    return true;
+  }
+  return false;
+}
+
+// -------------------- //
+//     Transactions     //
+// -------------------- //
+
+export const execTrade = async (sellToken: Token, buyToken: Token, sellAmount: string, buyAmount: string, wallet: ethers.Wallet, txOptions: ITxOptions): Promise<ethers.ContractTransaction> => {
+  const exchange: IExchange = exchanges.load(sellToken, buyToken);
+  const tradeTx = await exchange.trade(sellAmount, buyAmount, wallet, txOptions);
+  return tradeTx;
+};
+
+export const execTrade_delayed = async (sellToken: Token, buyToken: Token, sellAmount: string, buyAmount: string, wallet: ethers.Wallet, nonce: number, txOptions: ITxOptions): Promise<any> => {
+  const exchange: IExchange = exchanges.load(sellToken, buyToken);
+  const tradeTx = await exchange.trade_delayed(sellAmount, buyAmount, wallet, nonce, txOptions);
+  return tradeTx;
+};
 
 // TO DO get token address call from staking smart contracts?
 export const sendCrypto = async (amount: string, toAddress: string, token: Token, wallet: ethers.Wallet, txOptions: ITxOptions): Promise<ethers.ContractTransaction> => {
@@ -82,4 +101,9 @@ export const sendCrypto = async (amount: string, toAddress: string, token: Token
       txOptions
     );
   }
+};
+
+export const approveToken = async (spender: string, token: Token, wallet: ethers.Wallet, txOptions: ITxOptions): Promise<ethers.ContractTransaction> => {
+  const erc20instance = await contract.getErc20(wallet.provider, token);
+  return erc20instance.connect(wallet).approve(spender, ethers.utils.bigNumberify(2).pow(256).sub(1), txOptions);
 };

@@ -252,6 +252,7 @@ export interface IExchange {
   name: Exchange;
   estimate: Function;
   trade: Function;
+  trade_delayed: Function;
 }
 
 export interface IExchangeEstimation {
@@ -267,5 +268,5 @@ export interface ITxOptions {
   gasPrice?: number;
   gasLimit?: number;
   nonce?: number;
-  value?: number;
+  value?: any;
 }

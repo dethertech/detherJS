@@ -110,7 +110,7 @@ export const CONTRACT_ADDRESSES: any = {
     // Mkr/Oasis is not on rinkeby
     airswapExchange: '0x07fc7c43d8168a2730344e5cf958aaecc3b42b41',
   },
-  mainnet: {
+  homestead: {
     // dether
     DetherToken: '',
     Control: '',
@@ -143,7 +143,7 @@ export const CONTRACT_ADDRESSES: any = {
 export const MIN_ZONE_STAKE = 100;
 
 export const DEFAULT_TX_OPTIONS = {
-  gasPrice: 2,
+  gasPrice: 20000000000,
 };
 
 export const ERC223_TRANSFER_ABI = 'function transfer(address _to, uint _value, bytes _data) returns (bool)';

@@ -100,11 +100,24 @@ export default class DetherJS {
     return wallet.getExchangeEstimation(sellToken, buyToken, sellAmount, this.provider);
   }
 
+  async hasApproval(owner: string, spender: string, sellToken: Token, amount: string): Promise<boolean> {
+    this.hasProvider();
+    return wallet.hasApproval(owner, spender, sellToken, amount, this.provider);
+  }
+
+  // sellAmount and buyAmount in string WEI
   async execExchange(password: string, sellToken: Token, buyToken: Token, sellAmount: string, buyAmount: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
     const userWallet = await this.loadWallet(password);
     return wallet.execTrade(sellToken, buyToken, sellAmount, buyAmount, userWallet, txOptions);
+  }
+
+  async execExchange_delayed(password: string, sellToken: Token, buyToken: Token, sellAmount: string, buyAmount: string, nonce: number, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<any> {
+    this.hasProvider();
+    this.hasWallet();
+    const userWallet = await this.loadWallet(password);
+    return wallet.execTrade_delayed(sellToken, buyToken, sellAmount, buyAmount, userWallet, nonce, txOptions);
   }
 
   async getAvailableToken(forLogo?: false): Promise<ITicker> {
@@ -117,6 +130,13 @@ export default class DetherJS {
     this.hasWallet();
     const userWallet = await this.loadWallet(password);
     return wallet.sendCrypto(amount, toAddress, token, userWallet, txOptions);
+  }
+
+  async approveToken(password: string, spender: string, token: Token, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<ethers.ContractTransaction> {
+    this.hasProvider();
+    this.hasWallet();
+    const userWallet = await this.loadWallet(password);
+    return wallet.approveToken(spender, token, userWallet, txOptions);
   }
 
   // -------------------- //

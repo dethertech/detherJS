@@ -4,7 +4,10 @@
     "moduleResolution": "node",
     "target": "es2018",
     "outDir": "lib",
-    "lib": ["dom", "es7"],
+    "lib": [
+      "dom",
+      "es2017"
+    ],
     "noImplicitAny": true,
     "esModuleInterop": true,
     "sourceMap": true,
