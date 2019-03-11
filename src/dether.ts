@@ -100,9 +100,9 @@ export default class DetherJS {
     return wallet.getExchangeEstimation(sellToken, buyToken, sellAmount, this.provider);
   }
 
-  async hasApproval(owner: string, spender: string, sellToken: Token, amount: string): Promise<boolean> {
+  async hasApproval(owner: string, sellToken: Token, amount: string): Promise<boolean> {
     this.hasProvider();
-    return wallet.hasApproval(owner, spender, sellToken, amount, this.provider);
+    return wallet.hasApproval(owner, sellToken, amount, this.provider);
   }
 
   // sellAmount and buyAmount in string WEI
@@ -132,11 +132,11 @@ export default class DetherJS {
     return wallet.sendCrypto(amount, toAddress, token, userWallet, txOptions);
   }
 
-  async approveToken(password: string, spender: string, token: Token, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<ethers.ContractTransaction> {
+  async approveToken(password: string, token: Token, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
     const userWallet = await this.loadWallet(password);
-    return wallet.approveToken(spender, token, userWallet, txOptions);
+    return wallet.approveToken(token, userWallet, txOptions);
   }
 
   // -------------------- //

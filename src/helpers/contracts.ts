@@ -22,6 +22,10 @@ export const getAbi = async (contractName: DetherContract | ExternalContract): P
   return ABI[contractName];
 }
 
+export const getContractAddress = async (contractName: DetherContract | ExternalContract, networkName: any): Promise<any> => {
+  return CONTRACT_ADDRESSES[networkName][contractName];
+}
+
 export const get = async (provider: ethers.providers.Provider, contractName: DetherContract | ExternalContract, address?: string, overwriteAbi?: any): Promise<any> => {
   if (!provider) throw new Error('missing provider arg');
   if (!contractName) throw new Error('missing contract name');
