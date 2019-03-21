@@ -12,9 +12,11 @@ export const COORD_PRECISION: number = 5;
 export const TICKER: any = {
   kovan: {
     DTH: '0x9027E9FC4641e2991A36Eaeb0347Bc5b35322741',
-    DAI: '0xc4375b7de8af5a38a93548eb8453a498222c4ff2',
+    // DAI: '0xc4375b7de8af5a38a93548eb8453a498222c4ff2', // v1.0
+    DAI: '0x4C38cDC08f1260F5c4b21685654393BB1e66a858', // (uniswap)
     KNC: '0xB2f3dD487708ca7794f633D9Df57Fdb9347a7afF',
     WETH: '0xd0A1E359811322d97991E03f863a0C30C2cF029C', // WETH
+    MKR: '0xaC94Ea989f6955C67200DD67F0101e1865A560Ea',
   },
   ropsten: {
     DTH: '0xdb06f28e163684de611f21f76203e42ab4ae5b55',
@@ -51,9 +53,9 @@ export const TICKER: any = {
 
 export const EXCHANGE_PAIRS: IExchangePair[] = [
   { tokens: [Token.ETH, Token.DTH], exchange: Exchange.kyber },
-  { tokens: [Token.ETH, Token.DAI], exchange: Exchange.kyber },
+  { tokens: [Token.ETH, Token.DAI], exchange: Exchange.uniswap },
   { tokens: [Token.ETH, Token.BNB], exchange: Exchange.kyber },
-  { tokens: [Token.ETH, Token.MKR], exchange: Exchange.kyber },
+  { tokens: [Token.ETH, Token.MKR], exchange: Exchange.uniswap },
   { tokens: [Token.ETH, Token.OMG], exchange: Exchange.kyber },
   { tokens: [Token.ETH, Token.ZRX], exchange: Exchange.kyber },
   { tokens: [Token.ETH, Token.VEN], exchange: Exchange.kyber },
@@ -94,6 +96,10 @@ export const CONTRACT_ADDRESSES: any = {
     // Mkr/Oasis is not on ropsten
     // AirSwap is not on ropsten
     kyberNetworkProxy: '0x7e6b8b9510D71BF8EF0f893902EbB9C865eEF4Df',
+    uniswapExchange: {
+      DAI: '0x8779C708e2C3b1067de9Cd63698E4334866c691C',
+      MKR: '0xc64F00B099649D578Bf289894d3A51ee7d0b04e5',
+    }
   },
   rinkeby: {
     // dether
@@ -123,6 +129,12 @@ export const CONTRACT_ADDRESSES: any = {
     Shops: '',
     // external
     kyberNetworkProxy: '0x818E6FECD516Ecc3849DAf6845e3EC868087B755',
+    uniswapExchange: {
+      DAI: '0x09cabEC1eAd1c0Ba254B09efb3EE13841712bE14',
+      ZRX: '0xaE76c84C9262Cdb9abc0C2c8888e62Db8E22A0bF',
+      KNC: '0x49c4f9bc14884f6210F28342ceD592A633801a8b',
+      MKR: '0x2C4Bd064b998838076fa341A83d007FC2FA50957',
+    }
   },
   custom: {
     // dether
@@ -144,6 +156,7 @@ export const MIN_ZONE_STAKE = 100;
 
 export const DEFAULT_TX_OPTIONS = {
   gasPrice: 20000000000,
+  gasLimit: 7000000,
 };
 
 export const ERC223_TRANSFER_ABI = 'function transfer(address _to, uint _value, bytes _data) returns (bool)';

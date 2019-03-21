@@ -6,6 +6,7 @@
     "babel-node": "babel-node --presets=latest",
     "test": "mocha --require ts-node/register --timeout 0 test/**/*.spec.ts ",
     "example1": "npm run babel-node -- examples/one.js",
+    "example2": "npm run babel-node -- examples/two.js",
     "build": "tsc -p tsconfig.build.json"
   },
   "repository": {

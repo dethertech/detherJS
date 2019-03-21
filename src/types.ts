@@ -92,6 +92,7 @@ export enum ExternalContract {
   weth = 'weth',
   airswapExchange = 'airswapExchange',
   kyberNetworkProxy = 'kyberNetworkProxy',
+  uniswapExchange = 'uniswapExchange',
   appealableArbitrator = 'appealableArbitrator',
 }
 

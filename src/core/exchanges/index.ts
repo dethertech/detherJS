@@ -15,11 +15,10 @@ export const load = (sellToken: Token, buyToken: Token): IExchange => {
       (sell === buyToken && buy === sellToken);
   });
   if (!result) throw new Error('token pair not found');
-  let exchange: IExchange;
-  switch (result.exchange) {
-    case Exchange.kyber: exchange = new ExchangeKyber(sellToken, buyToken);
-    // case Exchange.uniswap: exchange = new ExchangeUniswap(sellToken, buyToken);
-  }
+
+  const exchange: IExchange = result.exchange === Exchange.kyber
+    ? new ExchangeKyber(sellToken, buyToken)
+    : new ExchangeUniswap(sellToken, buyToken)
   return exchange;
 };
 
