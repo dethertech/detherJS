@@ -35,7 +35,7 @@ export default class ExchangeUniswap extends ExchangeBase {
     let { name: networkName } = await wallet.provider.getNetwork();
     const exchangeAddress = CONTRACT_ADDRESSES[networkName][ExternalContract.uniswapExchange][erc20Token]
     const uniswapContract = await contract.get(wallet.provider, ExternalContract.uniswapExchange, exchangeAddress);
-
+    txOptions.gasLimit = 400000;
     if (this.sellToken === Token.ETH) {
       const uniswapInstance = uniswapContract.connect(wallet);
       txOptions.value = ethers.utils.bigNumberify(sellAmount);
@@ -64,7 +64,7 @@ export default class ExchangeUniswap extends ExchangeBase {
     const exchangeAddress = CONTRACT_ADDRESSES[networkName][ExternalContract.uniswapExchange][erc20Token]
 
     const uniswapContract = await contract.get(wallet.provider, ExternalContract.uniswapExchange, exchangeAddress);
-
+    txOptions.gasLimit = 400000;
     const deadline = Math.floor(Date.now() / 1000) + 600 // 600 seconds from now
     if (this.sellToken === Token.ETH) {
       txOptions.value = ethers.utils.bigNumberify(sellAmount);
