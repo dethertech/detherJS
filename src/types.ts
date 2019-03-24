@@ -22,7 +22,7 @@ export interface IEthersOptions {
   infuraKey?: string;
   etherscanKey?: string;
   // contract addresses
-  contracts? : IContractAddresses;
+  contracts?: IContractAddresses;
 }
 
 export interface ITeller {
@@ -92,6 +92,7 @@ export enum ExternalContract {
   weth = 'weth',
   airswapExchange = 'airswapExchange',
   kyberNetworkProxy = 'kyberNetworkProxy',
+  uniswapExchange = 'uniswapExchange',
   appealableArbitrator = 'appealableArbitrator',
 }
 
@@ -113,6 +114,11 @@ export interface IBalances {
   FLIXX?: string;
   PNK?: string;
   CAN?: string;
+}
+
+export interface ITicker {
+  [key: string]: string;
+  DAI?: string;
 }
 
 export interface IDate {
@@ -247,6 +253,7 @@ export interface IExchange {
   name: Exchange;
   estimate: Function;
   trade: Function;
+  trade_delayed: Function;
 }
 
 export interface IExchangeEstimation {
@@ -261,4 +268,6 @@ export enum DisputeType {
 export interface ITxOptions {
   gasPrice?: number;
   gasLimit?: number;
+  nonce?: number;
+  value?: any;
 }

@@ -1,9 +1,12 @@
 {
   "name": "detherjs",
-  "version": "1.0.0",
-  "main": "index.js",
+  "version": "5.0.9",
+  "main": "lib/dether.js",
   "scripts": {
+    "babel-node": "babel-node --presets=latest",
     "test": "mocha --require ts-node/register --timeout 0 test/**/*.spec.ts ",
+    "example1": "npm run babel-node -- examples/one.js",
+    "example2": "npm run babel-node -- examples/two.js",
     "build": "tsc -p tsconfig.build.json"
   },
   "repository": {
@@ -26,6 +29,8 @@
     "@types/mocha": "^5.2.5",
     "@types/utf8": "^2.1.6",
     "@types/web3": "^1.0.14",
+    "babel-cli": "^6.26.0",
+    "babel-preset-latest": "^6.24.1",
     "bignum": "^0.13.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
