@@ -5,8 +5,8 @@ import BN from 'bignumber.js';
 const USER_PASSWORD = '1234';
 
 
-const USER_PRIV_KEY = '0x0123456789012345678901234567890123456789012345678901234567890321';
-const address = '0x391edA1b8D31f891d1653B131779751BdeDA24D3'
+const USER_PRIV_KEY = '';
+const address = ''
 const rpcURL = 'https://kovan.infura.io';
 // const rpcURL = 'https://mainnet.infura.io';
 const detherJs = new DetherJS(false);
