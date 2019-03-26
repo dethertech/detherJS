@@ -14,11 +14,10 @@ const detherJs = new DetherJS(false);
 const destAddress = '0xB06c40B9c72231502949B33bC8b2543701C863Ef';
 const sellToken = 'ETH'
 const buyToken = 'DAI'
-const value = '1.32111';
+const value = '0.32111';
 
 let buyAmount;
 
-let wallet;
 let encryptedWallet;
 let user;
 
@@ -48,7 +47,6 @@ const testUniswap = async () => {
   const wallet = new ethers.Wallet(USER_PRIV_KEY, rpcURL)
   const encryptedWallet = await wallet.encrypt(USER_PASSWORD);
   await detherJs.loadUser(encryptedWallet)
-  // const result = await detherJs.execExchange(USER_PASSWORD, sellToken, buyToken, ethers.utils.parseEther(value).toString(), buyAmount)
   // const result = await sendDelayedExchangeRawTx(buyAmount)
   const result = await execExchange(buyAmount)
   console.log('exec exchange result: ', result)

@@ -17,6 +17,7 @@ const ABI: any = {
   [ExternalContract.erc20]: require('../../abi/external/erc20.json'),
   [ExternalContract.kyberNetworkProxy]: require('../../abi/external/kyberNetworkProxy.json'),
   [ExternalContract.uniswapExchange]: require('../../abi/external/uniswapExchange.json'),
+  [ExternalContract.uniswapFactory]: require('../../abi/external/uniswapFactory.json'),
 };
 
 export const getAbi = async (contractName: DetherContract | ExternalContract): Promise<any> => {
