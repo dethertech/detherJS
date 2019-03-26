@@ -28,6 +28,15 @@ export const getContractAddress = async (contractName: DetherContract | External
   return CONTRACT_ADDRESSES[networkName][contractName];
 }
 
+export const  getUniswapExchangeAddress = async (provider: ethers.providers.Provider, token: string): Promise<any> => {
+  const contractName = ExternalContract.uniswapFactory
+  let { name: networkName } = await provider.getNetwork();
+  const tokenAddress = TICKER[networkName][token];
+  const uniswapFactoryInstance = await get(provider, contractName);
+
+  return uniswapFactoryInstance.getExchange(tokenAddress)
+}
+
 export const get = async (provider: ethers.providers.Provider, contractName: DetherContract | ExternalContract, address?: string, overwriteAbi?: any): Promise<any> => {
   if (!provider) throw new Error('missing provider arg');
   if (!contractName) throw new Error('missing contract name');

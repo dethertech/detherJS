@@ -12,9 +12,9 @@ const rpcURL = 'https://kovan.infura.io';
 const detherJs = new DetherJS(false);
 
 const destAddress = '0xB06c40B9c72231502949B33bC8b2543701C863Ef';
-const sellToken = 'ETH'
-const buyToken = 'DAI'
-const value = '0.32111';
+const sellToken = 'DAI'
+const buyToken = 'ETH'
+const value = '3.32111';
 
 let buyAmount;
 
@@ -26,7 +26,7 @@ const checkApproved = () => detherJs.hasApproval(address, buyToken, '44444444');
 
 const sendDelayedExchangeRawTx = async buyAmount => {
   const txCount = await detherJs.provider.getTransactionCount(address)
-  const nonce = txCount + 1
+  const nonce = txCount
   const rawTx = await detherJs.execExchange_delayed(USER_PASSWORD, sellToken, buyToken, ethers.utils.parseEther(value).toString(), buyAmount, nonce)
   console.log('Raw tx: ', rawTx)
   const txResponse = await detherJs.provider.sendTransaction(rawTx)

@@ -1,7 +1,6 @@
 import ExchangeBase from './base';
 import { ethers } from 'ethers'
 import * as contract from '../../helpers/contracts';
-import { CONTRACT_ADDRESSES, TICKER } from '../../constants';
 
 import {
   Token, Exchange, ExternalContract, ITxOptions
@@ -15,7 +14,7 @@ export default class ExchangeUniswap extends ExchangeBase {
 
   async estimate(sellAmount: string, provider: ethers.providers.Provider): Promise<string> {
     const erc20Token = this.sellToken === 'ETH' ? this.buyToken : this.sellToken
-    const exchangeAddress = await this.getUniswapExchangeAddress(provider, erc20Token)
+    const exchangeAddress = await contract.getUniswapExchangeAddress(provider, erc20Token)
     const uniswapContract = await contract.get(provider, ExternalContract.uniswapExchange, exchangeAddress);
 
     const network = await provider.getNetwork();
@@ -31,8 +30,9 @@ export default class ExchangeUniswap extends ExchangeBase {
   }
 
   async trade(sellAmount: string, buyAmount: string, wallet: ethers.Wallet, txOptions: ITxOptions): Promise<ethers.ContractTransaction> {
+
     const erc20Token = this.sellToken === 'ETH' ? this.buyToken : this.sellToken
-    const exchangeAddress = await this.getUniswapExchangeAddress(wallet.provider, erc20Token)
+    const exchangeAddress = await contract.getUniswapExchangeAddress(wallet.provider, erc20Token)
     const uniswapContract = await contract.get(wallet.provider, ExternalContract.uniswapExchange, exchangeAddress);
 
     if (this.sellToken === Token.ETH) {
@@ -52,15 +52,6 @@ export default class ExchangeUniswap extends ExchangeBase {
     throw new Error('erc20 token to erc20 token not yet implemented');
   }
 
-  async getUniswapExchangeAddress(provider: ethers.providers.Provider, token: string): Promise<any> {
-    const contractName = ExternalContract.uniswapFactory
-    let { name: networkName } = await provider.getNetwork();
-    const tokenAddress = TICKER[networkName][token];
-    const uniswapFactoryInstance = await contract.get(provider, contractName);
-
-    return uniswapFactoryInstance.getExchange(tokenAddress)
-  }
-
   async trade_delayed(sellAmount: string, buyAmount: string, wallet: ethers.Wallet, nonce: number, txOptions: ITxOptions): Promise<any> {
 
     // https://docs.ethers.io/ethers.js/html/api-advanced.html?highlight=encode
@@ -68,7 +59,7 @@ export default class ExchangeUniswap extends ExchangeBase {
     const iUniswap = new ethers.utils.Interface(uniswapInterfaceAbi);
     const erc20Token = this.sellToken === 'ETH' ? this.buyToken : this.sellToken
 
-    const exchangeAddress = await this.getUniswapExchangeAddress(wallet.provider, erc20Token)
+    const exchangeAddress = await contract.getUniswapExchangeAddress(wallet.provider, erc20Token)
     const uniswapContract = await contract.get(wallet.provider, ExternalContract.uniswapExchange, exchangeAddress);
 
     const deadline = Math.floor(Date.now() / 1000) + 600 // 600 seconds from now
