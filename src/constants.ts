@@ -80,6 +80,7 @@ export const CONTRACT_ADDRESSES: any = {
     // Mkr/Oasis is not on ropsten
     // AirSwap is not on ropsten
     kyberNetworkProxy: '0x818E6FECD516Ecc3849DAf6845e3EC868087B755',
+    uniswapExchange: '',
   },
   kovan: {
     // dether
@@ -96,10 +97,8 @@ export const CONTRACT_ADDRESSES: any = {
     // Mkr/Oasis is not on ropsten
     // AirSwap is not on ropsten
     kyberNetworkProxy: '0x7e6b8b9510D71BF8EF0f893902EbB9C865eEF4Df',
-    uniswapExchange: {
-      DAI: '0x8779C708e2C3b1067de9Cd63698E4334866c691C',
-      MKR: '0xc64F00B099649D578Bf289894d3A51ee7d0b04e5',
-    }
+    uniswapFactory: '0xD3E51Ef092B2845f10401a0159B2B96e8B6c3D30',
+    uniswapExchange: '',
   },
   rinkeby: {
     // dether
@@ -115,6 +114,7 @@ export const CONTRACT_ADDRESSES: any = {
     // external
     // Mkr/Oasis is not on rinkeby
     airswapExchange: '0x07fc7c43d8168a2730344e5cf958aaecc3b42b41',
+    uniswapExchange: '',
   },
   homestead: {
     // dether
@@ -129,12 +129,7 @@ export const CONTRACT_ADDRESSES: any = {
     Shops: '',
     // external
     kyberNetworkProxy: '0x818E6FECD516Ecc3849DAf6845e3EC868087B755',
-    uniswapExchange: {
-      DAI: '0x09cabEC1eAd1c0Ba254B09efb3EE13841712bE14',
-      ZRX: '0xaE76c84C9262Cdb9abc0C2c8888e62Db8E22A0bF',
-      KNC: '0x49c4f9bc14884f6210F28342ceD592A633801a8b',
-      MKR: '0x2C4Bd064b998838076fa341A83d007FC2FA50957',
-    }
+    uniswapExchange: '',
   },
   custom: {
     // dether
@@ -149,6 +144,7 @@ export const CONTRACT_ADDRESSES: any = {
     Shops: '',
     // external
     kyberNetworkProxy: '',
+    uniswapExchange: '',
   },
 };
 

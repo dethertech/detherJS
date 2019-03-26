@@ -17,6 +17,7 @@ const ABI: any = {
   [ExternalContract.erc20]: require('../../abi/external/erc20.json'),
   [ExternalContract.kyberNetworkProxy]: require('../../abi/external/kyberNetworkProxy.json'),
   [ExternalContract.uniswapExchange]: require('../../abi/external/uniswapExchange.json'),
+  [ExternalContract.uniswapFactory]: require('../../abi/external/uniswapFactory.json'),
 };
 
 export const getAbi = async (contractName: DetherContract | ExternalContract): Promise<any> => {
@@ -25,6 +26,15 @@ export const getAbi = async (contractName: DetherContract | ExternalContract): P
 
 export const getContractAddress = async (contractName: DetherContract | ExternalContract, networkName: any): Promise<any> => {
   return CONTRACT_ADDRESSES[networkName][contractName];
+}
+
+export const  getUniswapExchangeAddress = async (provider: ethers.providers.Provider, token: string): Promise<any> => {
+  const contractName = ExternalContract.uniswapFactory
+  let { name: networkName } = await provider.getNetwork();
+  const tokenAddress = TICKER[networkName][token];
+  const uniswapFactoryInstance = await get(provider, contractName);
+
+  return uniswapFactoryInstance.getExchange(tokenAddress)
 }
 
 export const get = async (provider: ethers.providers.Provider, contractName: DetherContract | ExternalContract, address?: string, overwriteAbi?: any): Promise<any> => {
