@@ -6,6 +6,9 @@ import { ethers } from 'ethers';
 export const padZeroRight = (str: string, len: number): string => (
   `${str}${'0'.repeat(len - remove0x(str).length)}`
 );
+export const padZeroLeft = (str: string, len: number): string => (
+  `${'0'.repeat(len - remove0x(str).length)}${str}`
+);
 
 export const weiToEth = (wei: string): string => ethers.utils.formatEther(wei);
 export const ethToWei = (eth: number): string => ethers.utils.parseEther(eth.toString()).toString();

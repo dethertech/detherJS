@@ -24,7 +24,7 @@ const GEOHAS_CHARS = [
   'm', 'q', 'r', '2', '3', '6', '7', 'k', 'j', 'n', 'p', '0', '1', '4', '5', 'h',
 ];
 
-export const geohash = (str: string, len: number) : void => {
+export const geohash = (str: string, len: number): void => {
   if (str.length !== len) throw new Error(`expecting geohash to be at least ${len} characters`);
   for (const char of str) {
     if (!GEOHAS_CHARS.includes(char)) throw new Error(`character '${char}' is not a valid geohash char`);
@@ -32,7 +32,7 @@ export const geohash = (str: string, len: number) : void => {
 };
 
 // source: https://ethereum.stackexchange.com/a/1379
-export const ethAddress = (address: string) : void => {
+export const ethAddress = (address: string): void => {
   // TODO: reove this
   // @ts-ignore
   address = address.toLowerCase();
@@ -53,17 +53,17 @@ export const ethAddress = (address: string) : void => {
   for (let i = 0; i < 40; i += 1) {
     // the nth letter should be uppercase if the nth digit of casemap is 1
     if ((parseInt(addressHash[i], 16) > 7 && addressNo0x[i].toUpperCase() !== addressNo0x[i]) ||
-        (parseInt(addressHash[i], 16) <= 7 && addressNo0x[i].toLowerCase() !== addressNo0x[i])) {
+      (parseInt(addressHash[i], 16) <= 7 && addressNo0x[i].toLowerCase() !== addressNo0x[i])) {
       throw new Error(`invalid ethereum address: ${address}`);
     }
   }
 };
 
-export const countryCode = (country: string) : void => {
+export const countryCode = (country: string): void => {
   if (!COUNTRY_CODES.includes(country)) throw new Error(`invalid country code: ${country}`);
 };
 
-export const sellAmountUnit = (unit: Unit) : void => {
+export const sellAmountUnit = (unit: Unit): void => {
   if (!Object.keys(Unit).includes(unit)) {
     throw new Error('invalid unit (2nd arg) specified, allowed values: eth, wei, usd');
   }
@@ -104,7 +104,7 @@ export const tellerSellerInfo = (isSeller: boolean, sellRate: number) => {
 };
 
 // source: https://core.telegram.org/method/account.checkUsername
-export const telegramUsername = (messenger: string|undefined) => {
+export const telegramUsername = (messenger: string | undefined) => {
   if (typeof messenger !== 'string') throw new Error('teller messenger should be a string');
   if (messenger.length < 5 || messenger.length > 32) throw new Error('telegram username should be between 5 and 32 characters');
   if (!/[A-Za-z0-9_]/g.test(messenger)) throw new Error('invalid characters in telegram username');
@@ -115,5 +115,11 @@ export const shopDisputeID = (disputeID: number) => {
     throw new Error('invalid disputeID');
   }
 };
+
+export const tier = (tier: number) => {
+  if (!Number.isInteger(tier)) {
+    throw new Error('invalid tier');
+  }
+}
 
 export const ipfsHash = (_: any) => true; // TODO

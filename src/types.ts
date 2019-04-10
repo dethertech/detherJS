@@ -145,6 +145,9 @@ export enum DetherContract {
   Shops = 'Shops',
   SmsCertifier = 'SmsCertifier',
   KycCertifier = 'KycCertifier',
+  CertifierRegistry = 'CertifierRegistry',
+  Teller = 'Teller',
+  ShopDispute = 'ShopDispute',
 }
 
 export enum TransactionStatus {

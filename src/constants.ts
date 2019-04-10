@@ -84,15 +84,15 @@ export const CONTRACT_ADDRESSES: any = {
   },
   kovan: {
     // dether
-    DetherToken: '',
-    Control: '',
-    GeoRegistry: '',
-    KycCertifier: '',
-    SmsCertifier: '',
-    Users: '',
-    ZoneFactory: '',
-    Zone: '',
-    Shops: '',
+    DetherToken: '0x9027e9fc4641e2991a36eaeb0347bc5b35322741',
+    Control: '0x524fdFbB40413cda80f2d94489E2708422462e0D',
+    GeoRegistry: '0x3a638902A3e56Fd552a952266e64C738310F2ea2',
+    KycCertifier: '0xfb4571f1131890C833eb86C7d73751aD8370923C',
+    SmsCertifier: '0x6CE59d066A7E86b78975252eE4A67ad03eC43984',
+    Users: '0x3c9E20A97847a066Eca4780BF37F2DD191a18de2',
+    ZoneFactory: '0x9ba516A391E0e683aF4C4437B708EC33Fcc993F4',
+    Zone: '0xdA24C63221c5FA409D42aAd2769925C563F47B1C',
+    Shops: '0xbF6391Ad72D6E0b0f6333C00EBb39E9CdF8A5684',
     // external
     // Mkr/Oasis is not on ropsten
     // AirSwap is not on ropsten
@@ -118,7 +118,7 @@ export const CONTRACT_ADDRESSES: any = {
   },
   homestead: {
     // dether
-    DetherToken: '',
+    DetherToken: '0x5adc961D6AC3f7062D2eA45FEFB8D8167d44b190',
     Control: '',
     GeoRegistry: '',
     KycCertifier: '',
