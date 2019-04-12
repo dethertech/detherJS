@@ -13,6 +13,10 @@ const ABI: any = {
   [DetherContract.ExchangeRateOracle]: require('../../abi/dether/ExchangeRateOracle.json').abi,
   [DetherContract.Shops]: require('../../abi/dether/Shops.json').abi,
   [DetherContract.Zone]: require('../../abi/dether/Zone.json').abi,
+  [DetherContract.Teller]: require('../../abi/dether/Teller.json').abi,
+  [DetherContract.CertifierRegistry]: require('../../abi/dether/CertifierRegistry.json').abi,
+  [DetherContract.ShopDispute]: require('../../abi/dether/ShopDispute.json').abi,
+
   // external
   [ExternalContract.erc20]: require('../../abi/external/erc20.json'),
   [ExternalContract.kyberNetworkProxy]: require('../../abi/external/kyberNetworkProxy.json'),
@@ -28,7 +32,7 @@ export const getContractAddress = async (contractName: DetherContract | External
   return CONTRACT_ADDRESSES[networkName][contractName];
 }
 
-export const  getUniswapExchangeAddress = async (provider: ethers.providers.Provider, token: string): Promise<any> => {
+export const getUniswapExchangeAddress = async (provider: ethers.providers.Provider, token: string): Promise<any> => {
   const contractName = ExternalContract.uniswapFactory
   let { name: networkName } = await provider.getNetwork();
   const tokenAddress = TICKER[networkName][token];

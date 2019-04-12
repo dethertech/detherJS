@@ -37,6 +37,8 @@ export interface ITeller {
   sellRate: number;
   messenger?: string;
   referrer?: string;
+  tellerAddress: string;
+  tellerContractAddress: string;
 }
 
 export interface ITellerArgs {

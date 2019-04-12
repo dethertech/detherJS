@@ -33,7 +33,7 @@ const toShopStatus = (idx: number) => {
   }
 };
 
-export const shopDisputeArrToObj = (shopDisputeArr: any[]) : IShopDispute => ({
+export const shopDisputeArrToObj = (shopDisputeArr: any[]): IShopDispute => ({
   id: shopDisputeArr[0].toNumber(), // integer
   shop: shopDisputeArr[1], // address
   challenger: shopDisputeArr[2], // address
@@ -47,24 +47,24 @@ export const shopDisputeArrToObj = (shopDisputeArr: any[]) : IShopDispute => ({
 //        Getters       //
 // -------------------- //
 
-export const getDispute = async (shopAddress: string, provider: ethers.providers.Provider) : Promise<IShopDispute> => {
+export const getDispute = async (shopAddress: string, provider: ethers.providers.Provider): Promise<IShopDispute> => {
   validate.ethAddress(shopAddress);
 
-  const shopContract = await contract.get(provider, DetherContract.Shops);
-  const shopDispute: IShopDispute = shopDisputeArrToObj(await shopContract.getDispute(shopAddress));
+  const shopDisputeContract = await contract.get(provider, DetherContract.ShopDispute);
+  const shopDispute: IShopDispute = shopDisputeArrToObj(await shopDisputeContract.getDispute(shopAddress));
   return shopDispute;
 };
 
-export const getDisputeCreateCost = async (provider: ethers.providers.Provider) : Promise<string> => {
-  const shopContract = await contract.get(provider, DetherContract.Shops);
-  return shopContract.getDisputeCreateCost(); // wei as bignumber
+export const getDisputeCreateCost = async (provider: ethers.providers.Provider): Promise<string> => {
+  const shopDisputeContract = await contract.get(provider, DetherContract.ShopDispute);
+  return shopDisputeContract.getDisputeCreateCost(); // wei as bignumber
 };
 
-export const getDisputeAppealCost = async (shopAddress: string, provider: ethers.providers.Provider) : Promise<string> => {
+export const getDisputeAppealCost = async (shopAddress: string, provider: ethers.providers.Provider): Promise<string> => {
   validate.ethAddress(shopAddress);
 
-  const shopContract = await contract.get(provider, DetherContract.Shops);
-  return shopContract.getDisputeAppealCost(shopAddress); // wei as bignumber
+  const shopDisputeContract = await contract.get(provider, DetherContract.ShopDispute);
+  return shopDisputeContract.getDisputeAppealCost(shopAddress); // wei as bignumber
 };
 
 // -------------------- //
@@ -72,7 +72,7 @@ export const getDisputeAppealCost = async (shopAddress: string, provider: ethers
 // -------------------- //
 
 const createDisputeGasCost = 300000;
-export const createDispute = async (shopAddress: string, evidenceHash: string, wallet: ethers.Wallet, txOptions: ITxOptions) : Promise<ethers.ContractTransaction> => {
+export const createDispute = async (shopAddress: string, evidenceHash: string, wallet: ethers.Wallet, txOptions: ITxOptions): Promise<ethers.ContractTransaction> => {
   validate.ethAddress(shopAddress);
   validate.ipfsHash(evidenceHash);
   const shopContract = await contract.get(wallet.provider, DetherContract.Shops);
@@ -82,20 +82,22 @@ export const createDispute = async (shopAddress: string, evidenceHash: string, w
   const createCost = await getDisputeCreateCost(wallet.provider);
   const gasCost = ethers.utils.bigNumberify(createDisputeGasCost).mul(txOptions.gasPrice);
   const totalCost = ethers.utils.bigNumberify(createCost).add(gasCost);
+
   if (ethBalance.lt(totalCost)) throw new Error('not enough eth balance to make call');
-  return shopContract.connect(wallet).createDispute(shopAddress, DisputeType.firstOne, util.ipfsHashToBytes32(evidenceHash), { ...txOptions, value: createCost });
+  const shopDisputeContract = await contract.get(wallet.provider, DetherContract.ShopDispute);
+  return shopDisputeContract.connect(wallet).createDispute(shopAddress, DisputeType.firstOne, util.ipfsHashToBytes32(evidenceHash), { ...txOptions, value: createCost });
 };
 
 const appealDisputeGasCost = ethers.utils.bigNumberify(300000);
-export const appealDispute = async (shopAddress: string, evidenceHash: string, wallet: ethers.Wallet, txOptions: ITxOptions) : Promise<ethers.ContractTransaction> => {
+export const appealDispute = async (shopAddress: string, evidenceHash: string, wallet: ethers.Wallet, txOptions: ITxOptions): Promise<ethers.ContractTransaction> => {
   validate.ethAddress(shopAddress);
   validate.ipfsHash(evidenceHash);
-  const shopContract = await contract.get(wallet.provider, DetherContract.Shops);
-  const dispute = await shopContract.getDispute(shopAddress);
+  const shopDisputeContract = await contract.get(wallet.provider, DetherContract.ShopDispute);
+  const dispute = await shopDisputeContract.getDispute(shopAddress);
   const ethBalance = await wallet.provider.getBalance(wallet.address);
-  const appealCost = await shopContract.getDisputeAppealCost(shopAddress);
+  const appealCost = await shopDisputeContract.getDisputeAppealCost(shopAddress);
   const gasCost = ethers.utils.bigNumberify(appealDisputeGasCost).mul(txOptions.gasPrice);
   const totalCost = ethers.utils.bigNumberify(appealCost).add(gasCost);
   if (ethBalance.lt(totalCost)) throw new Error('not enough eth balance to make call');
-  return shopContract.connect(wallet).appealDispute(shopAddress, util.ipfsHashToBytes32(evidenceHash), { ...txOptions, value: appealCost });
+  return shopDisputeContract.connect(wallet).appealDispute(shopAddress, util.ipfsHashToBytes32(evidenceHash), { ...txOptions, value: appealCost });
 };

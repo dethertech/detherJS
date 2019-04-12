@@ -160,7 +160,6 @@ export const getZone = async (geohash6: string, provider: ethers.providers.Provi
 
   const zoneOwner: IZoneOwner = zoneOwnerArrToObj(await zoneContract.getZoneOwner());
   const auctionID = await zoneContract.currentAuctionId();
-  console.log('lastAuction', auctionID);
   if (auctionID > 0) {
     const lastAuction: IZoneAuction = zoneAuctionArrToObj(await zoneContract.getLastAuction());
     return toLiveZone(zoneAddress, geohash6, zoneContract, zoneOwner, lastAuction);
@@ -192,7 +191,7 @@ export const claimFree = async (geohash6: string, wallet: ethers.Wallet, txOptio
 
   const detherTokenContract = await contract.get(wallet.provider, DetherContract.DetherToken, undefined, [constants.ERC223_TRANSFER_ABI]);
   const zoneFactoryContract = await contract.get(wallet.provider, DetherContract.ZoneFactory);
-  const zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(geohash6));
+  const zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(geohash6).substring(0, 14));
 
   return detherTokenContract.connect(wallet).transfer(zoneAddress, convert.ethToWei(constants.MIN_ZONE_STAKE), '0x41', txOptions); // erc223 call
 };
@@ -203,7 +202,7 @@ export const bid = async (geohash6: string, bidAmount: string, wallet: ethers.Wa
 
   const detherTokenContract = await contract.get(wallet.provider, DetherContract.DetherToken, undefined, [constants.ERC223_TRANSFER_ABI]);
   const zoneFactoryContract = await contract.get(wallet.provider, DetherContract.ZoneFactory);
-  const zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(geohash6));
+  const zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(geohash6).substring(0, 14));
   return detherTokenContract.connect(wallet).transfer(zoneAddress, bidAmount, '0x42', txOptions); // erc223 call
 };
 
@@ -213,16 +212,16 @@ export const topUp = async (geohash6: string, topUpAmount: string, wallet: ether
 
   const detherTokenContract = await contract.get(wallet.provider, DetherContract.DetherToken, undefined, [constants.ERC223_TRANSFER_ABI]);
   const zoneFactoryContract = await contract.get(wallet.provider, DetherContract.ZoneFactory);
-  const zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(geohash6));
+  const zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(geohash6).substring(0, 14));
   return detherTokenContract.connect(wallet).transfer(zoneAddress, topUpAmount, '0x43', txOptions); // erc223 call
 };
 
 export const release = async (geohash6: string, wallet: ethers.Wallet, txOptions: ITxOptions): Promise<ethers.ContractTransaction> => {
   validate.geohash(geohash6, 6);
-
   const zoneFactoryContract = await contract.get(wallet.provider, DetherContract.ZoneFactory);
-  const zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(geohash6));
+  const zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(geohash6).substring(0, 14));
   const zoneContract = await contract.get(wallet.provider, DetherContract.Zone, zoneAddress);
+
   return zoneContract.connect(wallet).release(txOptions);
 };
 
@@ -230,7 +229,7 @@ export const withdrawFromAuction = async (geohash6: string, auctionId: number, w
   validate.geohash(geohash6, 6);
 
   const zoneFactoryContract = await contract.get(wallet.provider, DetherContract.ZoneFactory);
-  const zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(geohash6));
+  const zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(geohash6).substring(0, 14));
   const zoneContract = await contract.get(wallet.provider, DetherContract.Zone, zoneAddress);
   return zoneContract.connect(wallet).withdrawFromAuction(auctionId, txOptions);
 };
@@ -239,7 +238,7 @@ export const withdrawFromAuctions = async (geohash6: string, auctionIds: number[
   validate.geohash(geohash6, 6);
 
   const zoneFactoryContract = await contract.get(wallet.provider, DetherContract.ZoneFactory);
-  const zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(geohash6));
+  const zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(geohash6).substring(0, 14));
   const zoneContract = await contract.get(wallet.provider, DetherContract.Zone, zoneAddress);
   return zoneContract.connect(wallet).withdrawFromAuctions(auctionIds, txOptions);
 };
@@ -248,7 +247,7 @@ export const withdrawDth = async (geohash6: string, wallet: ethers.Wallet, txOpt
   validate.geohash(geohash6, 6);
 
   const zoneFactoryContract = await contract.get(wallet.provider, DetherContract.ZoneFactory);
-  const zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(geohash6));
+  const zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(geohash6).substring(0, 14));
   const zoneContract = await contract.get(wallet.provider, DetherContract.Zone, zoneAddress);
   return zoneContract.connect(wallet).withdrawDth(txOptions);
 };
@@ -257,7 +256,7 @@ export const withdrawEth = async (geohash6: string, wallet: ethers.Wallet, txOpt
   validate.geohash(geohash6, 6);
 
   const zoneFactoryContract = await contract.get(wallet.provider, DetherContract.ZoneFactory);
-  const zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(geohash6));
+  const zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(geohash6).substring(0, 14));
   const zoneContract = await contract.get(wallet.provider, DetherContract.Zone, zoneAddress);
   return zoneContract.connect(wallet).withdrawEth(txOptions);
 };

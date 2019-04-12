@@ -50,6 +50,8 @@ export default class DetherJS {
     constants.CONTRACT_ADDRESSES.custom.ZoneFactory = contractAddresses[DetherContract.ZoneFactory];
     constants.CONTRACT_ADDRESSES.custom.Zone = contractAddresses[DetherContract.Zone];
     constants.CONTRACT_ADDRESSES.custom.Shops = contractAddresses[DetherContract.Shops];
+    constants.CONTRACT_ADDRESSES.custom.ShopDispute = contractAddresses[DetherContract.ShopDispute];
+    constants.CONTRACT_ADDRESSES.CertifierRegistry = contractAddresses[DetherContract.CertifierRegistry];
   }
 
   loadUser(encryptedWallet: string) {
