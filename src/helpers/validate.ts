@@ -122,4 +122,9 @@ export const tier = (tier: number) => {
   }
 }
 
+export const url = (url: string) => {
+  if (!/(http[s]?:\/\/)?[^\s(["<,>]*\.[^\s[",><]*/.test(url)) {
+    throw new Error(`invalid url: ${url}`);
+  }
+}
 export const ipfsHash = (_: any) => true; // TODO

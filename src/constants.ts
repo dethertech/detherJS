@@ -142,6 +142,7 @@ export const CONTRACT_ADDRESSES: any = {
     ZoneFactory: '',
     Zone: '',
     Shops: '',
+    CertifierRegistry: '',
     // external
     kyberNetworkProxy: '',
     uniswapExchange: '',

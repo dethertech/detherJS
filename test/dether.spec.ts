@@ -318,7 +318,7 @@ describe('DetherJS', () => {
       Zone: deployedContracts.Zone.address,
       Shops: deployedContracts.Shops.address,
       ShopDispute: deployedContracts.ShopDispute.address,
-      CertifierRegistry: deployedContracts.CertifierRegistry.address
+      CertifierRegistry: deployedContracts.CertifierRegistry.address,
     });
   });
 
@@ -791,95 +791,89 @@ describe('DetherJS', () => {
     });
   });
 
-  describe('CertifierRegistry', () => {
-
+  describe.only('CertifierRegistry', () => {
+    beforeEach(async () => {
+      detherJs.loadUser(await accounts.user1.encrypt(PASS));
+      const urlCert = 'dether.io/certifier'
+      await transaction.waitForTxMined(detherJs.createCertifier(PASS, urlCert, { gasLimit: 2000000 }));
+    })
     describe('setters', () => {
-      describe('Create certifier', () => {
-        // it('should succeed', async () => {
-        //   detherJs.loadUser(await accounts.user1.encrypt(PASS));
-        //   await transaction.waitForTxMined(detherJs.addShop(PASS, SHOP, { gasLimit: 2000000 }));
-        // });
-      });
       describe('Modify Url', () => {
-        // it('should succeed', async () => {
-        //   detherJs.loadUser(await accounts.user1.encrypt(PASS));
-        //   await transaction.waitForTxMined(detherJs.addShop(PASS, SHOP, { gasLimit: 2000000 }));
-        // });
+        it('should succeed', async () => {
+          detherJs.loadUser(await accounts.user1.encrypt(PASS));
+          const newUrl = 'dether.io/certifier2';
+          await transaction.waitForTxMined(detherJs.modifyUrlCertifier(PASS, newUrl, accounts.user1.address, { gasLimit: 2000000 }));
+        });
+        it('should failed', async () => {
+          detherJs.loadUser(await accounts.user1.encrypt(PASS));
+          const newUrl = 'detherio/certifier2';
+          await transaction.waitForTxMined(detherJs.modifyUrlCertifier(PASS, newUrl, accounts.user1.address, { gasLimit: 2000000 }));
+        });
       });
       describe('Add certs type', () => {
-        // it('should succeed', async () => {
-        //   detherJs.loadUser(await accounts.user1.encrypt(PASS));
-        //   await transaction.waitForTxMined(detherJs.addShop(PASS, SHOP, { gasLimit: 2000000 }));
-        // });
+        it('should succeed', async () => {
+          detherJs.loadUser(await accounts.user1.encrypt(PASS));
+          const certType = 'sms verification';
+          const certNumber = 1;
+          await transaction.waitForTxMined(detherJs.addCertificationType(PASS, accounts.user1.address, certNumber, certType, { gasLimit: 2000000 }));
+        });
       });
       describe('Add delegate', () => {
-        // it('should succeed', async () => {
-        //   detherJs.loadUser(await accounts.user1.encrypt(PASS));
-        //   await transaction.waitForTxMined(detherJs.addShop(PASS, SHOP, { gasLimit: 2000000 }));
-        // });
+        it('should succeed', async () => {
+          detherJs.loadUser(await accounts.user1.encrypt(PASS));
+          await transaction.waitForTxMined(detherJs.addDelegate(PASS, accounts.user1.address, accounts.user2.address, { gasLimit: 2000000 }));
+        });
       });
       describe('Remove delegate', () => {
-        // it('should succeed', async () => {
-        //   detherJs.loadUser(await accounts.user1.encrypt(PASS));
-        //   await transaction.waitForTxMined(detherJs.addShop(PASS, SHOP, { gasLimit: 2000000 }));
-        // });
+        it('should succeed', async () => {
+          detherJs.loadUser(await accounts.user1.encrypt(PASS));
+          await transaction.waitForTxMined(detherJs.addDelegate(PASS, accounts.user1.address, accounts.user2.address, { gasLimit: 2000000 }));
+          await transaction.waitForTxMined(detherJs.removeDelegate(PASS, accounts.user1.address, accounts.user2.address, { gasLimit: 2000000 }));
+        });
       });
       describe('Certify', () => {
-        // it('should succeed', async () => {
-        //   detherJs.loadUser(await accounts.user1.encrypt(PASS));
-        //   await transaction.waitForTxMined(detherJs.addShop(PASS, SHOP, { gasLimit: 2000000 }));
-        // });
+        it('should succeed', async () => {
+          detherJs.loadUser(await accounts.user1.encrypt(PASS));
+          await transaction.waitForTxMined(detherJs.addDelegate(PASS, accounts.user1.address, accounts.user2.address, { gasLimit: 2000000 }));
+          detherJs.loadUser(await accounts.user2.encrypt(PASS));
+          await transaction.waitForTxMined(detherJs.certify(PASS, accounts.user1.address, accounts.user3.address, 1, { gasLimit: 2000000 }));
+        });
       });
       describe('Revoke', () => {
-        // it('should succeed', async () => {
-        //   detherJs.loadUser(await accounts.user1.encrypt(PASS));
-        //   await transaction.waitForTxMined(detherJs.addShop(PASS, SHOP, { gasLimit: 2000000 }));
-        // });
+        it('should succeed', async () => {
+          detherJs.loadUser(await accounts.user1.encrypt(PASS));
+          await transaction.waitForTxMined(detherJs.addDelegate(PASS, accounts.user1.address, accounts.user2.address, { gasLimit: 2000000 }));
+          detherJs.loadUser(await accounts.user2.encrypt(PASS));
+          await transaction.waitForTxMined(detherJs.certify(PASS, accounts.user1.address, accounts.user3.address, 1, { gasLimit: 2000000 }));
+          await transaction.waitForTxMined(detherJs.revoke(PASS, accounts.user1.address, accounts.user3.address, { gasLimit: 2000000 }));
+        });
       });
     });
     describe('getters', () => {
       describe('Is delegate', () => {
-        // it('should succeed', async () => {
-        //   detherJs.loadUser(await accounts.user1.encrypt(PASS));
-        //   await transaction.waitForTxMined(detherJs.addShop(PASS, SHOP, { gasLimit: 2000000 }));
-        //   const result = await detherJs.shopExistsByAddress(accounts.user1.address);
-        //   expect(result).to.be.true;
-        // });
-      });
-      describe('Get certification type', () => {
         it('should succeed', async () => {
-          // detherJs.loadUser(await accounts.user1.encrypt(PASS));
-          // await transaction.waitForTxMined(detherJs.addShop(PASS, SHOP, { gasLimit: 2000000 }));
-          // const result = await detherJs.getShopByAddress(accounts.user1.address);
-          // expect(result).to.deep.equal({
-          //   position: SHOP.position,
-          //   zoneGeohash: SHOP.position.slice(0, 6),
-          //   hasDispute: false,
-          //   staked: convert.ethToWei(SHOP_LICENSE_PRICE),
-          //   category: undefined,
-          //   name: undefined,
-          //   description: undefined,
-          //   opening: undefined,
-          //   disputeID: undefined,
-          // });
+          detherJs.loadUser(await accounts.user1.encrypt(PASS));
+          await transaction.waitForTxMined(detherJs.addDelegate(PASS, accounts.user1.address, accounts.user2.address, { gasLimit: 2000000 }));
+          const result = await detherJs.isDelegate(accounts.user1.address, accounts.user2.address);
+          expect(result).to.be.true;
         });
       });
       describe('Get certs', () => {
         it('should succeed', async () => {
-          // detherJs.loadUser(await accounts.user1.encrypt(PASS));
-          // await transaction.waitForTxMined(detherJs.addShop(PASS, SHOP, { gasLimit: 2000000 }));
-          // const result = await detherJs.getShopByAddress(accounts.user1.address);
-          // expect(result).to.deep.equal({
-          //   position: SHOP.position,
-          //   zoneGeohash: SHOP.position.slice(0, 6),
-          //   hasDispute: false,
-          //   staked: convert.ethToWei(SHOP_LICENSE_PRICE),
-          //   category: undefined,
-          //   name: undefined,
-          //   description: undefined,
-          //   opening: undefined,
-          //   disputeID: undefined,
-          // });
+          detherJs.loadUser(await accounts.user1.encrypt(PASS));
+          const certType = 'sms verification';
+          const certNumber = 1;
+          await transaction.waitForTxMined(detherJs.addCertificationType(PASS, accounts.user1.address, certNumber, certType, { gasLimit: 2000000 }));
+          await transaction.waitForTxMined(detherJs.addDelegate(PASS, accounts.user1.address, accounts.user2.address, { gasLimit: 2000000 }));
+          detherJs.loadUser(await accounts.user2.encrypt(PASS));
+          await transaction.waitForTxMined(detherJs.certify(PASS, accounts.user1.address, accounts.user3.address, 1, { gasLimit: 2000000 }));
+          const result = await detherJs.getCerts(accounts.user3.address);
+          expect(result[0][0]).to.equal(
+            accounts.user1.address
+          );
+          expect(result[0][1]).to.equal(
+            certNumber
+          );
         });
       });
     });
