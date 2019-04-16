@@ -20,6 +20,10 @@ import {
 
 // import * as zoneAuction from './core/zoneAuction';
 
+// TO DO :
+// teller shop management (set licence price, collect taxes, get available taxes)
+// shop licence price moving (get licence price, estimate taxes, is owned or not)
+
 export default class DetherJS {
   usingMetamask: boolean;
   encryptedWallet: string;
@@ -146,9 +150,9 @@ export default class DetherJS {
   //        Teller        //
   // -------------------- //
 
-  async getTellerInZone(geohash7: string): Promise<ITeller> {
+  async getTellerInZone(geohash6: string): Promise<ITeller> {
     this.hasProvider();
-    return teller.getTellerInZone(geohash7, this.provider);
+    return teller.getTellerInZone(geohash6, this.provider);
   }
 
   async getTellersInZones(geohash7List: string[]): Promise<ITeller[]> {
@@ -217,9 +221,14 @@ export default class DetherJS {
     return shop.getShopByPosition(geohash12, this.provider);
   }
 
-  async getShopsInZone(geohash7: string): Promise<IShop[]> {
+  async getShopsInZone(geohash6: string): Promise<IShop[]> {
     this.hasProvider();
-    return shop.getShopsInZone(geohash7, this.provider);
+    return shop.getShopsInZone(geohash6, this.provider);
+  }
+
+  async getLicencePriceInZone(geohash6: string): Promise<string> {
+    this.hasProvider();
+    return shop.getLicencePrice(geohash6, this.provider);
   }
 
   async addShop(password: string, shopData: IShopArgs, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<ethers.ContractTransaction> {

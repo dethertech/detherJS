@@ -81,6 +81,15 @@ export const getShopsInZone = async (geohash6: string, provider: ethers.provider
   return Promise.all(shopAddressesInZone.map((shopAddress: string): Promise<IShop> => getShopByAddress(shopAddress, provider)));
 };
 
+// untested
+export const getLicencePrice = async (geohash6: string, provider: ethers.providers.Provider): Promise<any> => {
+  validate.geohash(geohash6, 6);
+  const shopInstance: ethers.Contract = await contract.get(provider, DetherContract.Shops);
+  const price = await shopInstance.zoneLicencePrice(geohash6);
+  return price;
+}
+
+
 // -------------------- //
 //        Setters       //
 // -------------------- //
