@@ -166,8 +166,18 @@ export const getZone = async (geohash6: string, provider: ethers.providers.Provi
   } else {
     return toLiveZoneNoBidYet(zoneAddress, geohash6, zoneContract, zoneOwner);
   }
-
 };
+
+export const isZoneOpened = async (geohash6: string, country: string, provider: ethers.providers.Provider): Promise<Boolean> => {
+  validate.geohash(geohash6, 6);
+  const geoRegistryContract = await contract.get(provider, DetherContract.GeoRegistry);
+  const countryOpen = await geoRegistryContract.countryIsEnabled(convert.asciiToHex(geohash6).substring(0, 6));
+  const zoneAvailable = await geoRegistryContract.zoneInsideCountry(convert.asciiToHex(geohash6).substring(0, 6), convert.asciiToHex(geohash6).substring(0, 10))
+  console.log(countryOpen, zoneAvailable);
+  return true;
+  // geo.countryIsEnabled(country)
+  // geo.zoneInsideCountry(country, bytes4(geohash))
+}
 
 // -------------------- //
 //        Setters       //
