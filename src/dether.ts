@@ -11,6 +11,7 @@ import * as wallet from './core/wallet';
 import * as util from './core/util';
 import * as user from './core/user';
 import * as zone from './core/zone';
+import * as certifier from './core/certifier';
 
 import {
   Unit, Token, TransactionStatus, Tier, DetherContract,
@@ -18,6 +19,11 @@ import {
 } from './types';
 
 // import * as zoneAuction from './core/zoneAuction';
+
+// TO DO :
+// teller shop management (set licence price, collect taxes, get available taxes)
+// shop licence price moving (get licence price, estimate taxes, is owned or not)
+// getShopInZones
 
 export default class DetherJS {
   usingMetamask: boolean;
@@ -50,6 +56,8 @@ export default class DetherJS {
     constants.CONTRACT_ADDRESSES.custom.ZoneFactory = contractAddresses[DetherContract.ZoneFactory];
     constants.CONTRACT_ADDRESSES.custom.Zone = contractAddresses[DetherContract.Zone];
     constants.CONTRACT_ADDRESSES.custom.Shops = contractAddresses[DetherContract.Shops];
+    constants.CONTRACT_ADDRESSES.custom.ShopDispute = contractAddresses[DetherContract.ShopDispute];
+    constants.CONTRACT_ADDRESSES.custom.CertifierRegistry = contractAddresses[DetherContract.CertifierRegistry];
   }
 
   loadUser(encryptedWallet: string) {
@@ -143,14 +151,14 @@ export default class DetherJS {
   //        Teller        //
   // -------------------- //
 
-  async getTellerInZone(geohash7: string): Promise<ITeller> {
+  async getTellerInZone(geohash6: string): Promise<ITeller> {
     this.hasProvider();
-    return teller.getTellerInZone(geohash7, this.provider);
+    return teller.getTellerInZone(geohash6, this.provider);
   }
 
-  async getTellersInZones(geohash7List: string[]): Promise<ITeller[]> {
+  async getTellersInZones(geohash6List: string[]): Promise<ITeller[]> {
     this.hasProvider();
-    return teller.getTellersInZones(geohash7List, this.provider);
+    return teller.getTellersInZones(geohash6List, this.provider);
   }
 
   async addTeller(password: string, tellerData: ITellerArgs, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<ethers.ContractTransaction> {
@@ -214,9 +222,14 @@ export default class DetherJS {
     return shop.getShopByPosition(geohash12, this.provider);
   }
 
-  async getShopsInZone(geohash7: string): Promise<IShop[]> {
+  async getShopsInZone(geohash6: string): Promise<IShop[]> {
     this.hasProvider();
-    return shop.getShopsInZone(geohash7, this.provider);
+    return shop.getShopsInZone(geohash6, this.provider);
+  }
+
+  async getLicencePriceInZone(geohash6: string): Promise<string> {
+    this.hasProvider();
+    return shop.getLicencePrice(geohash6, this.provider);
   }
 
   async addShop(password: string, shopData: IShopArgs, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<ethers.ContractTransaction> {
@@ -290,11 +303,12 @@ export default class DetherJS {
     this.hasProvider();
     return zone.getZone(geohash7, this.provider);
   }
-  async createZone(password: string, country: string, geohash7: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<ethers.ContractTransaction> {
+
+  async createZone(password: string, country: string, geohash6: string, tier: number, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
     const wallet = await this.loadWallet(password);
-    return zone.create(country, geohash7, wallet, txOptions);
+    return zone.create(country, geohash6, tier, wallet, txOptions);
   }
 
   async claimFreeZone(password: string, geohash7: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<ethers.ContractTransaction> {
@@ -351,6 +365,73 @@ export default class DetherJS {
     this.hasWallet();
     const wallet = await this.loadWallet(password);
     return zone.withdrawEth(geohash7, wallet, txOptions);
+  }
+
+  async isZoneOpened(geohash6: string, country: string): Promise<Boolean> {
+    this.hasProvider();
+    return zone.isZoneOpened(geohash6, country, this.provider);
+  }
+  // -------------------- //
+  //        Certifier     //
+  // -------------------- //
+
+  async createCertifier(password: string, urlCert: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<ethers.ContractTransaction> {
+    this.hasProvider();
+    this.hasWallet();
+    const wallet = await this.loadWallet(password);
+    return certifier.createCertifier(urlCert, wallet, txOptions);
+  }
+
+  async modifyUrlCertifier(password: string, urlCert: string, certifierId: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<ethers.ContractTransaction> {
+    this.hasProvider();
+    this.hasWallet();
+    const wallet = await this.loadWallet(password);
+    return certifier.modifyUrlCertifier(urlCert, certifierId, wallet, txOptions);
+  }
+
+  async addCertificationType(password: string, certifierId: string, refcerts: number, descriptionRef: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<ethers.ContractTransaction> {
+    this.hasProvider();
+    this.hasWallet();
+    const wallet = await this.loadWallet(password);
+    return certifier.addCertificationType(certifierId, refcerts, descriptionRef, wallet, txOptions);
+  }
+
+  async addDelegate(password: string, certifierId: string, delegate: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<ethers.ContractTransaction> {
+    this.hasProvider();
+    this.hasWallet();
+    const wallet = await this.loadWallet(password);
+    return certifier.addDelegate(certifierId, delegate, wallet, txOptions);
+  }
+
+  async certify(password: string, certifierId: string, who: string, type: number, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<ethers.ContractTransaction> {
+    this.hasProvider();
+    this.hasWallet();
+    const wallet = await this.loadWallet(password);
+    return certifier.certify(certifierId, who, type, wallet, txOptions);
+  }
+
+  async revoke(password: string, certifierId: string, who: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<ethers.ContractTransaction> {
+    this.hasProvider();
+    this.hasWallet();
+    const wallet = await this.loadWallet(password);
+    return certifier.revoke(certifierId, who, wallet, txOptions);
+  }
+
+  async removeDelegate(password: string, certifierId: string, delegate: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<ethers.ContractTransaction> {
+    this.hasProvider();
+    this.hasWallet();
+    const wallet = await this.loadWallet(password);
+    return certifier.removeDelegate(certifierId, delegate, wallet, txOptions);
+  }
+
+  async isDelegate(certifierId: string, who: string): Promise<Boolean> {
+    this.hasProvider();
+    return certifier.isDelegate(certifierId, who, this.provider);
+  }
+
+  async getCerts(who: string): Promise<any> {
+    this.hasProvider();
+    return certifier.getCerts(who, this.provider);
   }
 
   // -------------------- //

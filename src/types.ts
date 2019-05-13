@@ -37,6 +37,8 @@ export interface ITeller {
   sellRate: number;
   messenger?: string;
   referrer?: string;
+  tellerAddress: string;
+  tellerContractAddress: string;
 }
 
 export interface ITellerArgs {
@@ -146,6 +148,9 @@ export enum DetherContract {
   Shops = 'Shops',
   SmsCertifier = 'SmsCertifier',
   KycCertifier = 'KycCertifier',
+  CertifierRegistry = 'CertifierRegistry',
+  Teller = 'Teller',
+  ShopDispute = 'ShopDispute',
 }
 
 export enum TransactionStatus {

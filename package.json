@@ -1,6 +1,6 @@
 {
   "name": "detherjs",
-  "version": "5.0.10",
+  "version": "5.0.11",
   "main": "lib/dether.js",
   "scripts": {
     "babel-node": "babel-node --presets=latest",
@@ -36,8 +36,12 @@
     "chai-as-promised": "^7.1.1",
     "chai-bignumber": "^3.0.0",
     "dotenv": "^6.1.0",
-    "ethereumjs-util": "^6.0.0",
+    "ethereumjs-util": "^6.1.0",
+    "for-async": "^1.0.1",
+    "fs": "0.0.1-security",
     "mocha": "^5.2.0",
+    "papaparse": "^4.6.3",
+    "path": "^0.12.7",
     "ts-node": "^7.0.1",
     "tslint": "^5.11.0",
     "tslint-config-airbnb": "^5.11.0",
