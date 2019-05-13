@@ -45,6 +45,7 @@ export const TICKER: any = {
     FLIXX: '0xf04a8ac553fcedb5ba99a64799155826c136b0be',
     PNK: '0x93ed3fbe21207ec2e8f2d3c3de6e058cb73bc04d',
     CAN: '0x1d462414fe14cf489c7a21cac78509f4bf8cd7c0',
+    KNC: '0xdd974d5c2e2928dea5f71b9825b8b646686bd200',
   },
   custom: {
     DTH: '',
@@ -61,6 +62,7 @@ export const EXCHANGE_PAIRS: IExchangePair[] = [
   { tokens: [Token.ETH, Token.VEN], exchange: Exchange.kyber },
   { tokens: [Token.ETH, Token.AE], exchange: Exchange.kyber },
   { tokens: [Token.ETH, Token.REP], exchange: Exchange.kyber },
+  { tokens: [Token.ETH, Token.KNC], exchange: Exchange.kyber },
 ];
 
 // source: https://github.com/OasisDEX/oasis-direct/blob/master/src/settings.json
