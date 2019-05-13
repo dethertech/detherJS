@@ -117,6 +117,7 @@ export interface IBalances {
   FLIXX?: string;
   PNK?: string;
   CAN?: string;
+  KNC?: string;
 }
 
 export interface ITicker {
@@ -191,6 +192,7 @@ export enum Token {
   FLIXX = 'FLIXX',
   PNK = 'PNK',
   CAN = 'CAN',
+  KNC = 'KNC',
 }
 
 export enum Network {
