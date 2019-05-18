@@ -87,6 +87,12 @@ export const sellAmount = (sellAmount: number) => {
   }
 };
 
+export const refFees = (reffees: number) => {
+  if (!reffees || typeof reffees !== 'number' || reffees < 0) {
+    throw new Error(`invalid sell amount: ${reffees}`);
+  }
+};
+
 export const currencyId = (currencyId: number) => {
   if (!Number.isInteger(currencyId) || currencyId < 1 || currencyId > 100) {
     throw new Error('invalid currency');

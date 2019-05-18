@@ -1,6 +1,6 @@
 {
   "name": "detherjs",
-  "version": "5.0.15",
+  "version": "5.0.16",
   "main": "lib/dether.js",
   "scripts": {
     "babel-node": "babel-node --presets=latest",
@@ -39,6 +39,7 @@
     "ethereumjs-util": "^6.1.0",
     "for-async": "^1.0.1",
     "fs": "0.0.1-security",
+    "latlon-geohash": "^1.1.0",
     "mocha": "^5.2.0",
     "papaparse": "^4.6.3",
     "path": "^0.12.7",

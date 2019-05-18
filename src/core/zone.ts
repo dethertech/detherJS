@@ -172,11 +172,14 @@ export const isZoneOpened = async (geohash6: string, country: string, provider: 
   validate.geohash(geohash6, 6);
   const geoRegistryContract = await contract.get(provider, DetherContract.GeoRegistry);
   const countryOpen = await geoRegistryContract.countryIsEnabled(convert.asciiToHex(geohash6).substring(0, 6));
+  if (countryOpen === false) {
+    return false
+  }
   const zoneAvailable = await geoRegistryContract.zoneInsideCountry(convert.asciiToHex(geohash6).substring(0, 6), convert.asciiToHex(geohash6).substring(0, 10))
-  console.log(countryOpen, zoneAvailable);
+  if (zoneAvailable === false) {
+    return false;
+  }
   return true;
-  // geo.countryIsEnabled(country)
-  // geo.zoneInsideCountry(country, bytes4(geohash))
 }
 
 // -------------------- //

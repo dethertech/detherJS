@@ -50,6 +50,7 @@ export interface ITellerArgs {
   sellRate?: number;
   buyRate?: number;
   referrer?: string;
+  refFees?: number;
 }
 
 export enum ZoneAuctionState {

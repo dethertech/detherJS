@@ -81,6 +81,11 @@ export const getShopsInZone = async (geohash6: string, provider: ethers.provider
   return Promise.all(shopAddressesInZone.map((shopAddress: string): Promise<IShop> => getShopByAddress(shopAddress, provider)));
 };
 
+export const getShopsInZones = async (geohash6List: string[], provider: ethers.providers.Provider): Promise<IShop[][]> => (
+  Promise.all(geohash6List.map((geohash6: string): Promise<IShop[]> => getShopsInZone(geohash6, provider)))
+);
+
+
 // untested
 export const getLicencePrice = async (geohash6: string, provider: ethers.providers.Provider): Promise<any> => {
   validate.geohash(geohash6, 6);
@@ -99,10 +104,12 @@ export const addShop = async (shopData: IShopArgs, wallet: ethers.Wallet, txOpti
   validate.countryCode(shopData.country);
   validate.geohash(shopData.position, 12);
   // other 4 args are optional strings: category, name, description, opening
-
   const shopContract = await contract.get(wallet.provider, DetherContract.Shops);
   const detherTokenContract = await contract.get(wallet.provider, DetherContract.DetherToken, undefined, [constants.ERC223_TRANSFER_ABI]);
-  const licensePrice = await shopContract.countryLicensePrice(util.stringToBytes(shopData.country, 2));
+  let licensePrice = await shopContract.zoneLicencePrice(util.stringToBytes(shopData.position.slice(0, 6), 6));
+  if (licensePrice.toNumber() === 0) {
+    licensePrice = ethers.utils.parseEther('42');
+  }
   return detherTokenContract.connect(wallet).transfer(shopContract.address, licensePrice, createShopBytes(shopData), txOptions); // erc223 call
 };
 

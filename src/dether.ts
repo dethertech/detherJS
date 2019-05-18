@@ -227,6 +227,11 @@ export default class DetherJS {
     return shop.getShopsInZone(geohash6, this.provider);
   }
 
+  async getShopsInZones(geohash6List: string[]): Promise<IShop[][]> {
+    this.hasProvider();
+    return shop.getShopsInZones(geohash6List, this.provider);
+  }
+
   async getLicencePriceInZone(geohash6: string): Promise<string> {
     this.hasProvider();
     return shop.getLicencePrice(geohash6, this.provider);

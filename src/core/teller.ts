@@ -77,6 +77,8 @@ export const addTeller = async (tellerData: ITellerArgs, wallet: ethers.Wallet, 
   validate.currencyId(tellerData.currencyId);
   validate.tellerBuyerInfo(tellerData.isBuyer, tellerData.buyRate);
   validate.tellerSellerInfo(tellerData.isSeller, tellerData.sellRate);
+
+  if (tellerData.refFees) validate.refFees(tellerData.refFees);
   if (tellerData.messenger) validate.telegramUsername(tellerData.messenger);
   if (tellerData.referrer) validate.ethAddress(tellerData.referrer);
   const tellerSettings = settingsToBytes(tellerData.isBuyer, tellerData.isSeller);
@@ -96,6 +98,7 @@ export const addTeller = async (tellerData: ITellerArgs, wallet: ethers.Wallet, 
     tellerData.buyRate,
     tellerSettings,
     tellerData.referrer || constants.ADDRESS_ZERO,
+    tellerData.refFees || 0,
     txOptions,
   );
 };
