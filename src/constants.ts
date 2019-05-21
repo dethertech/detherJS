@@ -135,6 +135,7 @@ export const CONTRACT_ADDRESSES: any = {
     CertifierRegistry: '',
     // external
     kyberNetworkProxy: '0x818E6FECD516Ecc3849DAf6845e3EC868087B755',
+    uniswapFactory: '0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95',
     uniswapExchange: '',
   },
   custom: {
