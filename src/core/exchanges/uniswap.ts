@@ -62,6 +62,7 @@ export default class ExchangeUniswap extends ExchangeBase {
     const exchangeAddress = await contract.getUniswapExchangeAddress(wallet.provider, erc20Token)
     const uniswapContract = await contract.get(wallet.provider, ExternalContract.uniswapExchange, exchangeAddress);
     txOptions.gasLimit = 400000;
+    const network = await wallet.provider.getNetwork();
     const deadline = Math.floor(Date.now() / 1000) + 600 // 600 seconds from now
     if (this.sellToken === Token.ETH) {
       txOptions.value = ethers.utils.bigNumberify(sellAmount);
@@ -74,12 +75,12 @@ export default class ExchangeUniswap extends ExchangeBase {
       const data = iUniswap.functions.ethToTokenSwapInput.encode(args);
       const tsx = {
         nonce,
-        gasPrice: txOptions.gasPrice,
+        gasPrice: txOptions.gasPrice ? txOptions.gasPrice : 10000000000,
         gasLimit: 500000,
         to: uniswapContract.address,
         value: ethers.utils.bigNumberify(sellAmount),
         data,
-        chainId: 42,
+        chainId: network.chainId,
       }
       return wallet.sign(tsx);
     }
@@ -94,12 +95,12 @@ export default class ExchangeUniswap extends ExchangeBase {
       const data = iUniswap.functions.tokenToEthSwapInput.encode(args);
       const tsx = {
         nonce,
-        gasPrice: txOptions.gasPrice,
+        gasPrice: txOptions.gasPrice ? txOptions.gasPrice : 10000000000,
         gasLimit: 500000,
         to: uniswapContract.address,
         value: 0,
         data,
-        chainId: 42,
+        chainId: network.chainId,
       }
       return wallet.sign(tsx);
     }

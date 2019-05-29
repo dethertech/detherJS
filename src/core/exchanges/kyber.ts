@@ -63,6 +63,7 @@ export default class ExchangeKyber extends ExchangeBase {
     const ikyber = new ethers.utils.Interface(kyberInterfaceAbi);
 
     const kyberNetworkProxyContract = await contract.get(wallet.provider, ExternalContract.kyberNetworkProxy);
+    const network = await wallet.provider.getNetwork();
 
     if (this.sellToken === Token.ETH) {
       const buyTokenContract = await contract.getErc20(wallet.provider, this.buyToken);
@@ -79,7 +80,7 @@ export default class ExchangeKyber extends ExchangeBase {
         to: kyberNetworkProxyContract.address,
         value: ethers.utils.bigNumberify(sellAmount),
         data,
-        chainId: 42,
+        chainId: network.chainId,
       }
       return wallet.sign(tsx);
     }
@@ -98,7 +99,7 @@ export default class ExchangeKyber extends ExchangeBase {
         to: kyberNetworkProxyContract.address,
         value: 0,
         data,
-        chainId: 42,
+        chainId: network.chainId,
       }
       return wallet.sign(tsx);
     }
