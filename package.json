@@ -1,6 +1,6 @@
 {
   "name": "detherjs",
-  "version": "5.0.18",
+  "version": "5.0.20",
   "main": "lib/dether.js",
   "scripts": {
     "babel-node": "babel-node --presets=latest",
@@ -50,9 +50,11 @@
     "web3": "^1.0.0-beta.37"
   },
   "dependencies": {
+    "@types/node-fetch": "^2.3.7",
     "bignumber.js": "^8.0.2",
     "bs58": "^4.0.1",
     "buffer": "^5.2.1",
-    "ethers": "^4.0.23"
+    "ethers": "^4.0.23",
+    "node-fetch": "^2.6.0"
   }
 }

@@ -79,6 +79,7 @@ export const CONTRACT_ADDRESSES: any = {
     Zone: '',
     Shops: '',
     CertifierRegistry: '',
+    TokenRegistry: '',
     // external
     // Mkr/Oasis is not on ropsten
     // AirSwap is not on ropsten
@@ -97,6 +98,7 @@ export const CONTRACT_ADDRESSES: any = {
     Zone: '0x900419De381C92bff0D36fd35B384cc034A8B217',
     Shops: '0x8bb4e3A26b78279b01d6E5Afd4322bc82ddb9372',
     CertifierRegistry: '0xA085c33483c023C6a8eB24d0F94957074d27B256',
+    TokenRegistry: '0xEe74b51546f714fEe31603737845D2d859515cA7',
     // external
     // Mkr/Oasis is not on ropsten
     // AirSwap is not on ropsten
@@ -116,6 +118,7 @@ export const CONTRACT_ADDRESSES: any = {
     Zone: '',
     Shops: '',
     CertifierRegistry: '',
+    TokenRegistry: '',
     // external
     // Mkr/Oasis is not on rinkeby
     airswapExchange: '0x07fc7c43d8168a2730344e5cf958aaecc3b42b41',
@@ -133,6 +136,7 @@ export const CONTRACT_ADDRESSES: any = {
     Zone: '',
     Shops: '',
     CertifierRegistry: '',
+    TokenRegistry: '0x94feC2C65a581b9551526EE6A130300dBd8D467B',
     // external
     kyberNetworkProxy: '0x818E6FECD516Ecc3849DAf6845e3EC868087B755',
     uniswapFactory: '0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95',
@@ -150,6 +154,7 @@ export const CONTRACT_ADDRESSES: any = {
     Zone: '',
     Shops: '',
     CertifierRegistry: '',
+    TokenRegistry: '',
     // external
     kyberNetworkProxy: '',
     uniswapExchange: '',

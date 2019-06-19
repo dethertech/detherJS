@@ -126,6 +126,10 @@ export interface ITicker {
   DAI?: string;
 }
 
+export interface ITickerDecimal {
+  [key: string]: [string, number];
+}
+
 export interface IDate {
   day: number;
   month: number;
@@ -152,6 +156,7 @@ export enum DetherContract {
   CertifierRegistry = 'CertifierRegistry',
   Teller = 'Teller',
   ShopDispute = 'ShopDispute',
+  TokenRegistry = 'TokenRegistry',
 }
 
 export enum TransactionStatus {

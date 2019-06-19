@@ -1,4 +1,5 @@
 import { ethers } from 'ethers';
+import fetch from 'node-fetch';
 
 import * as constants from '../constants';
 
@@ -9,7 +10,7 @@ import * as exchanges from './exchanges';
 
 import {
   Token,
-  IBalances, IExchange, ITxOptions, ITicker, ExternalContract
+  IBalances, IExchange, ITxOptions, ITicker, ExternalContract, ITickerDecimal, DetherContract
 } from '../types';
 
 // -------------------- //
@@ -55,6 +56,33 @@ export const getAvailableToken = async (provider: ethers.providers.Provider, for
   else {
     const network = await provider.getNetwork();
     return constants.TICKER[network.name];
+  }
+}
+
+const _getTokenInfo = async (token: any): Promise<object> => {
+  try {
+    const rawData = await fetch(token.urlInfo);
+    const jsonData = await rawData.json();
+    console.log('json data', jsonData);
+    return jsonData;
+  } catch (e) {
+    console.log('error getTokenInfo with this url as params', e, token.urlInfo);
+  }
+}
+
+// TO DO get token address call from staking smart contracts
+export const getAvailableTokenDecimals = async (provider: ethers.providers.Provider, forLogo?: boolean): Promise<any> => {
+  // forLogo is for returning mainnet ticker in case of testnet, because we use an open library matching
+  // mainnet address to logo
+  if (forLogo) return constants.TICKER['homestead']
+  else {
+    const network = await provider.getNetwork();
+    const tokenRegistryInstance: ethers.Contract = await contract.get(provider, DetherContract.TokenRegistry);
+    const availableToken = await tokenRegistryInstance.getTokenList();
+    // const tokenInfo = await _getTokenInfo();
+    // console.log('availableTokennnnnnnn', availableToken);
+    // return Promise.all(availableToken.map((token: Object): Promise<any> => _getTokenInfo(token)))
+    return Promise.all(availableToken.map((token: Object): Promise<any> => _getTokenInfo(token)));
   }
 }
 

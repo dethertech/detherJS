@@ -15,7 +15,7 @@ import * as certifier from './core/certifier';
 
 import {
   Unit, Token, TransactionStatus, Tier, DetherContract,
-  IEthersOptions, ITeller, IBalances, ITellerArgs, IShop, IShopArgs, IShopDispute, ITxOptions, IZone, ITicker,
+  IEthersOptions, ITeller, IBalances, ITellerArgs, IShop, IShopArgs, IShopDispute, ITxOptions, IZone, ITicker, ITickerDecimal,
 } from './types';
 
 // import * as zoneAuction from './core/zoneAuction';
@@ -131,6 +131,11 @@ export default class DetherJS {
   async getAvailableToken(forLogo?: false): Promise<ITicker> {
     this.hasProvider();
     return wallet.getAvailableToken(this.provider, forLogo);
+  }
+
+  async getAvailableTokenDecimals(forLogo?: false): Promise<any> {
+    this.hasProvider();
+    return wallet.getAvailableTokenDecimals(this.provider, forLogo);
   }
 
   async sendCrypto(password: string, toAddress: string, token: Token, amount: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<ethers.ContractTransaction> {
