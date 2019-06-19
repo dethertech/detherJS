@@ -98,7 +98,7 @@ export default class DetherJS {
   //        Wallet        //
   // -------------------- //
 
-  async getAllBalance(address: string, tickers: Token[]): Promise<IBalances> {
+  async getAllBalance(address: string, tickers: ITicker[]): Promise<IBalances[]> {
     this.hasProvider();
     return wallet.getAllBalance(address, tickers, this.provider);
   }

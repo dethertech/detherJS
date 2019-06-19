@@ -65,3 +65,11 @@ export const getErc20 = async (provider: ethers.providers.Provider, tokenName: T
   if (!address) throw new Error(`could not find token address of ${tokenName} on ${networkName}`);
   return new ethers.Contract(address, ABI.erc20, provider);
 };
+
+export const getErc20Address = async (provider: ethers.providers.Provider, address: string): Promise<any> => {
+  if (!provider) throw new Error('missing provider arg');
+  if (!address) throw new Error('missing address');
+  let { name: networkName } = await provider.getNetwork();
+  if (networkName === 'unknown') networkName = 'custom';
+  return new ethers.Contract(address, ABI.erc20, provider);
+};

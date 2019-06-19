@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import fetch from 'node-fetch';
+import axios from 'axios';
 
 import * as constants from '../constants';
 
@@ -17,27 +17,43 @@ import {
 //        Getters       //
 // -------------------- //
 
-export const getAllBalance = async (address: string, tickers: Token[], provider: ethers.providers.Provider): Promise<IBalances> => {
+const getBalance = async (address: string, ticker: ITicker, provider: ethers.providers.Provider): Promise<IBalances> => {
   validate.ethAddress(address);
-  tickers.forEach(validate.token);
-  let getEthBalance = false;
-
   const result: IBalances = {};
-
-  for (const ticker of tickers) {
-    if (ticker === Token.ETH) {
-      getEthBalance = true;
-      continue;
-    }
-    const erc20instance = await contract.getErc20(provider, ticker);
-    result[ticker] = ethers.utils.formatEther(await erc20instance.balanceOf(address));
-  }
-
-  if (getEthBalance) {
+  if (Object.keys(ticker)[0] === Token.ETH) {
     result.ETH = ethers.utils.formatEther(await provider.getBalance(address));
+    return result;
   }
-
+  let decimals;
+  let erc20instance;
+  try {
+    erc20instance = await contract.getErc20Address(provider, ticker[Object.keys(ticker)[0]]);
+  } catch (e) {
+    console.log('error detherJS getBalance instanciation', e)
+    return;
+  }
+  try {
+    decimals = await erc20instance.decimals();
+  } catch (e) {
+    console.log('error getBalance decimal', e)
+    decimals = 18;
+    return;
+  }
+  try {
+    result[`${Object.keys(ticker)[0]}`] = ethers.utils.formatUnits(await erc20instance.balanceOf(address), decimals);
+  } catch (e) {
+    console.log('error detherJS getBalance', e);
+    return;
+  }
   return result;
+}
+
+export const getAllBalance = async (address: string, tickers: ITicker[], provider: ethers.providers.Provider): Promise<IBalances[]> => {
+  const myBalances = await Promise.all(tickers.map((ticker: ITicker): Promise<IBalances> => getBalance(address, ticker, provider)));
+  const cleanBalances = await myBalances.filter(function (el) {
+    return el != null;
+  });
+  return cleanBalances;
 };
 
 export const getExchangeEstimation = async (sellToken: Token, buyToken: Token, sellAmount: string, provider: ethers.providers.Provider): Promise<string> => {
@@ -61,10 +77,11 @@ export const getAvailableToken = async (provider: ethers.providers.Provider, for
 
 const _getTokenInfo = async (token: any): Promise<object> => {
   try {
-    const rawData = await fetch(token.urlInfo);
-    const jsonData = await rawData.json();
-    console.log('json data', jsonData);
-    return jsonData;
+
+    const jsonData = await axios.get(token.urlInfo);
+    if (jsonData.status === 200) {
+      return jsonData.data;
+    }
   } catch (e) {
     console.log('error getTokenInfo with this url as params', e, token.urlInfo);
   }

@@ -123,7 +123,6 @@ export interface IBalances {
 
 export interface ITicker {
   [key: string]: string;
-  DAI?: string;
 }
 
 export interface ITickerDecimal {
