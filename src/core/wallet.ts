@@ -131,7 +131,7 @@ export const execTrade_delayed = async (sellToken: Token, buyToken: Token, sellA
 };
 
 // TO DO get token address call from staking smart contracts?
-export const sendCrypto = async (amount: string, toAddress: string, token: Token, wallet: ethers.Wallet, txOptions: ITxOptions): Promise<ethers.ContractTransaction> => {
+export const sendCrypto = async (amount: string, toAddress: string, token: Token, wallet: ethers.Wallet, tokenAddress: string, txOptions: ITxOptions): Promise<ethers.ContractTransaction> => {
   let tsx;
   if (token === 'ETH') {
     return wallet.sendTransaction({
@@ -140,10 +140,17 @@ export const sendCrypto = async (amount: string, toAddress: string, token: Token
       ...txOptions,
     });
   } else {
-    const erc20instance = await contract.getErc20(wallet.provider, token);
+    const erc20instance = await contract.getErc20Address(wallet.provider, tokenAddress);
+    let decimals;
+    try {
+      decimals = await erc20instance.decimals();
+    } catch (e) {
+      decimals = 18;
+    }
+    const valueToSend = ethers.utils.parseUnits(amount, decimals);
     return erc20instance.connect(wallet).transfer(
       toAddress,
-      convert.ethToWeiBN(Number(amount)),
+      valueToSend,
       txOptions
     );
   }
