@@ -145,7 +145,7 @@ export const sendCrypto = async (amount: string, toAddress: string, token: Token
     try {
       decimals = await erc20instance.decimals();
     } catch (e) {
-      decimals = 18;
+      throw new Error('Unable to get decimals of the token');
     }
     const valueToSend = ethers.utils.parseUnits(amount, decimals);
     return erc20instance.connect(wallet).transfer(
