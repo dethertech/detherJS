@@ -79,7 +79,7 @@ const _getTokenInfo = async (token: any, networkName: string): Promise<object> =
   try {
 
     const jsonData = await axios.get(token.urlInfo);
-    if (jsonData.status === 200 && networkName === 'mainnet') {
+    if (jsonData.status === 200 && networkName === 'homestead') {
       return jsonData.data;
     } else if (jsonData.status === 200 && networkName === 'kovan') {
       jsonData.data.address = constants.TICKER['kovan'][jsonData.data.symbol];
@@ -100,6 +100,7 @@ export const getAvailableTokenDecimals = async (provider: ethers.providers.Provi
     console.log('network', network);
     const tokenRegistryInstance: ethers.Contract = await contract.get(provider, DetherContract.TokenRegistry);
     const availableToken = await tokenRegistryInstance.getTokenList();
+
     // const tokenInfo = await _getTokenInfo();
     // console.log('availableTokennnnnnnn', availableToken);
     // return Promise.all(availableToken.map((token: Object): Promise<any> => _getTokenInfo(token)))
