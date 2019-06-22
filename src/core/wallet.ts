@@ -133,7 +133,7 @@ export const execTrade = async (sellToken: string, buyToken: string, sellAmount:
   return tradeTx;
 };
 
-export const execTrade_delayed = async (sellToken: Token, buyToken: Token, sellAmount: string, buyAmount: string, wallet: ethers.Wallet, nonce: number, txOptions: ITxOptions): Promise<any> => {
+export const execTrade_delayed = async (sellToken: string, buyToken: string, sellAmount: string, buyAmount: string, wallet: ethers.Wallet, nonce: number, txOptions: ITxOptions): Promise<any> => {
   const exchange: IExchange = exchanges.load(sellToken, buyToken);
   const tradeTx = await exchange.trade_delayed(sellAmount, buyAmount, wallet, nonce, txOptions);
   return tradeTx;

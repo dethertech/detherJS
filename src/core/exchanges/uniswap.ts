@@ -82,44 +82,53 @@ export default class ExchangeUniswap extends ExchangeBase {
     const network = await wallet.provider.getNetwork();
     const deadline = Math.floor(Date.now() / 1000) + 600 // 600 seconds from now
     if (this.sellToken === Token.ETH) {
-      txOptions.value = ethers.utils.bigNumberify(sellAmount);
-
-      const args = Object.values({
-        min_tokens: buyAmount,
-        deadline,
-      });
-
-      const data = iUniswap.functions.ethToTokenSwapInput.encode(args);
-      const tsx = {
-        nonce,
-        gasPrice: txOptions.gasPrice ? txOptions.gasPrice : 10000000000,
-        gasLimit: 500000,
-        to: uniswapContract.address,
-        value: ethers.utils.bigNumberify(sellAmount),
-        data,
-        chainId: network.chainId,
+      const erc20instance = await contract.getErc20Address(wallet.provider, this.buyToken);
+      const decimal = await erc20instance.decimals();
+      if (decimal) {
+        const args = Object.values({
+          min_tokens: ethers.utils.parseUnits(buyAmount, decimal),
+          deadline,
+        });
+        const data = iUniswap.functions.ethToTokenSwapInput.encode(args);
+        const tsx = {
+          nonce,
+          gasPrice: txOptions.gasPrice ? txOptions.gasPrice : 10000000000,
+          gasLimit: 500000,
+          to: uniswapContract.address,
+          value: ethers.utils.parseEther(sellAmount),
+          data,
+          chainId: network.chainId,
+        }
+        return wallet.sign(tsx);
+      } else {
+        throw new Error('erc20 token decimals not detected');
       }
-      return wallet.sign(tsx);
     }
     if (this.buyToken === Token.ETH) {
 
-      const args = Object.values({
-        tokens_sold: sellAmount,
-        min_eth: buyAmount,
-        deadline,
-      });
+      const erc20instance = await contract.getErc20Address(wallet.provider, this.sellToken);
+      const decimal = await erc20instance.decimals();
+      if (decimal) {
+        const args = Object.values({
+          tokens_sold: ethers.utils.parseUnits(sellAmount, decimal),
+          min_eth: ethers.utils.parseEther(buyAmount),
+          deadline,
+        });
 
-      const data = iUniswap.functions.tokenToEthSwapInput.encode(args);
-      const tsx = {
-        nonce,
-        gasPrice: txOptions.gasPrice ? txOptions.gasPrice : 10000000000,
-        gasLimit: 500000,
-        to: uniswapContract.address,
-        value: 0,
-        data,
-        chainId: network.chainId,
+        const data = iUniswap.functions.tokenToEthSwapInput.encode(args);
+        const tsx = {
+          nonce,
+          gasPrice: txOptions.gasPrice ? txOptions.gasPrice : 10000000000,
+          gasLimit: 500000,
+          to: uniswapContract.address,
+          value: 0,
+          data,
+          chainId: network.chainId,
+        }
+        return wallet.sign(tsx);
+      } else {
+        throw new Error('erc20 token decimals not detected');
       }
-      return wallet.sign(tsx);
     }
     throw new Error('erc20 token to erc20 token not yet implemented');
   }
