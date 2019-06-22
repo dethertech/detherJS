@@ -56,7 +56,7 @@ export const getAllBalance = async (address: string, tickers: ITicker[], provide
   return cleanBalances;
 };
 
-export const getExchangeEstimation = async (sellToken: Token, buyToken: Token, sellAmount: string, provider: ethers.providers.Provider): Promise<string> => {
+export const getExchangeEstimation = async (sellToken: string, buyToken: string, sellAmount: string, provider: ethers.providers.Provider): Promise<string> => {
   // validate.sellAmount(sellAmount);
 
   const exchange: IExchange = exchanges.load(sellToken, buyToken);
@@ -97,13 +97,8 @@ export const getAvailableTokenDecimals = async (provider: ethers.providers.Provi
   if (forLogo) return constants.TICKER['homestead']
   else {
     const network = await provider.getNetwork();
-    console.log('network', network);
     const tokenRegistryInstance: ethers.Contract = await contract.get(provider, DetherContract.TokenRegistry);
     const availableToken = await tokenRegistryInstance.getTokenList();
-
-    // const tokenInfo = await _getTokenInfo();
-    // console.log('availableTokennnnnnnn', availableToken);
-    // return Promise.all(availableToken.map((token: Object): Promise<any> => _getTokenInfo(token)))
     return Promise.all(availableToken.map((token: Object): Promise<any> => _getTokenInfo(token, network.name)));
   }
 }
@@ -119,11 +114,20 @@ export const hasApproval = async (owner: string, sellToken: Token, amount: strin
   return false;
 }
 
+export const isExchangeAvailable = async (token: string, provider: ethers.providers.Provider): Promise<boolean> => {
+  try {
+    await contract.getUniswapExchangeAddress(provider, token);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 // -------------------- //
 //     Transactions     //
 // -------------------- //
 
-export const execTrade = async (sellToken: Token, buyToken: Token, sellAmount: string, buyAmount: string, wallet: ethers.Wallet, txOptions: ITxOptions): Promise<ethers.ContractTransaction> => {
+export const execTrade = async (sellToken: string, buyToken: string, sellAmount: string, buyAmount: string, wallet: ethers.Wallet, txOptions: ITxOptions): Promise<ethers.ContractTransaction> => {
   const exchange: IExchange = exchanges.load(sellToken, buyToken);
   const tradeTx = await exchange.trade(sellAmount, buyAmount, wallet, txOptions);
   return tradeTx;
@@ -161,8 +165,8 @@ export const sendCrypto = async (amount: string, toAddress: string, token: Token
   }
 };
 
-export const approveToken = async (token: Token, wallet: ethers.Wallet, txOptions: ITxOptions): Promise<ethers.ContractTransaction> => {
+export const approveToken = async (token: string, wallet: ethers.Wallet, txOptions: ITxOptions): Promise<ethers.ContractTransaction> => {
   const exchangeAddress = await contract.getUniswapExchangeAddress(wallet.provider, token)
-  const erc20instance = await contract.getErc20(wallet.provider, token);
+  const erc20instance = await contract.getErc20Address(wallet.provider, token);
   return erc20instance.connect(wallet).approve(exchangeAddress, ethers.utils.bigNumberify(2).pow(256).sub(1), txOptions);
 };

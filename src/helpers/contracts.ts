@@ -36,10 +36,9 @@ export const getContractAddress = async (contractName: DetherContract | External
 export const getUniswapExchangeAddress = async (provider: ethers.providers.Provider, token: string): Promise<any> => {
   const contractName = ExternalContract.uniswapFactory
   let { name: networkName } = await provider.getNetwork();
-  const tokenAddress = TICKER[networkName][token];
   const uniswapFactoryInstance = await get(provider, contractName);
 
-  return uniswapFactoryInstance.getExchange(tokenAddress)
+  return uniswapFactoryInstance.getExchange(token)
 }
 
 export const get = async (provider: ethers.providers.Provider, contractName: DetherContract | ExternalContract, address?: string, overwriteAbi?: any): Promise<any> => {

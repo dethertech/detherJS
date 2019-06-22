@@ -8,10 +8,10 @@ import {
 } from '../../types';
 
 export default class ExchangeBase {
-  sellToken: Token;
-  buyToken: Token;
+  sellToken: string;
+  buyToken: string;
   name: Exchange;
-  constructor(sellToken: Token, buyToken: Token) {
+  constructor(sellToken: string, buyToken: string) {
     this.sellToken = sellToken;
     this.buyToken = buyToken;
   }

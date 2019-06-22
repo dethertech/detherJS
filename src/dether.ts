@@ -4,6 +4,7 @@ import * as constants from './constants';
 
 import * as providers from './helpers/providers';
 
+
 import * as teller from './core/teller';
 import * as shop from './core/shop';
 import * as shopDispute from './core/shopDispute';
@@ -58,6 +59,7 @@ export default class DetherJS {
     constants.CONTRACT_ADDRESSES.custom.Shops = contractAddresses[DetherContract.Shops];
     constants.CONTRACT_ADDRESSES.custom.ShopDispute = contractAddresses[DetherContract.ShopDispute];
     constants.CONTRACT_ADDRESSES.custom.CertifierRegistry = contractAddresses[DetherContract.CertifierRegistry];
+    constants.CONTRACT_ADDRESSES.custom.TokenRegistry = contractAddresses[DetherContract.TokenRegistry];
   }
 
   loadUser(encryptedWallet: string) {
@@ -103,7 +105,7 @@ export default class DetherJS {
     return wallet.getAllBalance(address, tickers, this.provider);
   }
 
-  async getExchangeEstimation(sellToken: Token, buyToken: Token, sellAmount: string): Promise<string> {
+  async getExchangeEstimation(sellToken: string, buyToken: string, sellAmount: string): Promise<string> {
     this.hasProvider();
     return wallet.getExchangeEstimation(sellToken, buyToken, sellAmount, this.provider);
   }
@@ -113,8 +115,14 @@ export default class DetherJS {
     return wallet.hasApproval(owner, sellToken, amount, this.provider);
   }
 
+  async isExchangeAvailable(token: string): Promise<boolean> {
+    this.hasProvider();
+
+    return wallet.isExchangeAvailable(token, this.provider);
+  }
+
   // sellAmount and buyAmount in string WEI
-  async execExchange(password: string, sellToken: Token, buyToken: Token, sellAmount: string, buyAmount: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<ethers.ContractTransaction> {
+  async execExchange(password: string, sellToken: string, buyToken: string, sellAmount: string, buyAmount: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
     const userWallet = await this.loadWallet(password);
@@ -145,7 +153,7 @@ export default class DetherJS {
     return wallet.sendCrypto(amount, toAddress, token, userWallet, tokenAddress, txOptions);
   }
 
-  async approveToken(password: string, token: Token, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<ethers.ContractTransaction> {
+  async approveToken(password: string, token: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
     const userWallet = await this.loadWallet(password);
