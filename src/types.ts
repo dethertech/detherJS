@@ -261,8 +261,8 @@ export interface IExchangePair {
 }
 
 export interface IExchange {
-  sellToken: Token;
-  buyToken: Token;
+  sellToken: string;
+  buyToken: string;
   name: Exchange;
   estimate: Function;
   trade: Function;

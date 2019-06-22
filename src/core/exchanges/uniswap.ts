@@ -7,7 +7,7 @@ import {
 } from '../../types';
 
 export default class ExchangeUniswap extends ExchangeBase {
-  constructor(sellToken: Token, buyToken: Token) {
+  constructor(sellToken: string, buyToken: string) {
     super(sellToken, buyToken);
     this.name = Exchange.uniswap;
   }
@@ -16,13 +16,23 @@ export default class ExchangeUniswap extends ExchangeBase {
     const erc20Token = this.sellToken === 'ETH' ? this.buyToken : this.sellToken
     const exchangeAddress = await contract.getUniswapExchangeAddress(provider, erc20Token)
     const uniswapContract = await contract.get(provider, ExternalContract.uniswapExchange, exchangeAddress);
-
     const network = await provider.getNetwork();
+    let decimals = 18;
+    if (this.sellToken !== 'ETH') {
+      const erc20instance = await contract.getErc20Address(provider, this.sellToken);
+      decimals = await erc20instance.decimals();
+    }
+    const sellAmountWei = ethers.utils.parseUnits(sellAmount, decimals);
     const buyAmountWei = this.sellToken === 'ETH'
-      ? (await uniswapContract.getEthToTokenInputPrice(sellAmount))
-      : (await uniswapContract.getTokenToEthInputPrice(sellAmount))
+      ? (await uniswapContract.getEthToTokenInputPrice(sellAmountWei))
+      : (await uniswapContract.getTokenToEthInputPrice(sellAmountWei))
     if (buyAmountWei.eq(0)) return '0';
-    const buyAmount = ethers.utils.formatEther(buyAmountWei)
+    decimals = 18;
+    if (this.buyToken !== 'ETH') {
+      const erc20instance2 = await contract.getErc20Address(provider, this.buyToken);
+      decimals = await erc20instance2.decimals();
+    }
+    const buyAmount = ethers.utils.formatUnits(buyAmountWei, decimals);
     console.log({
       network, buyAmount: buyAmount.toString(),
     });
@@ -37,17 +47,24 @@ export default class ExchangeUniswap extends ExchangeBase {
     txOptions.gasLimit = 400000;
     if (this.sellToken === Token.ETH) {
       const uniswapInstance = uniswapContract.connect(wallet);
-      txOptions.value = ethers.utils.bigNumberify(sellAmount);
-
-      const deadline = Math.floor(Date.now() / 1000) + 100 // 100 seconds from now
-      const tradeTx = await uniswapInstance.ethToTokenSwapInput(buyAmount, deadline, txOptions);
-
-      return tradeTx;
+      txOptions.value = ethers.utils.parseEther(sellAmount);
+      const erc20instance = await contract.getErc20Address(wallet.provider, this.buyToken);
+      const decimal = await erc20instance.decimals();
+      if (decimal) {
+        const deadline = Math.floor(Date.now() / 1000) + 100 // 100 seconds from now
+        const tradeTx = await uniswapInstance.ethToTokenSwapInput(ethers.utils.parseUnits(buyAmount, decimal), deadline, txOptions);
+        return tradeTx;
+      }
     }
     if (this.buyToken === Token.ETH) {
       const deadline = Math.floor(Date.now() / 1000) + 100  // 100 seconds from now
-      const tradeTx = await uniswapContract.connect(wallet).tokenToEthSwapInput(sellAmount, buyAmount, deadline, txOptions);
-      return tradeTx;
+      const erc20instance = await contract.getErc20Address(wallet.provider, this.sellToken);
+      const decimal = await erc20instance.decimals();
+      if (decimal) {
+        const sellAmountWei = ethers.utils.parseUnits(sellAmount, decimal);
+        const tradeTx = await uniswapContract.connect(wallet).tokenToEthSwapInput(sellAmountWei, ethers.utils.parseEther(buyAmount), deadline, txOptions);
+        return tradeTx;
+      }
     }
     throw new Error('erc20 token to erc20 token not yet implemented');
   }
