@@ -104,7 +104,7 @@ export const getAvailableTokenDecimals = async (provider: ethers.providers.Provi
 }
 
 export const hasApproval = async (owner: string, sellToken: Token, amount: string, provider: ethers.providers.Provider): Promise<boolean> => {
-  const erc20instance = await contract.getErc20(provider, sellToken);
+  const erc20instance = await contract.getErc20Address(provider, sellToken);
   const exchangeAddress = await contract.getUniswapExchangeAddress(provider, sellToken)
   const approve = await erc20instance.allowance(owner, exchangeAddress);
 
