@@ -5,18 +5,17 @@ import { DetherContract, ExternalContract, Token } from '../types';
 
 const ABI: any = {
   // dether
-  [DetherContract.Control]: require('../../abi/dether/Control.json').abi,
   [DetherContract.DetherToken]: require('../../abi/dether/DetherToken.json').abi,
   [DetherContract.GeoRegistry]: require('../../abi/dether/GeoRegistry.json').abi,
   [DetherContract.Users]: require('../../abi/dether/Users.json').abi,
   [DetherContract.ZoneFactory]: require('../../abi/dether/ZoneFactory.json').abi,
-  [DetherContract.ExchangeRateOracle]: require('../../abi/dether/ExchangeRateOracle.json').abi,
   [DetherContract.Shops]: require('../../abi/dether/Shops.json').abi,
   [DetherContract.Zone]: require('../../abi/dether/Zone.json').abi,
   [DetherContract.Teller]: require('../../abi/dether/Teller.json').abi,
   [DetherContract.CertifierRegistry]: require('../../abi/dether/CertifierRegistry.json').abi,
   [DetherContract.ShopDispute]: require('../../abi/dether/ShopDispute.json').abi,
   [DetherContract.TokenRegistry]: require('../../abi/dether/TokenRegistry.json').abi,
+  [DetherContract.TaxCollector]: require('../../abi/dether/TaxCollector.json').abi,
 
   // external
   [ExternalContract.erc20]: require('../../abi/external/erc20.json'),

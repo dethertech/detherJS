@@ -32,11 +32,12 @@ export interface ITeller {
   tellerGeohash: string;
   zoneGeohash: string;
   zoneAddress: string;
-  funds: string;
   buyRate: number;
   sellRate: number;
   messenger?: string;
   referrer?: string;
+  refFees?: number;
+  description?: string;
   tellerAddress: string;
   tellerContractAddress: string;
 }
@@ -51,6 +52,7 @@ export interface ITellerArgs {
   buyRate?: number;
   referrer?: string;
   refFees?: number;
+  description?: string;
 }
 
 export enum ZoneAuctionState {
@@ -156,6 +158,7 @@ export enum DetherContract {
   Teller = 'Teller',
   ShopDispute = 'ShopDispute',
   TokenRegistry = 'TokenRegistry',
+  TaxCollector = 'TaxCollector',
 }
 
 export enum TransactionStatus {

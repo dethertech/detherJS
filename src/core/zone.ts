@@ -11,8 +11,6 @@ import {
   IZoneAuction, IZoneOwner, ITxOptions, IZone,
 } from '../types';
 
-const ZONE_CREATE_FN = '40';
-
 // -------------------- //
 //      Formatters      //
 // -------------------- //
@@ -37,14 +35,11 @@ export const zoneAuctionArrToObj = (onchainZoneAuction: any[]): IZoneAuction => 
   highestBid: onchainZoneAuction[5].toString(),
 });
 
-const createZoneBytes = (country: string, geohash6: string, tier: number): string => {
+const createZoneBytes = (country: string, geohash6: string): string => {
   // if (tier.toString().length === 1)
-  const tierValue = convert.padZeroLeft(tier.toString(), 2);
   const data = [
-    ZONE_CREATE_FN,
     util.toNBytes(country, 2),
     util.toNBytes(geohash6, 6),
-    tierValue,
   ].join('');
   return `0x${data}`;
 };
@@ -187,15 +182,14 @@ export const isZoneOpened = async (geohash6: string, country: string, provider: 
 // -------------------- //
 
 // ERC223
-export const create = async (country: string, geohash6: string, tier: number, wallet: ethers.Wallet, txOptions: ITxOptions): Promise<ethers.ContractTransaction> => {
+export const create = async (country: string, geohash6: string, wallet: ethers.Wallet, txOptions: ITxOptions): Promise<ethers.ContractTransaction> => {
   validate.countryCode(country);
   validate.geohash(geohash6, 6);
-  validate.tier(tier);
   const detherTokenContract = await contract.get(wallet.provider, DetherContract.DetherToken, undefined, [constants.ERC223_TRANSFER_ABI]);
   const zoneFactoryContract = await contract.get(wallet.provider, DetherContract.ZoneFactory);
 
   if (!txOptions.gasLimit) txOptions.gasLimit = 450000;
-  return detherTokenContract.connect(wallet).functions.transfer(zoneFactoryContract.address, convert.ethToWei(constants.MIN_ZONE_STAKE), createZoneBytes(country, geohash6, tier), txOptions); // erc223 call
+  return detherTokenContract.connect(wallet).functions.transfer(zoneFactoryContract.address, convert.ethToWei(constants.MIN_ZONE_STAKE), createZoneBytes(country, geohash6), txOptions); // erc223 call
 };
 
 // ERC223

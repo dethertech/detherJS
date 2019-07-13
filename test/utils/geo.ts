@@ -2,7 +2,7 @@
 import path from 'path';
 
 import { ethers } from 'ethers';
-import ethUtil from 'ethereumjs-util';
+import * as ethUtil from 'ethereumjs-util';
 import bignum from 'bignum';
 
 import * as convert from './convert';
@@ -10,7 +10,7 @@ import * as transaction from './transaction';
 
 const BATCH_SIZE = 300;
 
-const toBitMap = (chars: string[]) : string => {
+const toBitMap = (chars: string[]): string => {
   let res = new bignum('0');
   chars.forEach((char) => {
     switch (char) {
@@ -53,7 +53,7 @@ const toBitMap = (chars: string[]) : string => {
   return ethUtil.bufferToHex(ethUtil.setLengthLeft(res.toNumber(), 4));
 };
 
-const parseCountryFile = (countryFile: any) : any => (
+const parseCountryFile = (countryFile: any): any => (
   Object.keys(countryFile).reduce((memo, level0char) => {
     Object.keys(countryFile[level0char]).forEach((level1char) => {
       Object.keys(countryFile[level0char][level1char]).forEach((level2char) => {

@@ -96,13 +96,3 @@ export const certify = async (certifierId: string, who: string, type: number, wa
     const certifierRegistryContract = await contract.get(wallet.provider, DetherContract.CertifierRegistry);
     return certifierRegistryContract.connect(wallet).certify(certifierId, who, type, txOptions);
 };
-
-// revoke
-export const revoke = async (certifierId: string, who: string, wallet: ethers.Wallet, txOptions: ITxOptions): Promise<ethers.ContractTransaction> => {
-    // add validater
-    validate.ethAddress(certifierId);
-    validate.ethAddress(who);
-
-    const certifierRegistryContract = await contract.get(wallet.provider, DetherContract.CertifierRegistry);
-    return certifierRegistryContract.connect(wallet).revoke(certifierId, who, txOptions);
-};
