@@ -94,14 +94,14 @@ export const CONTRACT_ADDRESSES: any = {
   kovan: {
     // dether
     DetherToken: '0x9027e9fc4641e2991a36eaeb0347bc5b35322741',
-    GeoRegistry: '0xE7dA3AAe1F65658e347b017d6b3Ccb093B446Dd6',
-    Users: '0x9a91F8A00F8420A58E7B818eC0DE6F20Aa575c4a',
-    ZoneFactory: '0xCcA8ADfFD0CB4799C0841398A60acE7482344Cb0',
-    Zone: '0x3B33e2e0EcADc957Cd8Ae76deb48097457B7400c',
-    Shops: '0x0B0f60A942Fee7A562177C233fa5e983955F7A32',
-    CertifierRegistry: '0x887603AA60C5aA07A625536dA5d38F7EC715Fc9F',
+    GeoRegistry: '0xf60Aa1a0895bded3C116F4a6A94D179dc114b130', //
+    Users: '0xd9BF775ecBcB47C6Cc4c1967F2EbdDFc840fBC7F', //
+    ZoneFactory: '0xF2b4FeE2c37113C46C3710D8C915f67D75E9d951', //
+    Zone: '0xEa4cD6e5a4A375880b2bC34D5dCe9350Fd9af9f7', //
+    Shops: '0x621fFD4b9a7e24b2FE7a531BdE75E8E91Af93c0A', //
+    CertifierRegistry: '0xd47CE99Fad8a3Fe65cb5214B362BbBf91C882663', //
     TokenRegistry: '0xEe74b51546f714fEe31603737845D2d859515cA7',
-    TaxCollector: '0x1F8E72908A446adC71E299F893Fbc749bCea57f4',
+    TaxCollector: '0x61e80aA1D836d1941d915A30679C40b865203940', //
     // external
     // Mkr/Oasis is not on ropsten
     // AirSwap is not on ropsten

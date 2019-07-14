@@ -3,7 +3,6 @@ const fs = require("fs");
 
 import DetherJS from '../lib/dether';
 import forAsync from "for-async";
-import CertifierRegistry from '../abi/dether/CertifierRegistry.json';
 import ERC20 from '../abi/external/erc20.json';
 
 export const waitForTxMined = (tsxPromise) => tsxPromise.then((tsx) => tsx.wait());
@@ -19,8 +18,8 @@ const rpcURL = 'https://kovan.infura.io';
 // const rpcURL = 'https://mainnet.infura.io';
 const detherJs = new DetherJS(false);
 
-const addressCertifier = '0xA085c33483c023C6a8eB24d0F94957074d27B256';
-const certifierID = '0x32BedF6609f002A591f871009C8e66D84F98d48E';
+// const addressCertifier = '0xA085c33483c023C6a8eB24d0F94957074d27B256';
+// const certifierID = '0x32BedF6609f002A591f871009C8e66D84F98d48E';
 const addressDth = '0x9027E9FC4641e2991A36Eaeb0347Bc5b35322741';
 
 
@@ -39,6 +38,9 @@ const TELLER_1 = {
     sellRate: 177, // 1.77%
     isBuyer: true,
     buyRate: 334, // 13.44%
+    referrer: '0x26F3d9f700111338092cd534126fb3832575aEA2',
+    refFees: 210,
+    description: 'BTC-XMR-DOGE'
 };
 
 
@@ -151,8 +153,8 @@ const fillZoneGeohash4 = async () => {
     const provider = new ethers.providers.JsonRpcProvider(rpcURL);
     const mainWallet = mnemonicWallet.connect(provider);
 
-    const certifierContractAlone = new ethers.Contract(addressCertifier, CertifierRegistry.abi, provider);
-    const certifierContract = certifierContractAlone.connect(mainWallet);
+    // const certifierContractAlone = new ethers.Contract(addressCertifier, CertifierRegistry.abi, provider);
+    // const certifierContract = certifierContractAlone.connect(mainWallet);
 
     const dthContractAlone = new ethers.Contract(addressDth, ERC20, provider);
     const dthContract = dthContractAlone.connect(mainWallet);
@@ -161,7 +163,7 @@ const fillZoneGeohash4 = async () => {
      */
 
     const allGeohashes = giveAllGeohash6(CITY_GEOHASH);
-    let counter = 288;
+    let counter = 0;
     forAsync(allGeohashes, function (zoneGeohash6, idx) {
         return new Promise(function (resolve) {
             setTimeout(async function () {
@@ -178,12 +180,12 @@ const fillZoneGeohash4 = async () => {
                     await tx.wait();
                     tx = await dthContract.transfer(newConnectedWallet.address, ethers.utils.parseEther('110'))
                     await tx.wait();
-
+                    console.log('dth transfer', tx);
                     /*
                     * 3. Certify this user
                     */
-                    tx = await certifierContract.certify(certifierID, newConnectedWallet.address, 1)
-                    console.log('tx certify', tx.hash);
+                    // tx = await certifierContract.certify(certifierID, newConnectedWallet.address, 1)
+                    // console.log('tx certify', tx.hash);
 
                     /*
                     * 4 create zone and teller
@@ -191,9 +193,10 @@ const fillZoneGeohash4 = async () => {
                     // --> create zone
                     detherJs.loadUser(await newConnectedWallet.encrypt(PASS));
                     try {
-                        tx = await detherJs.createZone(PASS, COUNTRY, zoneGeohash6, TELLER_TIER);
-                        console.log('tx create zone', tx.hash)
+                        console.log('create zone params', COUNTRY, zoneGeohash6);
+                        tx = await detherJs.createZone(PASS, COUNTRY, zoneGeohash6, { gasLimit: 3000000 });
                         await tx.wait();
+                        console.log('tx create zone post wait', tx)
                     } catch (e) {
                         console.log('error create zone', zoneGeohash6, idx, e);
                     }
@@ -201,7 +204,7 @@ const fillZoneGeohash4 = async () => {
                     TELLER_1.position = giveRandomGeohash(zoneGeohash6);
                     TELLER_1.messenger = makeid(getRandomInt(6, 15));
                     try {
-                        tx = await detherJs.addTeller(PASS, TELLER_1);
+                        tx = await detherJs.addTeller(PASS, TELLER_1, { gasLimit: 3000000 });
                         console.log('tx add teller', tx.hash);
                     } catch (e) {
                         console.log('error add teller', zoneGeohash6, idx, e);
