@@ -77,7 +77,7 @@ const SHOP_GEOHASH = 'krcztseeeeee';
 const INITIAL_ETH_BALANCE = 7;
 const INITIAL_DTH_BALANCE = 1000;
 const SHOP_LICENSE_PRICE = 42;
-const MIN_ZONE_STAKE = 100;
+const MIN_ZONE_STAKE = 103;  // for testing, because real min zone stake is 100
 const TELLER_TIER = 1;
 
 const SHOP: IShopArgs = {
@@ -266,12 +266,7 @@ describe('DetherJS', () => {
     // init Dapp
     //
     await transaction.waitForTxMined(deployedContracts.Users.connect(accounts.deployer).functions.setZoneFactory(deployedContracts.ZoneFactory.address));
-    // await transaction.waitForTxMined(deployedContracts.Users.connect(accounts.ceo).functions.setZoneFactory(deployedContracts.ZoneFactory.address));
-    // await transaction.waitForTxMined(deployedContracts.GeoRegistry.connect(accounts.ceo).functions.setCountryTierDailyLimit(convert.asciiToHex(COUNTRY), '0', '1000')); // unregistered
-    // await transaction.waitForTxMined(deployedContracts.GeoRegistry.connect(accounts.ceo).functions.setCountryTierDailyLimit(convert.asciiToHex(COUNTRY), '1', '1000')); // tier 1
-    await transaction.waitForTxMined(deployedContracts.GeoRegistry.connect(accounts.ceo).functions.enableCountry(convert.asciiToHex(COUNTRY)));
     // await transaction.waitForTxMined(deployedContracts.Shops.connect(accounts.ceo).functions.setShopsDisputeContract(deployedContracts.ShopDispute.address));
-    // await transaction.waitForTxMined(deployedContracts.Shops.connect(accounts.ceo).functions.setCountryLicensePrice(convert.asciiToHex(COUNTRY), convert.ethToWeiBN(SHOP_LICENSE_PRICE)));
     // await transaction.waitForTxMined(deployedContracts.ShopDispute.connect(accounts.ceo).addDisputeType('my first metaevidence line'));
 
     deployerBalanceAfterInit = await accounts.deployer.getBalance(); // returns wei as BigNumber
@@ -279,6 +274,7 @@ describe('DetherJS', () => {
     // add country CG
     //
     await geo.addCountry(accounts.ceo, deployedContracts.GeoRegistry, COUNTRY);
+    await transaction.waitForTxMined(deployedContracts.GeoRegistry.connect(accounts.deployer).functions.endInit(convert.asciiToHex(COUNTRY)));
 
     //
     // give DTH to all created accounts
@@ -310,8 +306,8 @@ describe('DetherJS', () => {
       describe('get live zone', () => {
         it('should succeed', async () => {
           detherJs.loadUser(await accounts.user1.encrypt(PASS));
-          const tx = await transaction.waitForTxMined(detherJs.createZone(PASS, COUNTRY, ZONE_GEOHASH, { gasLimit: 2000000 }));
-
+          const tx = await transaction.waitForTxMined(detherJs.createZone(PASS, COUNTRY, ZONE_GEOHASH, MIN_ZONE_STAKE, { gasLimit: 2000000 }));
+          console.log('tx', tx);
           const zone = await detherJs.getZone(ZONE_GEOHASH);
           expect(zone).to.deep.include({
             geohash: ZONE_GEOHASH,
@@ -332,13 +328,13 @@ describe('DetherJS', () => {
       describe('create zone', () => {
         it('should succeed', async () => {
           detherJs.loadUser(await accounts.user1.encrypt(PASS));
-          await transaction.waitForTxMined(detherJs.createZone(PASS, COUNTRY, ZONE_GEOHASH, { gasLimit: 2000000 }));
+          await transaction.waitForTxMined(detherJs.createZone(PASS, COUNTRY, ZONE_GEOHASH, MIN_ZONE_STAKE, { gasLimit: 2000000 }));
         });
       });
       describe('claim free zone', () => {
         it('should succeed', async () => {
           detherJs.loadUser(await accounts.user1.encrypt(PASS));
-          await transaction.waitForTxMined(detherJs.createZone(PASS, COUNTRY, ZONE_GEOHASH, { gasLimit: 2000000 }));
+          await transaction.waitForTxMined(detherJs.createZone(PASS, COUNTRY, ZONE_GEOHASH, MIN_ZONE_STAKE, { gasLimit: 2000000 }));
           const tx = await transaction.waitForTxMined(detherJs.releaseZone(PASS, ZONE_GEOHASH, { gasLimit: 2000000 }));
           detherJs.loadUser(await accounts.user2.encrypt(PASS));
           await transaction.waitForTxMined(detherJs.claimFreeZone(PASS, ZONE_GEOHASH, { gasLimit: 2000000 }));
@@ -347,7 +343,7 @@ describe('DetherJS', () => {
       describe('bid on zone', () => {
         it('should succeed', async () => {
           detherJs.loadUser(await accounts.user1.encrypt(PASS));
-          await transaction.waitForTxMined(detherJs.createZone(PASS, COUNTRY, ZONE_GEOHASH, { gasLimit: 2000000 }));
+          await transaction.waitForTxMined(detherJs.createZone(PASS, COUNTRY, ZONE_GEOHASH, MIN_ZONE_STAKE, { gasLimit: 2000000 }));
           await timeTravel.inSecs(COOLDOWN_PERIOD + 1);
           detherJs.loadUser(await accounts.user2.encrypt(PASS));
           await transaction.waitForTxMined(detherJs.bidZone(PASS, ZONE_GEOHASH, convert.ethToWei(MIN_ZONE_STAKE + 10), { gasLimit: 2000000 }));
@@ -356,21 +352,21 @@ describe('DetherJS', () => {
       describe('topup zone owner DTH balance', () => {
         it('should succeed', async () => {
           detherJs.loadUser(await accounts.user1.encrypt(PASS));
-          await transaction.waitForTxMined(detherJs.createZone(PASS, COUNTRY, ZONE_GEOHASH, { gasLimit: 2000000 }));
+          await transaction.waitForTxMined(detherJs.createZone(PASS, COUNTRY, ZONE_GEOHASH, MIN_ZONE_STAKE, { gasLimit: 2000000 }));
           await transaction.waitForTxMined(detherJs.topUpZone(PASS, ZONE_GEOHASH, convert.ethToWei(50), { gasLimit: 2000000 }));
         });
       });
       describe('release zone ownership', () => {
         it('should succeed', async () => {
           detherJs.loadUser(await accounts.user1.encrypt(PASS));
-          await transaction.waitForTxMined(detherJs.createZone(PASS, COUNTRY, ZONE_GEOHASH, { gasLimit: 2000000 }));
+          await transaction.waitForTxMined(detherJs.createZone(PASS, COUNTRY, ZONE_GEOHASH, MIN_ZONE_STAKE, { gasLimit: 2000000 }));
           await transaction.waitForTxMined(detherJs.releaseZone(PASS, ZONE_GEOHASH, { gasLimit: 2000000 }));
         });
       });
       describe('withdraw lost auction dth bid', () => {
         it('should succeed', async () => {
           detherJs.loadUser(await accounts.user1.encrypt(PASS));
-          await transaction.waitForTxMined(detherJs.createZone(PASS, COUNTRY, ZONE_GEOHASH, { gasLimit: 2000000 }));
+          await transaction.waitForTxMined(detherJs.createZone(PASS, COUNTRY, ZONE_GEOHASH, MIN_ZONE_STAKE, { gasLimit: 2000000 }));
 
           await timeTravel.inSecs(COOLDOWN_PERIOD + 1);
 
@@ -402,7 +398,7 @@ describe('DetherJS', () => {
       describe('withdraw multiple lost auctions dth bid', () => {
         it('should succeed', async () => {
           detherJs.loadUser(await accounts.user1.encrypt(PASS));
-          await transaction.waitForTxMined(detherJs.createZone(PASS, COUNTRY, ZONE_GEOHASH, { gasLimit: 2000000 }));
+          await transaction.waitForTxMined(detherJs.createZone(PASS, COUNTRY, ZONE_GEOHASH, MIN_ZONE_STAKE, { gasLimit: 2000000 }));
 
           await timeTravel.inSecs(COOLDOWN_PERIOD + 1);
 
@@ -449,7 +445,7 @@ describe('DetherJS', () => {
       describe('withdraw previous zoneowner withdrawable DTH (= zone.balance - taxes)', () => {
         it('should succeed', async () => {
           detherJs.loadUser(await accounts.user1.encrypt(PASS));
-          await transaction.waitForTxMined(detherJs.createZone(PASS, COUNTRY, ZONE_GEOHASH, { gasLimit: 2000000 }));
+          await transaction.waitForTxMined(detherJs.createZone(PASS, COUNTRY, ZONE_GEOHASH, MIN_ZONE_STAKE, { gasLimit: 2000000 }));
 
           await timeTravel.inSecs(COOLDOWN_PERIOD + 1);
 
@@ -475,7 +471,7 @@ describe('DetherJS', () => {
       describe('withdraw previous zoneowner withdrawable ETH (=teller funds)', () => {
         it('should succeed', async () => {
           detherJs.loadUser(await accounts.user1.encrypt(PASS));
-          await transaction.waitForTxMined(detherJs.createZone(PASS, COUNTRY, ZONE_GEOHASH, { gasLimit: 2000000 }));
+          await transaction.waitForTxMined(detherJs.createZone(PASS, COUNTRY, ZONE_GEOHASH, MIN_ZONE_STAKE, { gasLimit: 2000000 }));
 
           await timeTravel.inSecs(COOLDOWN_PERIOD + 1);
 
@@ -503,7 +499,7 @@ describe('DetherJS', () => {
   describe('tellers', () => {
     beforeEach(async () => {
       detherJs.loadUser(await accounts.user1.encrypt(PASS));
-      await transaction.waitForTxMined(detherJs.createZone(PASS, COUNTRY, ZONE_GEOHASH, { gasLimit: 2000000 }));
+      await transaction.waitForTxMined(detherJs.createZone(PASS, COUNTRY, ZONE_GEOHASH, MIN_ZONE_STAKE, { gasLimit: 2000000 }));
     });
     describe('getters', () => {
       describe('get teller by zone geohash', () => {
@@ -528,7 +524,7 @@ describe('DetherJS', () => {
         it('should succeed', async () => {
           await transaction.waitForTxMined(detherJs.addTeller(PASS, TELLER, { gasLimit: 2000000 }));
           detherJs.loadUser(await accounts.user2.encrypt(PASS));
-          await transaction.waitForTxMined(detherJs.createZone(PASS, COUNTRY, ZONE_GEOHASH_2, { gasLimit: 2000000 }));
+          await transaction.waitForTxMined(detherJs.createZone(PASS, COUNTRY, ZONE_GEOHASH_2, MIN_ZONE_STAKE, { gasLimit: 2000000 }));
           await transaction.waitForTxMined(detherJs.addTeller(PASS, TELLER_2, { gasLimit: 2000000 }));
           const result = await detherJs.getTellersInZones([ZONE_GEOHASH, ZONE_GEOHASH_2]);
           expect(result[0]).to.deep.include({

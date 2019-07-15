@@ -290,11 +290,11 @@ export default class DetherJS {
     return zone.getZone(geohash7, this.provider);
   }
 
-  async createZone(password: string, country: string, geohash6: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<ethers.ContractTransaction> {
+  async createZone(password: string, country: string, geohash6: string, amount: number, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
     const wallet = await this.loadWallet(password);
-    return zone.create(country, geohash6, wallet, txOptions);
+    return zone.create(country, geohash6, amount, wallet, txOptions);
   }
 
   async claimFreeZone(password: string, geohash7: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<ethers.ContractTransaction> {

@@ -182,14 +182,16 @@ export const isZoneOpened = async (geohash6: string, country: string, provider: 
 // -------------------- //
 
 // ERC223
-export const create = async (country: string, geohash6: string, wallet: ethers.Wallet, txOptions: ITxOptions): Promise<ethers.ContractTransaction> => {
+export const create = async (country: string, geohash6: string, amount: number, wallet: ethers.Wallet, txOptions: ITxOptions): Promise<ethers.ContractTransaction> => {
   validate.countryCode(country);
   validate.geohash(geohash6, 6);
-  console.log('detherJS create', geohash6, country, createZoneBytes(country, geohash6), txOptions, convert.ethToWei(constants.MIN_ZONE_STAKE));
+  validate.minStake(amount);
+
+  console.log('detherJS create', geohash6, country, convert.ethToWei(amount), createZoneBytes(country, geohash6));
   const detherTokenContract = await contract.get(wallet.provider, DetherContract.DetherToken, undefined, [constants.ERC223_TRANSFER_ABI]);
   const zoneFactoryContract = await contract.get(wallet.provider, DetherContract.ZoneFactory);
   if (!txOptions.gasLimit) txOptions.gasLimit = 450000;
-  return detherTokenContract.connect(wallet).functions.transfer(zoneFactoryContract.address, convert.ethToWei(constants.MIN_ZONE_STAKE), createZoneBytes(country, geohash6), txOptions); // erc223 call
+  return detherTokenContract.connect(wallet).functions.transfer(zoneFactoryContract.address, convert.ethToWei(amount), createZoneBytes(country, geohash6), txOptions); // erc223 call
 };
 
 // ERC223
