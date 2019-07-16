@@ -154,12 +154,12 @@ export default class DetherJS {
   //        Teller        //
   // -------------------- //
 
-  async getTellerInZone(geohash6: string): Promise<ITeller> {
+  async getTellerInZone(geohash6: string): Promise<any> {
     this.hasProvider();
     return teller.getTellerInZone(geohash6, this.provider);
   }
 
-  async getTellersInZones(geohash6List: string[]): Promise<ITeller[]> {
+  async getTellersInZones(geohash6List: string[]): Promise<any[]> {
     this.hasProvider();
     return teller.getTellersInZones(geohash6List, this.provider);
   }

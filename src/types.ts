@@ -37,7 +37,9 @@ export interface ITeller {
   messenger?: string;
   referrer?: string;
   refFees?: number;
-  description?: string;
+  ticker?: string;
+  sellUp?: string,
+  buyUp?: string,
   tellerAddress: string;
   tellerContractAddress: string;
 }

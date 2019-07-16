@@ -21,7 +21,7 @@ export const tellerArrToObj = (zoneAddr: string, tellerContractAddr: string, tel
   const settingsInt = parseInt(tellerArr[4], 16);
   const isSeller = (settingsInt & 1) > 0;
   const isBuyer = (settingsInt & 2) > 0;
-  console.log('teller raw obj', tellerArr, settingsInt);
+  const description = convert.hexToAscii(tellerArr[8]).split('-');
   return {
     isSeller,
     isBuyer,
@@ -30,12 +30,15 @@ export const tellerArrToObj = (zoneAddr: string, tellerContractAddr: string, tel
     zoneAddress: zoneAddr,
     zoneGeohash: convert.hexToAscii(tellerArr[3]).slice(0, 6),
     // optional
-    buyRate: isBuyer ? tellerArr[5] : 0,
-    sellRate: isSeller ? tellerArr[6] : 0,
+    buyRate: isBuyer ? tellerArr[5] / 100 : 0,
+    sellRate: isSeller ? tellerArr[6] / 100 : 0,
     referrer: tellerArr[7] !== constants.ADDRESS_ZERO ? tellerArr[7] : undefined,
     messenger: tellerArr[2] !== EMPTY_MESSENGER_FIELD ? convert.hexToAscii(tellerArr[2]) : undefined,
     tellerAddress: tellerArr[0],
     tellerContractAddress: tellerContractAddr,
+    sellUp: description.length == 3 ? description[0] : '?',
+    buyUp: description.length == 3 ? description[1] : '?',
+    ticker: description.length == 3 ? description[2] : '',
   };
 };
 
@@ -52,17 +55,23 @@ export const settingsToBytes = (isBuyer: boolean, isSeller: boolean): string => 
 //        Getters       //
 // -------------------- //
 
-export const getTellerInZone = async (geohash6: string, provider: ethers.providers.Provider): Promise<ITeller> => {
+export const getTellerInZone = async (geohash6: string, provider: ethers.providers.Provider): Promise<any> => {
   validate.geohash(geohash6, 6);
-  const zoneFactoryContract = await contract.get(provider, DetherContract.ZoneFactory);
-  const zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(geohash6).substring(0, 14));
-  const zoneInstance = await contract.get(provider, DetherContract.Zone, zoneAddress);
-  const tellerAddress = await zoneInstance.teller();
-  const tellerInstance = await contract.get(provider, DetherContract.Teller, tellerAddress);
+  let zoneAddress, tellerAddress, tellerInstance;
+  try {
+    const zoneFactoryContract = await contract.get(provider, DetherContract.ZoneFactory);
+    zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(geohash6).substring(0, 14));
+    const zoneInstance = await contract.get(provider, DetherContract.Zone, zoneAddress);
+    tellerAddress = await zoneInstance.teller();
+    tellerInstance = await contract.get(provider, DetherContract.Teller, tellerAddress);
+  } catch {
+    return {};
+  }
+
   return tellerArrToObj(zoneAddress, tellerAddress, await tellerInstance.getTeller());
 };
 
-export const getTellersInZones = async (geohash6List: string[], provider: ethers.providers.Provider): Promise<ITeller[]> => (
+export const getTellersInZones = async (geohash6List: string[], provider: ethers.providers.Provider): Promise<any[]> => (
   Promise.all(geohash6List.map((geohash6: string): Promise<ITeller> => getTellerInZone(geohash6, provider)))
 );
 
