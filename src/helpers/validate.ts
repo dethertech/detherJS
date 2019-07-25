@@ -1,4 +1,5 @@
 import { ethers } from 'ethers';
+import * as constants from '../constants';
 
 import {
   Unit, Token,
@@ -87,6 +88,11 @@ export const sellAmount = (sellAmount: number) => {
   }
 };
 
+export const minStake = (amount: number) => {
+  if (amount < constants.MIN_ZONE_STAKE) {
+    throw new Error(`Staking amount must be superior at ${constants.MIN_ZONE_STAKE}`);
+  }
+}
 export const refFees = (reffees: number) => {
   if (!reffees || typeof reffees !== 'number' || reffees < 0) {
     throw new Error(`invalid sell amount: ${reffees}`);
@@ -98,6 +104,12 @@ export const currencyId = (currencyId: number) => {
     throw new Error('invalid currency');
   }
 };
+
+export const tellerDescrInfo = (descr: string) => {
+  if (descr.length > 32) {
+    throw new Error('description should be inferior of 32 char');
+  }
+}
 
 export const tellerBuyerInfo = (isBuyer: boolean, buyRate: number) => {
   if (!isBuyer && buyRate) throw new Error('cannot set buyRate when not set as buyer');

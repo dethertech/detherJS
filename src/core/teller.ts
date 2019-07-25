@@ -21,7 +21,7 @@ export const tellerArrToObj = (zoneAddr: string, tellerContractAddr: string, tel
   const settingsInt = parseInt(tellerArr[4], 16);
   const isSeller = (settingsInt & 1) > 0;
   const isBuyer = (settingsInt & 2) > 0;
-
+  const description = convert.hexToAscii(tellerArr[8]).split('-');
   return {
     isSeller,
     isBuyer,
@@ -30,13 +30,15 @@ export const tellerArrToObj = (zoneAddr: string, tellerContractAddr: string, tel
     zoneAddress: zoneAddr,
     zoneGeohash: convert.hexToAscii(tellerArr[3]).slice(0, 6),
     // optional
-    buyRate: isBuyer ? tellerArr[5] : 0,
-    sellRate: isSeller ? tellerArr[6] : 0,
-    funds: isSeller ? tellerArr[7].toNumber() : 0,
-    referrer: tellerArr[8] !== constants.ADDRESS_ZERO ? tellerArr[7] : undefined,
+    buyRate: isBuyer ? tellerArr[5] / 100 : 0,
+    sellRate: isSeller ? tellerArr[6] / 100 : 0,
+    referrer: tellerArr[7] !== constants.ADDRESS_ZERO ? tellerArr[7] : undefined,
     messenger: tellerArr[2] !== EMPTY_MESSENGER_FIELD ? convert.hexToAscii(tellerArr[2]) : undefined,
     tellerAddress: tellerArr[0],
     tellerContractAddress: tellerContractAddr,
+    sellUp: description.length == 3 ? description[0] : '?',
+    buyUp: description.length == 3 ? description[1] : '?',
+    ticker: description.length == 3 ? description[2] : '',
   };
 };
 
@@ -53,17 +55,23 @@ export const settingsToBytes = (isBuyer: boolean, isSeller: boolean): string => 
 //        Getters       //
 // -------------------- //
 
-export const getTellerInZone = async (geohash6: string, provider: ethers.providers.Provider): Promise<ITeller> => {
+export const getTellerInZone = async (geohash6: string, provider: ethers.providers.Provider): Promise<any> => {
   validate.geohash(geohash6, 6);
-  const zoneFactoryContract = await contract.get(provider, DetherContract.ZoneFactory);
-  const zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(geohash6).substring(0, 14));
-  const zoneInstance = await contract.get(provider, DetherContract.Zone, zoneAddress);
-  const tellerAddress = await zoneInstance.teller();
-  const tellerInstance = await contract.get(provider, DetherContract.Teller, tellerAddress);
+  let zoneAddress, tellerAddress, tellerInstance;
+  try {
+    const zoneFactoryContract = await contract.get(provider, DetherContract.ZoneFactory);
+    zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(geohash6).substring(0, 14));
+    const zoneInstance = await contract.get(provider, DetherContract.Zone, zoneAddress);
+    tellerAddress = await zoneInstance.teller();
+    tellerInstance = await contract.get(provider, DetherContract.Teller, tellerAddress);
+  } catch {
+    return {};
+  }
+
   return tellerArrToObj(zoneAddress, tellerAddress, await tellerInstance.getTeller());
 };
 
-export const getTellersInZones = async (geohash6List: string[], provider: ethers.providers.Provider): Promise<ITeller[]> => (
+export const getTellersInZones = async (geohash6List: string[], provider: ethers.providers.Provider): Promise<any[]> => (
   Promise.all(geohash6List.map((geohash6: string): Promise<ITeller> => getTellerInZone(geohash6, provider)))
 );
 
@@ -77,10 +85,12 @@ export const addTeller = async (tellerData: ITellerArgs, wallet: ethers.Wallet, 
   validate.currencyId(tellerData.currencyId);
   validate.tellerBuyerInfo(tellerData.isBuyer, tellerData.buyRate);
   validate.tellerSellerInfo(tellerData.isSeller, tellerData.sellRate);
+  validate.tellerDescrInfo(tellerData.description);
 
   if (tellerData.refFees) validate.refFees(tellerData.refFees);
   if (tellerData.messenger) validate.telegramUsername(tellerData.messenger);
   if (tellerData.referrer) validate.ethAddress(tellerData.referrer);
+  if (tellerData.description) validate.tellerDescrInfo(tellerData.description);
   const tellerSettings = settingsToBytes(tellerData.isBuyer, tellerData.isSeller);
 
   const geohash6 = tellerData.position.slice(0, 6);
@@ -99,6 +109,7 @@ export const addTeller = async (tellerData: ITellerArgs, wallet: ethers.Wallet, 
     tellerSettings,
     tellerData.referrer || constants.ADDRESS_ZERO,
     tellerData.refFees || 0,
+    tellerData.description ? util.stringToBytes(tellerData.description, 32) : '',
     txOptions,
   );
 };
@@ -129,23 +140,6 @@ export const addFunds = async (zoneGeohash: string, ethAmount: string, wallet: e
   return tellerContract.connect(wallet).addFunds({ ...txOptions, value: ethAmountBN });
 };
 
-export const sellEth = async (zoneGeohash: string, recipient: string, ethAmount: string, wallet: ethers.Wallet, txOptions: ITxOptions): Promise<ethers.ContractTransaction> => {
-  validate.geohash(zoneGeohash, 6);
-  validate.ethAddress(recipient);
-
-  const zoneFactoryContract = await contract.get(wallet.provider, DetherContract.ZoneFactory);
-  const zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(zoneGeohash).substring(0, 14));
-  const zoneContract = await contract.get(wallet.provider, DetherContract.Zone, zoneAddress);
-  const tellerAddress = await zoneContract.teller();
-  const tellerContract = await contract.get(wallet.provider, DetherContract.Teller, tellerAddress);
-  const ethAmountBN = ethers.utils.parseUnits(ethAmount, 'wei');
-
-  const fundsInZone = await tellerContract.funds();
-  if (fundsInZone.lt(ethAmountBN)) throw new Error('not enough funds in zone');
-  // TODO: check that wallet address has enough funds in the zone contract + is a teller
-  return tellerContract.connect(wallet).sellEth(recipient, ethAmountBN, txOptions);
-};
-
 // --- Comments
 
 export const addComment = async (zoneGeohash: string, ipfsHash: string, wallet: ethers.Wallet, txOptions: ITxOptions): Promise<ethers.ContractTransaction> => {
@@ -159,17 +153,4 @@ export const addComment = async (zoneGeohash: string, ipfsHash: string, wallet: 
   // TODO: check that wallet address is allowed to place a comment
 
   return tellerContract.connect(wallet).addComment(util.ipfsHashToBytes32(ipfsHash), txOptions);
-};
-
-export const addCertifiedComment = async (zoneGeohash: string, ipfsHash: string, wallet: ethers.Wallet, txOptions: ITxOptions): Promise<ethers.ContractTransaction> => {
-  validate.geohash(zoneGeohash, 6);
-
-  const zoneFactoryContract = await contract.get(wallet.provider, DetherContract.ZoneFactory);
-  const zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(zoneGeohash).substring(0, 14));
-  const zoneContract = await contract.get(wallet.provider, DetherContract.Zone, zoneAddress);
-  const tellerAddress = await zoneContract.teller();
-  const tellerContract = await contract.get(wallet.provider, DetherContract.Teller, tellerAddress);
-  // TODO: check that wallet address is allowed to place a certified comment
-
-  return tellerContract.connect(wallet).addCertifiedComment(util.ipfsHashToBytes32(ipfsHash), txOptions);
 };

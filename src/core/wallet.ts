@@ -104,7 +104,7 @@ export const getAvailableTokenDecimals = async (provider: ethers.providers.Provi
 }
 
 export const hasApproval = async (owner: string, sellToken: Token, amount: string, provider: ethers.providers.Provider): Promise<boolean> => {
-  const erc20instance = await contract.getErc20(provider, sellToken);
+  const erc20instance = await contract.getErc20Address(provider, sellToken);
   const exchangeAddress = await contract.getUniswapExchangeAddress(provider, sellToken)
   const approve = await erc20instance.allowance(owner, exchangeAddress);
 
@@ -168,5 +168,6 @@ export const sendCrypto = async (amount: string, toAddress: string, token: Token
 export const approveToken = async (token: string, wallet: ethers.Wallet, txOptions: ITxOptions): Promise<ethers.ContractTransaction> => {
   const exchangeAddress = await contract.getUniswapExchangeAddress(wallet.provider, token)
   const erc20instance = await contract.getErc20Address(wallet.provider, token);
+
   return erc20instance.connect(wallet).approve(exchangeAddress, ethers.utils.bigNumberify(2).pow(256).sub(1), txOptions);
 };

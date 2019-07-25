@@ -3,14 +3,8 @@ const Geohash = require('latlon-geohash');
 
 import DetherJS from '../lib/dether';
 
-const geoHashes6 = [
-    'xn0mts',
-    'xn0mtm',
-    'xn0mtq',
-    'xn0mtr',
-    'xn0mt2',
-    'xn0mt3',
-]
+const geoHashes6 =
+    ["xn0m7h", "xn0m7k", "xn0me1", "xn0m76", "xn0m74", "xn0m6f", "xn0m6g", "xn0m6u"]
 const rpcURL = 'https://kovan.infura.io';
 const provider = new ethers.providers.JsonRpcProvider(rpcURL);
 
@@ -19,6 +13,13 @@ const getTellers = async () => {
     await detherJs.init({ rpcURL })
     const tellers = await detherJs.getTellersInZones(geoHashes6, provider);
     console.log('Tellers', tellers);
+}
+
+const getTeller = async () => {
+    const detherJs = new DetherJS(false);
+    await detherJs.init({ rpcURL })
+    const tellers = await detherJs.getTellerInZone('xn0me1', provider);
+    console.log('Teller', tellers);
 }
 
 const getShops = async () => {
@@ -40,6 +41,7 @@ const getArrayOfGeohash = async () => {
     const tellers = await detherJs.getTellersInZones(geoHashes6, provider);
     console.log('Tellers present in these 9 zones', tellers);
 }
-// getTellers();
+getTellers();
 // getShops();
-getArrayOfGeohash();
+// getTeller();
+// getArrayOfGeohash();

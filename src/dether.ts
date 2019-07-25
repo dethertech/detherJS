@@ -48,15 +48,13 @@ export default class DetherJS {
     constants.TICKER.custom.DTH = contractAddresses[DetherContract.DetherToken];
 
     constants.CONTRACT_ADDRESSES.custom.DetherToken = contractAddresses[DetherContract.DetherToken];
-    constants.CONTRACT_ADDRESSES.custom.Control = contractAddresses[DetherContract.Control];
     constants.CONTRACT_ADDRESSES.custom.GeoRegistry = contractAddresses[DetherContract.GeoRegistry];
-    constants.CONTRACT_ADDRESSES.custom.KycCertifier = contractAddresses[DetherContract.KycCertifier];
-    constants.CONTRACT_ADDRESSES.custom.SmsCertifier = contractAddresses[DetherContract.SmsCertifier];
     constants.CONTRACT_ADDRESSES.custom.Users = contractAddresses[DetherContract.Users];
     constants.CONTRACT_ADDRESSES.custom.ZoneFactory = contractAddresses[DetherContract.ZoneFactory];
     constants.CONTRACT_ADDRESSES.custom.Zone = contractAddresses[DetherContract.Zone];
     constants.CONTRACT_ADDRESSES.custom.Shops = contractAddresses[DetherContract.Shops];
     constants.CONTRACT_ADDRESSES.custom.ShopDispute = contractAddresses[DetherContract.ShopDispute];
+    constants.CONTRACT_ADDRESSES.custom.TaxCollector = contractAddresses[DetherContract.TaxCollector];
     constants.CONTRACT_ADDRESSES.custom.CertifierRegistry = contractAddresses[DetherContract.CertifierRegistry];
   }
 
@@ -156,12 +154,12 @@ export default class DetherJS {
   //        Teller        //
   // -------------------- //
 
-  async getTellerInZone(geohash6: string): Promise<ITeller> {
+  async getTellerInZone(geohash6: string): Promise<any> {
     this.hasProvider();
     return teller.getTellerInZone(geohash6, this.provider);
   }
 
-  async getTellersInZones(geohash6List: string[]): Promise<ITeller[]> {
+  async getTellersInZones(geohash6List: string[]): Promise<any[]> {
     this.hasProvider();
     return teller.getTellersInZones(geohash6List, this.provider);
   }
@@ -187,25 +185,11 @@ export default class DetherJS {
     return teller.addFunds(zoneGeohash, ethAmount, wallet, txOptions);
   }
 
-  async sellTellerEth(password: string, zoneGeohash: string, recipient: string, ethAmount: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<ethers.ContractTransaction> {
-    this.hasProvider();
-    this.hasWallet();
-    const wallet = await this.loadWallet(password);
-    return teller.sellEth(zoneGeohash, recipient, ethAmount, wallet, txOptions);
-  }
-
   async addTellerComment(password: string, zoneGeohash: string, ipfsHash: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
     const wallet = await this.loadWallet(password);
     return teller.addComment(zoneGeohash, ipfsHash, wallet, txOptions);
-  }
-
-  async addTellerCertifiedComment(password: string, zoneGeohash: string, ipfsHash: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<ethers.ContractTransaction> {
-    this.hasProvider();
-    this.hasWallet();
-    const wallet = await this.loadWallet(password);
-    return teller.addCertifiedComment(zoneGeohash, ipfsHash, wallet, txOptions);
   }
 
   // -------------------- //
@@ -295,15 +279,7 @@ export default class DetherJS {
   //         User         //
   // -------------------- //
 
-  async getUserTier(address: string): Promise<Tier> {
-    this.hasProvider();
-    return user.getTier(address, this.provider);
-  }
 
-  async getAvailableSellAmountToday(userAddress: string, country: string, unit: Unit = Unit.eth): Promise<string> {
-    this.hasProvider();
-    return user.getAvailableSellAmountToday(userAddress, country, unit, this.provider);
-  }
 
   // -------------------- //
   //         Zone         //
@@ -314,11 +290,11 @@ export default class DetherJS {
     return zone.getZone(geohash7, this.provider);
   }
 
-  async createZone(password: string, country: string, geohash6: string, tier: number, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<ethers.ContractTransaction> {
+  async createZone(password: string, country: string, geohash6: string, amount: number, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
     const wallet = await this.loadWallet(password);
-    return zone.create(country, geohash6, tier, wallet, txOptions);
+    return zone.create(country, geohash6, amount, wallet, txOptions);
   }
 
   async claimFreeZone(password: string, geohash7: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<ethers.ContractTransaction> {
@@ -418,13 +394,6 @@ export default class DetherJS {
     this.hasWallet();
     const wallet = await this.loadWallet(password);
     return certifier.certify(certifierId, who, type, wallet, txOptions);
-  }
-
-  async revoke(password: string, certifierId: string, who: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<ethers.ContractTransaction> {
-    this.hasProvider();
-    this.hasWallet();
-    const wallet = await this.loadWallet(password);
-    return certifier.revoke(certifierId, who, wallet, txOptions);
   }
 
   async removeDelegate(password: string, certifierId: string, delegate: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<ethers.ContractTransaction> {
