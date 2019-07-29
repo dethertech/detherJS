@@ -8,9 +8,19 @@ const geoHashes6 =
 const rpcURL = 'https://kovan.infura.io';
 const provider = new ethers.providers.JsonRpcProvider(rpcURL);
 
+
+const isZoneTeller = async () => {
+    const address = '0x432b93C0c212149Ca12361b52B926f89107707c3';
+    const detherJs = new DetherJS(false);
+    await detherJs.init({ rpcURL });
+    console.log(await detherJs.isZoneOwner(address));
+    console.log(await detherJs.isTeller(address));
+
+}
+
 const getTellers = async () => {
     const detherJs = new DetherJS(false);
-    await detherJs.init({ rpcURL })
+    await detherJs.init({ rpcURL });
     const tellers = await detherJs.getTellersInZones(geoHashes6, provider);
     console.log('Tellers', tellers);
 }
@@ -41,7 +51,8 @@ const getArrayOfGeohash = async () => {
     const tellers = await detherJs.getTellersInZones(geoHashes6, provider);
     console.log('Tellers present in these 9 zones', tellers);
 }
-getTellers();
+// getTellers();
 // getShops();
 // getTeller();
 // getArrayOfGeohash();
+isZoneTeller();

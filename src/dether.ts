@@ -154,6 +154,11 @@ export default class DetherJS {
   //        Teller        //
   // -------------------- //
 
+  async isTeller(address: string): Promise<any> {
+    this.hasProvider();
+    return teller.isTeller(address, this.provider);
+  }
+
   async getTellerInZone(geohash6: string): Promise<any> {
     this.hasProvider();
     return teller.getTellerInZone(geohash6, this.provider);
@@ -357,6 +362,12 @@ export default class DetherJS {
     this.hasProvider();
     return zone.isZoneOpened(geohash6, country, this.provider);
   }
+
+  async isZoneOwner(address: string): Promise<any> {
+    this.hasProvider();
+    return zone.isZoneOwner(address, this.provider);
+  }
+
   // -------------------- //
   //        Certifier     //
   // -------------------- //

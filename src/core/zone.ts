@@ -177,6 +177,17 @@ export const isZoneOpened = async (geohash6: string, country: string, provider: 
   return true;
 }
 
+export const isZoneOwner = async (address: string, provider: ethers.providers.Provider): Promise<any> => {
+  validate.ethAddress(address);
+  try {
+    const zoneFactoryContract = await contract.get(provider, DetherContract.ZoneFactory);
+    const zoneAddr = await zoneFactoryContract.ownerToZone(address);
+    return zoneAddr;
+  } catch {
+    return false;
+  }
+}
+
 // -------------------- //
 //        Setters       //
 // -------------------- //

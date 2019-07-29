@@ -75,6 +75,24 @@ export const getTellersInZones = async (geohash6List: string[], provider: ethers
   Promise.all(geohash6List.map((geohash6: string): Promise<ITeller> => getTellerInZone(geohash6, provider)))
 );
 
+
+export const isTeller = async (address: string, provider: ethers.providers.Provider): Promise<any> => {
+  validate.ethAddress(address);
+  let zoneAddress, tellerAddress, tellerInstance;
+  try {
+    const zoneFactoryContract = await contract.get(provider, DetherContract.ZoneFactory);
+    zoneAddress = await zoneFactoryContract.ownerToZone(address);
+    // if (zoneAddr)
+    const zoneInstance = await contract.get(provider, DetherContract.Zone, zoneAddress);
+    tellerAddress = await zoneInstance.teller();
+    tellerInstance = await contract.get(provider, DetherContract.Teller, tellerAddress);
+  } catch {
+    return false
+  }
+  const teller = tellerArrToObj(zoneAddress, tellerAddress, await tellerInstance.getTeller());
+  return teller.tellerAddress;
+}
+
 // -------------------- //
 //        Setters       //
 // -------------------- //
