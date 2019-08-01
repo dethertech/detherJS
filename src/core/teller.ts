@@ -132,6 +132,38 @@ export const addTeller = async (tellerData: ITellerArgs, wallet: ethers.Wallet, 
   );
 };
 
+// tellerData contains the zone geohash, the first 6 characters of tellerData.position
+
+export const updateTeller = async (tellerData: ITellerArgs, wallet: ethers.Wallet, txOptions: ITxOptions): Promise<ethers.ContractTransaction> => {
+  // console.log('teller update teller', tellerData);
+  validate.geohash(tellerData.position, 12);
+  validate.currencyId(tellerData.currencyId);
+  validate.tellerBuyerInfo(tellerData.isBuyer, tellerData.buyRate);
+  validate.tellerSellerInfo(tellerData.isSeller, tellerData.sellRate);
+  validate.tellerDescrInfo(tellerData.description);
+
+  if (tellerData.description) validate.tellerDescrInfo(tellerData.description);
+  const tellerSettings = settingsToBytes(tellerData.isBuyer, tellerData.isSeller);
+
+  const geohash6 = tellerData.position.slice(0, 6);
+  const zoneFactoryContract = await contract.get(wallet.provider, DetherContract.ZoneFactory);
+  const zoneAddress = await zoneFactoryContract.geohashToZone(util.stringToBytes(geohash6, 6));
+  const zoneContract = await contract.get(wallet.provider, DetherContract.Zone, zoneAddress);
+  const tellerAddress = await zoneContract.teller();
+  const tellerContract = await contract.get(wallet.provider, DetherContract.Teller, tellerAddress);
+
+  return tellerContract.connect(wallet).updateTeller(
+    util.stringToBytes(tellerData.position, 12),
+    tellerData.currencyId,
+    tellerData.messenger ? util.stringToBytes(tellerData.messenger, 16) : EMPTY_MESSENGER_FIELD,
+    tellerData.sellRate,
+    tellerData.buyRate,
+    tellerSettings,
+    tellerData.description ? util.stringToBytes(tellerData.description, 32) : '',
+    txOptions,
+  );
+};
+
 export const removeTeller = async (zoneGeohash: string, wallet: ethers.Wallet, txOptions: ITxOptions): Promise<ethers.ContractTransaction> => {
   validate.geohash(zoneGeohash, 6);
 

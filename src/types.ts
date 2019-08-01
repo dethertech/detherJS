@@ -46,7 +46,7 @@ export interface ITeller {
 
 export interface ITellerArgs {
   position: string;
-  currencyId: number;
+  currencyId?: number;
   messenger?: string;
   isSeller: boolean;
   isBuyer: boolean;

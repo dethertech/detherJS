@@ -163,6 +163,7 @@ export const getZone = async (geohash6: string, provider: ethers.providers.Provi
   }
 };
 
+
 export const isZoneOpened = async (geohash6: string, country: string, provider: ethers.providers.Provider): Promise<Boolean> => {
   validate.geohash(geohash6, 6);
   const geoRegistryContract = await contract.get(provider, DetherContract.GeoRegistry);
@@ -182,11 +183,16 @@ export const isZoneOwner = async (address: string, provider: ethers.providers.Pr
   try {
     const zoneFactoryContract = await contract.get(provider, DetherContract.ZoneFactory);
     const zoneAddr = await zoneFactoryContract.ownerToZone(address);
-    return zoneAddr;
-  } catch {
+    const zoneGeohash = convert.hexToAscii(await zoneFactoryContract.zoneToGeohash(zoneAddr)).slice(0, 6);
+    return {
+      zoneAddr,
+      zoneGeohash
+    }
+  } catch (e) {
     return false;
   }
 }
+
 
 // -------------------- //
 //        Setters       //

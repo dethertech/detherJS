@@ -112,7 +112,6 @@ export const tellerDescrInfo = (descr: string) => {
 }
 
 export const tellerBuyerInfo = (isBuyer: boolean, buyRate: number) => {
-  if (!isBuyer && buyRate) throw new Error('cannot set buyRate when not set as buyer');
   if (buyRate > 9999 || buyRate < -9999) throw new Error('buyRate minimum is -99.99, maximum is 99.99');
 };
 

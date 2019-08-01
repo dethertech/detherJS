@@ -10,7 +10,7 @@ const provider = new ethers.providers.JsonRpcProvider(rpcURL);
 
 
 const isZoneTeller = async () => {
-    const address = '0x432b93C0c212149Ca12361b52B926f89107707c3';
+    const address = '0xc4378a241C784fD8D3B3E36b3B70AC477d0bC4Cb';
     const detherJs = new DetherJS(false);
     await detherJs.init({ rpcURL });
     console.log(await detherJs.isZoneOwner(address));
