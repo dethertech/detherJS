@@ -141,7 +141,7 @@ export const updateTeller = async (tellerData: ITellerArgs, wallet: ethers.Walle
   validate.tellerBuyerInfo(tellerData.isBuyer, tellerData.buyRate);
   validate.tellerSellerInfo(tellerData.isSeller, tellerData.sellRate);
   validate.tellerDescrInfo(tellerData.description);
-
+  console.log('dether.js update teller', tellerData);
   if (tellerData.description) validate.tellerDescrInfo(tellerData.description);
   const tellerSettings = settingsToBytes(tellerData.isBuyer, tellerData.isSeller);
 

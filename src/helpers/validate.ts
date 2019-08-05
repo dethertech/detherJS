@@ -36,7 +36,12 @@ export const geohash = (str: string, len: number): void => {
 export const ethAddress = (address: string): void => {
   // TODO: reove this
   // @ts-ignore
-  address = address.toLowerCase();
+  try {
+    address = address.toLowerCase();
+  } catch (e) {
+    throw new Error(`ethereum address validate${e}`);
+  }
+
 
   if (!/^(0x)?[0-9a-f]{40}$/i.test(address)) {
     // check if it has the basic requirements of an address
