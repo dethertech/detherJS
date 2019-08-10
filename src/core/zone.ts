@@ -203,10 +203,13 @@ export const create = async (country: string, geohash6: string, amount: number, 
   validate.countryCode(country);
   validate.geohash(geohash6, 6);
   validate.minStake(amount);
-
-  console.log('detherJS create', geohash6, country, convert.ethToWei(amount), createZoneBytes(country, geohash6));
-  const detherTokenContract = await contract.get(wallet.provider, DetherContract.DetherToken, undefined, [constants.ERC223_TRANSFER_ABI]);
   const zoneFactoryContract = await contract.get(wallet.provider, DetherContract.ZoneFactory);
+  const zoneExists = await zoneFactoryContract.zoneExists(convert.asciiToHex(geohash6).substring(0, 14));
+  if (zoneExists) {
+    return claimFree(geohash6, wallet, txOptions);
+  }
+  const detherTokenContract = await contract.get(wallet.provider, DetherContract.DetherToken, undefined, [constants.ERC223_TRANSFER_ABI]);
+
   if (!txOptions.gasLimit) txOptions.gasLimit = 450000;
   return detherTokenContract.connect(wallet).functions.transfer(zoneFactoryContract.address, convert.ethToWei(amount), createZoneBytes(country, geohash6), txOptions); // erc223 call
 };
@@ -214,7 +217,7 @@ export const create = async (country: string, geohash6: string, amount: number, 
 // ERC223
 export const claimFree = async (geohash6: string, wallet: ethers.Wallet, txOptions: ITxOptions): Promise<ethers.ContractTransaction> => {
   validate.geohash(geohash6, 6);
-
+  console.log('detherJS claim free', geohash6);
   const detherTokenContract = await contract.get(wallet.provider, DetherContract.DetherToken, undefined, [constants.ERC223_TRANSFER_ABI]);
   const zoneFactoryContract = await contract.get(wallet.provider, DetherContract.ZoneFactory);
   const zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(geohash6).substring(0, 14));
