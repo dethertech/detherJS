@@ -90,6 +90,9 @@ export const isTeller = async (address: string, provider: ethers.providers.Provi
     return false
   }
   const teller = tellerArrToObj(zoneAddress, tellerAddress, await tellerInstance.getTeller());
+  if (teller.tellerAddress !== address) {
+    return false;
+  }
   return teller.tellerAddress;
 }
 
