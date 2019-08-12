@@ -163,6 +163,9 @@ export const getZone = async (geohash6: string, provider: ethers.providers.Provi
   }
 };
 
+export const getZonesStatus = async (geohash6List: string[], provider: ethers.providers.Provider): Promise<any[]> => (
+  Promise.all(geohash6List.map((geohash6: string): Promise<IZone> => getZone(geohash6, provider)))
+);
 
 export const isZoneOpened = async (geohash6: string, country: string, provider: ethers.providers.Provider): Promise<Boolean> => {
   validate.geohash(geohash6, 6);
@@ -226,13 +229,16 @@ export const claimFree = async (geohash6: string, wallet: ethers.Wallet, txOptio
 };
 
 // ERC223
-export const bid = async (geohash6: string, bidAmount: string, wallet: ethers.Wallet, txOptions: ITxOptions): Promise<ethers.ContractTransaction> => {
+export const bid = async (geohash6: string, bidAmount: number, wallet: ethers.Wallet, txOptions: ITxOptions): Promise<ethers.ContractTransaction> => {
   validate.geohash(geohash6, 6);
-
-  const detherTokenContract = await contract.get(wallet.provider, DetherContract.DetherToken, undefined, [constants.ERC223_TRANSFER_ABI]);
-  const zoneFactoryContract = await contract.get(wallet.provider, DetherContract.ZoneFactory);
-  const zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(geohash6).substring(0, 14));
-  return detherTokenContract.connect(wallet).transfer(zoneAddress, bidAmount, '0x42', txOptions); // erc223 call
+  try {
+    const detherTokenContract = await contract.get(wallet.provider, DetherContract.DetherToken, undefined, [constants.ERC223_TRANSFER_ABI]);
+    const zoneFactoryContract = await contract.get(wallet.provider, DetherContract.ZoneFactory);
+    const zoneAddress = await zoneFactoryContract.geohashToZone(convert.asciiToHex(geohash6).substring(0, 14));
+    return detherTokenContract.connect(wallet).transfer(zoneAddress, convert.ethToWei(bidAmount), '0x42', txOptions); // erc223 call
+  } catch (e) {
+    console.log('impossible to bid here', e);
+  }
 };
 
 // ERC223

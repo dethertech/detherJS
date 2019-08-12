@@ -345,7 +345,7 @@ describe('DetherJS', () => {
           await transaction.waitForTxMined(detherJs.createZone(PASS, COUNTRY, ZONE_GEOHASH, MIN_ZONE_STAKE, { gasLimit: 2000000 }));
           await timeTravel.inSecs(COOLDOWN_PERIOD + 1);
           detherJs.loadUser(await accounts.user2.encrypt(PASS));
-          await transaction.waitForTxMined(detherJs.bidZone(PASS, ZONE_GEOHASH, convert.ethToWei(MIN_ZONE_STAKE + 10), { gasLimit: 2000000 }));
+          await transaction.waitForTxMined(detherJs.bidZone(PASS, ZONE_GEOHASH, MIN_ZONE_STAKE + 10, { gasLimit: 2000000 }));
         });
       });
       describe('topup zone owner DTH balance', () => {
@@ -371,11 +371,11 @@ describe('DetherJS', () => {
 
           // user2 start auction
           detherJs.loadUser(await accounts.user2.encrypt(PASS));
-          await transaction.waitForTxMined(detherJs.bidZone(PASS, ZONE_GEOHASH, convert.ethToWei(MIN_ZONE_STAKE + 10), { gasLimit: 2000000 }));
+          await transaction.waitForTxMined(detherJs.bidZone(PASS, ZONE_GEOHASH, MIN_ZONE_STAKE + 10, { gasLimit: 2000000 }));
 
           // user1 (current zone owner) overbids user2 bid
           detherJs.loadUser(await accounts.user1.encrypt(PASS));
-          await transaction.waitForTxMined(detherJs.bidZone(PASS, ZONE_GEOHASH, convert.ethToWei(20), { gasLimit: 2000000 }));
+          await transaction.waitForTxMined(detherJs.bidZone(PASS, ZONE_GEOHASH, 20, { gasLimit: 2000000 }));
 
           // auction ends
           await timeTravel.inSecs(BID_PERIOD + 1);
@@ -403,11 +403,11 @@ describe('DetherJS', () => {
 
           // user2 start auction
           detherJs.loadUser(await accounts.user2.encrypt(PASS));
-          await transaction.waitForTxMined(detherJs.bidZone(PASS, ZONE_GEOHASH, convert.ethToWei(MIN_ZONE_STAKE + 10), { gasLimit: 2000000 }));
+          await transaction.waitForTxMined(detherJs.bidZone(PASS, ZONE_GEOHASH, MIN_ZONE_STAKE + 10, { gasLimit: 2000000 }));
 
           // user1 (current zone owner) overbids user2 bid
           detherJs.loadUser(await accounts.user1.encrypt(PASS));
-          await transaction.waitForTxMined(detherJs.bidZone(PASS, ZONE_GEOHASH, convert.ethToWei(20), { gasLimit: 2000000 }));
+          await transaction.waitForTxMined(detherJs.bidZone(PASS, ZONE_GEOHASH, 20, { gasLimit: 2000000 }));
 
           // auction ends
           await timeTravel.inSecs(BID_PERIOD + 1);
@@ -417,11 +417,11 @@ describe('DetherJS', () => {
 
           // user2 start auction
           detherJs.loadUser(await accounts.user2.encrypt(PASS));
-          await transaction.waitForTxMined(detherJs.bidZone(PASS, ZONE_GEOHASH, convert.ethToWei(MIN_ZONE_STAKE + 30), { gasLimit: 2000000 }));
+          await transaction.waitForTxMined(detherJs.bidZone(PASS, ZONE_GEOHASH, MIN_ZONE_STAKE + 30, { gasLimit: 2000000 }));
 
           // user1 (current zone owner) overbids user2 bid
           detherJs.loadUser(await accounts.user1.encrypt(PASS));
-          await transaction.waitForTxMined(detherJs.bidZone(PASS, ZONE_GEOHASH, convert.ethToWei(40), { gasLimit: 2000000 }));
+          await transaction.waitForTxMined(detherJs.bidZone(PASS, ZONE_GEOHASH, 40, { gasLimit: 2000000 }));
 
           // auction ends
           await timeTravel.inSecs(BID_PERIOD + 1);
@@ -450,7 +450,7 @@ describe('DetherJS', () => {
 
           // user2 start auction
           detherJs.loadUser(await accounts.user2.encrypt(PASS));
-          await transaction.waitForTxMined(detherJs.bidZone(PASS, ZONE_GEOHASH, convert.ethToWei(MIN_ZONE_STAKE + 10), { gasLimit: 2000000 }));
+          await transaction.waitForTxMined(detherJs.bidZone(PASS, ZONE_GEOHASH, MIN_ZONE_STAKE + 10, { gasLimit: 2000000 }));
 
           // auction ends
           await timeTravel.inSecs(BID_PERIOD + 1);
@@ -476,7 +476,7 @@ describe('DetherJS', () => {
 
           // user2 start auction
           detherJs.loadUser(await accounts.user2.encrypt(PASS));
-          await transaction.waitForTxMined(detherJs.bidZone(PASS, ZONE_GEOHASH, convert.ethToWei(MIN_ZONE_STAKE + 10), { gasLimit: 2000000 }));
+          await transaction.waitForTxMined(detherJs.bidZone(PASS, ZONE_GEOHASH, MIN_ZONE_STAKE + 10, { gasLimit: 2000000 }));
 
           // auction ends
           await timeTravel.inSecs(BID_PERIOD + 1);

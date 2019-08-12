@@ -15,7 +15,12 @@ const isZoneTeller = async () => {
     await detherJs.init({ rpcURL });
     console.log(await detherJs.isZoneOwner(address));
     console.log(await detherJs.isTeller(address));
+}
 
+const getZones = async () => {
+    const detherJs = new DetherJS(false);
+    await detherJs.init({ rpcURL });
+    console.log(await detherJs.getZonesStatus(geoHashes6));
 }
 
 const getTellers = async () => {
@@ -55,4 +60,5 @@ const getArrayOfGeohash = async () => {
 // getShops();
 // getTeller();
 // getArrayOfGeohash();
-isZoneTeller();
+getZones();
+// isZoneTeller();
