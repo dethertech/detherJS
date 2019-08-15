@@ -128,7 +128,7 @@ export const tellerSellerInfo = (isSeller: boolean, sellRate: number) => {
 // source: https://core.telegram.org/method/account.checkUsername
 export const telegramUsername = (messenger: string | undefined) => {
   if (typeof messenger !== 'string') throw new Error('teller messenger should be a string');
-  if (messenger.length < 5 || messenger.length > 32) throw new Error('telegram username should be between 5 and 32 characters');
+  if (messenger.length < 1 || messenger.length > 16) throw new Error('telegram username should be between 1 and 16 characters');
   if (!/[A-Za-z0-9_]/g.test(messenger)) throw new Error('invalid characters in telegram username');
 };
 

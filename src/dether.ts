@@ -119,6 +119,8 @@ export default class DetherJS {
     return wallet.execTrade(sellToken, buyToken, sellAmount, buyAmount, userWallet, txOptions);
   }
 
+  // sellAmount and buyAmount in string WEI
+  // return a signed tx to broadcast later
   async execExchange_delayed(password: string, sellToken: Token, buyToken: Token, sellAmount: string, buyAmount: string, nonce: number, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<any> {
     this.hasProvider();
     this.hasWallet();
@@ -126,6 +128,13 @@ export default class DetherJS {
     return wallet.execTrade_delayed(sellToken, buyToken, sellAmount, buyAmount, userWallet, nonce, txOptions);
   }
 
+  // Used from sell part . ONLY ETH -> ERC20
+  async execExchangeFromSell(password: string, buyToken: Token, sellAmount: string, buyAmount: string, destAddress: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<ethers.ContractTransaction> {
+    this.hasProvider();
+    this.hasWallet();
+    const userWallet = await this.loadWallet(password);
+    return wallet.execTradeFromSell(buyToken, sellAmount, buyAmount, destAddress, userWallet, txOptions);
+  }
   async getAvailableToken(forLogo?: false): Promise<ITicker> {
     this.hasProvider();
     return wallet.getAvailableToken(this.provider, forLogo);

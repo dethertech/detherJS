@@ -271,6 +271,7 @@ export interface IExchange {
   name: Exchange;
   estimate: Function;
   trade: Function;
+  tradeFromSell: Function;
   trade_delayed: Function;
 }
 

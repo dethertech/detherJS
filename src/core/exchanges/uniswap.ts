@@ -39,6 +39,26 @@ export default class ExchangeUniswap extends ExchangeBase {
     return buyAmount.toString();
   }
 
+  async tradeFromSell(sellAmount: string, buyAmount: string, destAddress: string, wallet: ethers.Wallet, txOptions: ITxOptions): Promise<ethers.ContractTransaction> {
+    const erc20Token = this.sellToken === 'ETH' ? this.buyToken : this.sellToken
+    const exchangeAddress = await contract.getUniswapExchangeAddress(wallet.provider, erc20Token)
+    const uniswapContract = await contract.get(wallet.provider, ExternalContract.uniswapExchange, exchangeAddress);
+    txOptions.gasLimit = 300000;
+    console.log('trade from sell', sellAmount, buyAmount, destAddress);
+    if (this.sellToken === Token.ETH) {
+      const uniswapInstance = uniswapContract.connect(wallet);
+      txOptions.value = ethers.utils.parseEther(sellAmount);
+      const erc20instance = await contract.getErc20Address(wallet.provider, this.buyToken);
+      const decimal = await erc20instance.decimals();
+      if (decimal) {
+        const deadline = Math.floor(Date.now() / 1000) + 100 // 100 seconds from now
+        const tradeTx = await uniswapInstance.ethToTokenTransferInput(ethers.utils.parseUnits(buyAmount, decimal), deadline, destAddress, txOptions);
+        return tradeTx;
+      }
+    }
+    throw new Error('erc20 token to erc20 token not yet implemented');
+  }
+
   async trade(sellAmount: string, buyAmount: string, wallet: ethers.Wallet, txOptions: ITxOptions): Promise<ethers.ContractTransaction> {
 
     const erc20Token = this.sellToken === 'ETH' ? this.buyToken : this.sellToken

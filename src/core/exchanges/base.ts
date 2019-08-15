@@ -21,6 +21,9 @@ export default class ExchangeBase {
   async trade(sellAmount: string, buyAmount: string, wallet: ethers.Wallet, txOptions: ITxOptions): Promise<ethers.ContractTransaction | void> {
     throw new Error('trade method not implented');
   }
+  async tradeFromSell(sellAmount: string, buyAmount: string, destAddress: string, wallet: ethers.Wallet, txOptions: ITxOptions): Promise<ethers.ContractTransaction | void> {
+    throw new Error('trade method not implented');
+  }
   async trade_delayed(sellAmount: string, buyAmount: string, wallet: ethers.Wallet, nonce: number, txOptions: ITxOptions): Promise<ethers.ContractTransaction | void> {
     throw new Error('trade_delayed method not implented');
   }
