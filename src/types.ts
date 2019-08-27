@@ -38,8 +38,8 @@ export interface ITeller {
   referrer?: string;
   refFees?: number;
   ticker?: string;
-  sellUp?: string,
-  buyUp?: string,
+  sellUp?: string;
+  buyUp?: string;
   tellerAddress: string;
   tellerContractAddress: string;
 }
@@ -58,8 +58,8 @@ export interface ITellerArgs {
 }
 
 export enum ZoneAuctionState {
-  started = 'started',
-  ended = 'ended',
+  started = "started",
+  ended = "ended"
 }
 
 export interface IZoneAuction {
@@ -68,14 +68,14 @@ export interface IZoneAuction {
   startTime: number;
   endTime: number;
   highestBidder: string;
-  highestBid: string;
+  highestBid: number;
 }
 
 export interface IZoneOwner {
   address: string;
   startTime: number;
-  staked: string;
-  balance: string;
+  staked: number;
+  balance: number;
   lastTaxTime: number;
   auctionId: number;
 }
@@ -89,19 +89,19 @@ export interface IZone {
 }
 
 export enum ZoneStatus {
-  Inexistent = 'Inexistent',
-  Claimable = 'Claimable',
-  Occupied = 'Occupied',
+  Inexistent = "Inexistent",
+  Claimable = "Claimable",
+  Occupied = "Occupied"
 }
 
 export enum ExternalContract {
-  erc20 = 'erc20',
-  weth = 'weth',
-  airswapExchange = 'airswapExchange',
-  kyberNetworkProxy = 'kyberNetworkProxy',
-  uniswapExchange = 'uniswapExchange',
-  uniswapFactory = 'uniswapFactory',
-  appealableArbitrator = 'appealableArbitrator',
+  erc20 = "erc20",
+  weth = "weth",
+  airswapExchange = "airswapExchange",
+  kyberNetworkProxy = "kyberNetworkProxy",
+  uniswapExchange = "uniswapExchange",
+  uniswapFactory = "uniswapFactory",
+  appealableArbitrator = "appealableArbitrator"
 }
 
 export interface IBalances {
@@ -140,40 +140,40 @@ export interface IDate {
 }
 
 export enum Unit {
-  eth = 'eth',
-  usd = 'usd',
-  wei = 'wei',
+  eth = "eth",
+  usd = "usd",
+  wei = "wei"
 }
 
 export enum DetherContract {
-  DetherToken = 'DetherToken',
-  Control = 'Control',
-  Users = 'Users',
-  GeoRegistry = 'GeoRegistry',
-  Zone = 'Zone',
-  ZoneFactory = 'ZoneFactory',
-  ExchangeRateOracle = 'ExchangeRateOracle',
-  Shops = 'Shops',
-  SmsCertifier = 'SmsCertifier',
-  KycCertifier = 'KycCertifier',
-  CertifierRegistry = 'CertifierRegistry',
-  Teller = 'Teller',
-  ShopDispute = 'ShopDispute',
-  TokenRegistry = 'TokenRegistry',
-  TaxCollector = 'TaxCollector',
+  DetherToken = "DetherToken",
+  Control = "Control",
+  Users = "Users",
+  GeoRegistry = "GeoRegistry",
+  Zone = "Zone",
+  ZoneFactory = "ZoneFactory",
+  ExchangeRateOracle = "ExchangeRateOracle",
+  Shops = "Shops",
+  SmsCertifier = "SmsCertifier",
+  KycCertifier = "KycCertifier",
+  CertifierRegistry = "CertifierRegistry",
+  Teller = "Teller",
+  ShopDispute = "ShopDispute",
+  TokenRegistry = "TokenRegistry",
+  TaxCollector = "TaxCollector"
 }
 
 export enum TransactionStatus {
-  pending = 'pending',
-  error = 'error',
-  success = 'success',
-  unknown = 'unknown',
+  pending = "pending",
+  error = "error",
+  success = "success",
+  unknown = "unknown"
 }
 
 export enum Tier {
-  sms = 'sms',
-  kyc = 'kyc',
-  uncertified = 'uncertified',
+  sms = "sms",
+  kyc = "kyc",
+  uncertified = "uncertified"
 }
 
 export interface IWeb3 {
@@ -186,31 +186,31 @@ export interface IEstimation {
 }
 
 export enum Token {
-  ETH = 'ETH',
-  DTH = 'DTH',
-  DAI = 'DAI',
-  BNB = 'BNB',
-  MKR = 'MKR',
-  OMG = 'OMG',
-  ZRX = 'ZRX',
-  VEN = 'VEN',
-  AE = 'AE',
-  REP = 'REP',
-  HAV = 'HAV',
-  NUSD = 'NUSD',
-  ZLA = 'ZLA',
-  FLIXX = 'FLIXX',
-  PNK = 'PNK',
-  CAN = 'CAN',
-  KNC = 'KNC',
+  ETH = "ETH",
+  DTH = "DTH",
+  DAI = "DAI",
+  BNB = "BNB",
+  MKR = "MKR",
+  OMG = "OMG",
+  ZRX = "ZRX",
+  VEN = "VEN",
+  AE = "AE",
+  REP = "REP",
+  HAV = "HAV",
+  NUSD = "NUSD",
+  ZLA = "ZLA",
+  FLIXX = "FLIXX",
+  PNK = "PNK",
+  CAN = "CAN",
+  KNC = "KNC"
 }
 
 export enum Network {
-  homestead = 'homestead',
-  mainnet = 'mainnet',
-  rinkeby = 'rinkeby',
-  ropsten = 'ropsten',
-  kovan = 'kovan',
+  homestead = "homestead",
+  mainnet = "mainnet",
+  rinkeby = "rinkeby",
+  ropsten = "ropsten",
+  kovan = "kovan"
 }
 
 export interface IShop {
@@ -226,15 +226,15 @@ export interface IShop {
 }
 
 export enum ShopDisputeStatus {
-  Waiting = 'Waiting',
-  Appealable = 'Appealable',
-  Solved = 'Solved',
+  Waiting = "Waiting",
+  Appealable = "Appealable",
+  Solved = "Solved"
 }
 
 export enum ShopDisputeRuling {
-  NoRuling = 'NoRuling',
-  ShopWins = 'ShopWins',
-  ChallengerWins = 'ChallengerWins',
+  NoRuling = "NoRuling",
+  ShopWins = "ShopWins",
+  ChallengerWins = "ChallengerWins"
 }
 
 export interface IShopDispute {
@@ -256,8 +256,8 @@ export interface IShopArgs {
 }
 
 export enum Exchange {
-  kyber = 'kyber',
-  uniswap = 'uniswap',
+  kyber = "kyber",
+  uniswap = "uniswap"
 }
 
 export interface IExchangePair {
@@ -281,7 +281,7 @@ export interface IExchangeEstimation {
 }
 
 export enum DisputeType {
-  firstOne = 0,
+  firstOne = 0
 }
 
 export interface ITxOptions {

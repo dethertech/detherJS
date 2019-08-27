@@ -279,6 +279,11 @@ export default class DetherJS {
     return teller.isTeller(address, this.provider);
   }
 
+  async getTeller(address: string): Promise<any> {
+    this.hasProvider();
+    return teller.getTeller(address, this.provider);
+  }
+
   async getTellerInZone(geohash6: string): Promise<any> {
     this.hasProvider();
     return teller.getTellerInZone(geohash6, this.provider);
@@ -321,13 +326,6 @@ export default class DetherJS {
     const wallet = await this.loadWallet(password);
     return teller.updateTeller(tellerData, wallet, txOptions);
   }
-
-  // async addTellerFunds(password: string, zoneGeohash: string, ethAmount: string, txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS): Promise<ethers.ContractTransaction> {
-  //   this.hasProvider();
-  //   this.hasWallet();
-  //   const wallet = await this.loadWallet(password);
-  //   return teller.addFunds(zoneGeohash, ethAmount, wallet, txOptions);
-  // }
 
   async addTellerComment(
     password: string,
@@ -478,7 +476,7 @@ export default class DetherJS {
     zoneAddress: string,
     ethAddress: string,
     auctionID: number
-  ): Promise<boolean> {
+  ): Promise<number> {
     this.hasProvider();
     return zone.isBidderOnthisAuction(
       zoneAddress,
