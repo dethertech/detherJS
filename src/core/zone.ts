@@ -67,6 +67,7 @@ const checkForeclosure = async (
   return taxesDue.gte(convert.ethToWei(Number(balance)));
 };
 
+// here zone is updated on the state it should be even before process state is called in the smart contract
 export const toLiveZone = async (
   zoneAddress: string,
   geohash6: string,
@@ -138,7 +139,96 @@ export const toLiveZone = async (
               now,
               convert.ethToWeiBN(zoneOwner.balance)
             );
+            // zone owner needs to pay harberger taxes, but dows not have enough balance
+            if (taxesDue.gte(convert.ethToWei(zoneOwner.balance)))
+              zoneStatus = ZoneStatus.Claimable;
+            else zoneStatus = ZoneStatus.Occupied;
+          }
+        }
+      }
+    }
+  }
+  return {
+    geohash: geohash6,
+    status: zoneStatus,
+    address: zoneAddress,
+    owner: zoneOwner.address !== constants.ADDRESS_ZERO ? zoneOwner : undefined,
+    auction: lastAuction.id !== 0 ? lastAuction : undefined
+  };
+};
 
+// here the state is the always the same that the current state on the smart contract
+export const toLiveZoneRaw = async (
+  zoneAddress: string,
+  geohash6: string,
+  zoneContract: ethers.Contract,
+  zoneOwner: IZoneOwner,
+  lastAuction: IZoneAuction
+): Promise<any> => {
+  let zoneStatus: ZoneStatus;
+  if (zoneOwner.startTime === 0) zoneStatus = ZoneStatus.Claimable;
+  else {
+    const now = util.timestampNow();
+    // TODO: calc harberger tax locally
+    if (lastAuction.id === 0 || lastAuction.state === ZoneAuctionState.ended) {
+      // there is NO active auction, check zoneowner tax payments
+      if (zoneOwner.lastTaxTime >= now) zoneStatus = ZoneStatus.Occupied;
+      else {
+        const [, taxesDue] = await zoneContract.calcHarbergerTax(
+          zoneOwner.lastTaxTime,
+          now,
+          convert.ethToWei(zoneOwner.balance)
+        );
+        if (taxesDue.gte(convert.ethToWei(zoneOwner.balance)))
+          zoneStatus = ZoneStatus.Claimable;
+        else zoneStatus = ZoneStatus.Occupied;
+      }
+    } else {
+      // there is an active auction
+
+      // check if auction is still open
+      if (now < lastAuction.endTime) zoneStatus = ZoneStatus.Occupied;
+      else {
+        // this auction has actually ended
+        lastAuction.state = ZoneAuctionState.ended;
+
+        if (zoneOwner.address === lastAuction.highestBidder) {
+          // winner is current zone owner
+          zoneOwner.auctionId = lastAuction.id;
+          // strange here as its already done in smart contract
+          zoneOwner.staked = Number(zoneOwner.staked);
+          //             Number(zoneOwner.staked) + Number(lastAuction.highestBid);
+          zoneOwner.balance = Number(zoneOwner.balance);
+          // Number(zoneOwner.balance) + Number(lastAuction.highestBid);
+          if (zoneOwner.lastTaxTime >= now) zoneStatus = ZoneStatus.Occupied;
+          else {
+            const [, taxesDue] = await zoneContract.calcHarbergerTax(
+              lastAuction.endTime,
+              now,
+              convert.ethToWeiBN(zoneOwner.balance)
+            );
+
+            // zone owner needs to pay harberger taxes, but dows not have enough balance
+            if (taxesDue.gte(convert.ethToWei(zoneOwner.balance)))
+              zoneStatus = ZoneStatus.Claimable;
+            else zoneStatus = ZoneStatus.Occupied;
+          }
+          // zone owner can pay for his taxes
+        } else {
+          // winner is NOT the current zone owner
+          // zoneOwner.address = lastAuction.highestBidder;
+          zoneOwner.startTime = lastAuction.endTime;
+          // zoneOwner.staked = lastAuction.highestBid;
+          // zoneOwner.balance = lastAuction.highestBid;
+          // zoneOwner.lastTaxTime = now;
+          // zoneOwner.auctionId = lastAuction.id;
+          if (zoneOwner.lastTaxTime >= now) zoneStatus = ZoneStatus.Occupied;
+          else {
+            const [, taxesDue] = await zoneContract.calcHarbergerTax(
+              lastAuction.endTime,
+              now,
+              convert.ethToWeiBN(zoneOwner.balance)
+            );
             // zone owner needs to pay harberger taxes, but dows not have enough balance
             if (taxesDue.gte(convert.ethToWei(zoneOwner.balance)))
               zoneStatus = ZoneStatus.Claimable;
@@ -243,13 +333,15 @@ export const getZone = async (
   }
 };
 
+// TO DO GET ZONE WHEN ITS CLAIMED AND WIN AFTER AUCTION
+// BECAUSE OWNER IS SET TO THE PREVIOUS AUCTION OWNER AND NOT THE CLAIMER
+// DO THE SAME IN GETZONE()
 export const getZoneByAddress = async (
   address: string,
   provider: ethers.providers.Provider
 ): Promise<IZone> => {
   validate.ethAddress(address);
   let zoneContract;
-
   try {
     zoneContract = await contract.get(provider, DetherContract.Zone, address);
   } catch (e) {
@@ -259,13 +351,14 @@ export const getZoneByAddress = async (
   const zoneOwner: IZoneOwner = zoneOwnerArrToObj(
     await zoneContract.getZoneOwner()
   );
+
   const geohash6 = await zoneContract.geohash();
   const auctionID = await zoneContract.currentAuctionId();
   if (auctionID > 0) {
     const lastAuction: IZoneAuction = zoneAuctionArrToObj(
       await zoneContract.getLastAuction()
     );
-    return toLiveZone(
+    return toLiveZoneRaw(
       address,
       convert.hexToAscii(geohash6),
       zoneContract,
@@ -418,6 +511,7 @@ export const create = async (
     ); // erc223 call
 };
 
+// TO DO ADD PARAM HERE
 // ERC223
 export const claimFree = async (
   geohash6: string,
