@@ -457,9 +457,9 @@ export default class DetherJS {
   //         Zone         //
   // -------------------- //
 
-  async getZone(geohash6: string): Promise<IZone> {
+  async getZoneByGeohash(geohash6: string): Promise<IZone> {
     this.hasProvider();
-    return zone.getZone(geohash6, this.provider);
+    return zone.getZoneByGeohash(geohash6, this.provider);
   }
 
   async getZoneByAddress(address: string): Promise<IZone> {

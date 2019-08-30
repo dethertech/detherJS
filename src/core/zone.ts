@@ -285,7 +285,7 @@ export const toLiveZoneNoBidYet = async (
 //        Getters       //
 // -------------------- //
 
-export const getZone = async (
+export const getZoneByGeohash = async (
   geohash6: string,
   provider: ethers.providers.Provider
 ): Promise<IZone> => {
@@ -321,7 +321,7 @@ export const getZone = async (
       await zoneContract.getLastAuction()
     );
 
-    return toLiveZone(
+    return toLiveZoneRaw(
       zoneAddress,
       geohash6,
       zoneContract,
