@@ -127,16 +127,14 @@ export const CONTRACT_ADDRESSES: any = {
   homestead: {
     // dether
     DetherToken: "0x5adc961D6AC3f7062D2eA45FEFB8D8167d44b190",
-    Control: "",
-    GeoRegistry: "",
-    KycCertifier: "",
-    SmsCertifier: "",
-    Users: "",
-    ZoneFactory: "",
-    Zone: "",
-    Shops: "",
-    CertifierRegistry: "",
+    GeoRegistry: "0x14B959d69F322272E93054eD0B0Bac26dFF7Ff1B", //
+    Users: "0xCfceF67ccf75e945e2f9fC705eDCE487177F6420", //
+    ZoneFactory: "0x61A8c47ef57A67cE541dc823ea0C49a0a37FfBbD", //
+    Zone: "0x070fe360453fA02751064828F1294Eea02105C15", //
+    Shops: "0x0E19B9B21595892fa2E58652577f7F8677b0899f", //
+    CertifierRegistry: "0x23e70c628c48d75d1abF7e3146e9cdB93B795d01", //
     TokenRegistry: "0x94feC2C65a581b9551526EE6A130300dBd8D467B",
+    TaxCollector: "0x33202158cc22dd09F966D429aCBF338169f1912e", //
     // external
     kyberNetworkProxy: "0x818E6FECD516Ecc3849DAf6845e3EC868087B755",
     uniswapFactory: "0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95",

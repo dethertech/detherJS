@@ -381,7 +381,7 @@ export const getZonesStatus = async (
 ): Promise<any[]> =>
   Promise.all(
     geohash6List.map(
-      (geohash6: string): Promise<IZone> => getZone(geohash6, provider)
+      (geohash6: string): Promise<IZone> => getZoneByAddress(geohash6, provider)
     )
   );
 
