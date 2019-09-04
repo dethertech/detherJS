@@ -395,16 +395,17 @@ export const isZoneOpened = async (
     provider,
     DetherContract.GeoRegistry
   );
-  const countryOpen = await geoRegistryContract.countryIsEnabled(
-    convert.asciiToHex(geohash6).substring(0, 6)
+  const countryOpen = await geoRegistryContract.zoneIsEnabled(
+    convert.asciiToHex(country).substring(0, 6)
   );
   if (countryOpen === false) {
     return false;
   }
-  const zoneAvailable = await geoRegistryContract.zoneInsideCountry(
-    convert.asciiToHex(geohash6).substring(0, 6),
+  const zoneAvailable = await geoRegistryContract.zoneInsideBiggerZone(
+    convert.asciiToHex(country).substring(0, 6),
     convert.asciiToHex(geohash6).substring(0, 10)
   );
+
   if (zoneAvailable === false) {
     return false;
   }
