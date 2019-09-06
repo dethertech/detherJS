@@ -128,7 +128,7 @@ const _getTokenInfo = async (
       return jsonData.data;
     }
   } catch (e) {
-    console.log("error getTokenInfo with this url as params", e, token.urlInfo);
+    console.log("error getTokenInfo with this url as params", e, token);
   }
 };
 
@@ -186,6 +186,42 @@ export const isExchangeAvailable = async (
   }
 };
 
+export const getUniswapLiquidity = async (
+  tokenAddress: string,
+  provider: ethers.providers.Provider
+): Promise<any> => {
+  try {
+    // get concerned exchange
+    const exchangeAddress = await contract.getUniswapExchangeAddress(
+      provider,
+      tokenAddress
+    );
+
+    // get ETH balance
+    const ethBalance = ethers.utils.formatEther(
+      await provider.getBalance(exchangeAddress)
+    );
+
+    // get token balance
+    const erc20instance = await contract.getErc20Address(
+      provider,
+      tokenAddress
+    );
+    const decimals = await erc20instance.decimals();
+    const tokenBalance = ethers.utils.formatUnits(
+      await erc20instance.balanceOf(exchangeAddress),
+      decimals
+    );
+    const balances = {
+      ETH: ethBalance,
+      TOKEN: tokenBalance
+    };
+    return balances;
+  } catch (e) {
+    console.log("error get uniswap liquidity");
+    return 0;
+  }
+};
 // -------------------- //
 //     Transactions     //
 // -------------------- //

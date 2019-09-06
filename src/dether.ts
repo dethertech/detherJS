@@ -270,6 +270,13 @@ export default class DetherJS {
     return wallet.approveToken(token, userWallet, txOptions);
   }
 
+  async getTokenLiquidity(
+    tokenAddress: string,
+    txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS
+  ): Promise<any> {
+    this.hasProvider();
+    return wallet.getUniswapLiquidity(tokenAddress, this.provider);
+  }
   // -------------------- //
   //        Teller        //
   // -------------------- //
