@@ -66,7 +66,25 @@ const checkForeclosure = async (
   );
   return taxesDue.gte(convert.ethToWei(Number(balance)));
 };
-
+const calcHarbergerTax = (
+  startTime: number,
+  endTime: number,
+  dthAmount: ethers.utils.BigNumber
+): ethers.utils.BigNumber => {
+  const taxAmountBN = dthAmount
+    .mul(endTime - startTime)
+    .mul(4)
+    .div(10000)
+    .div(86400);
+  /*
+  console.log(
+    "tax amount",
+    taxAmountBN.toString(),
+    "keep amount",
+    dthAmount.sub(taxAmountBN).toString()
+  );*/
+  return taxAmountBN;
+};
 // here zone is updated on the state it should be even before process state is called in the smart contract
 export const toLiveZone = async (
   zoneAddress: string,
@@ -75,6 +93,7 @@ export const toLiveZone = async (
   zoneOwner: IZoneOwner,
   lastAuction: IZoneAuction
 ): Promise<any> => {
+  console.log("toLiveZone");
   let zoneStatus: ZoneStatus;
   if (zoneOwner.startTime === 0) zoneStatus = ZoneStatus.Claimable;
   else {
@@ -84,12 +103,13 @@ export const toLiveZone = async (
       // there is NO active auction, check zoneowner tax payments
       if (zoneOwner.lastTaxTime >= now) zoneStatus = ZoneStatus.Occupied;
       else {
-        const [, taxesDue] = await zoneContract.calcHarbergerTax(
+        const myTaxesDue = calcHarbergerTax(
           zoneOwner.lastTaxTime,
           now,
-          convert.ethToWei(zoneOwner.balance)
+          convert.ethToWeiBN(zoneOwner.balance)
         );
-        if (taxesDue.gte(convert.ethToWei(zoneOwner.balance)))
+
+        if (myTaxesDue.gte(convert.ethToWei(zoneOwner.balance)))
           zoneStatus = ZoneStatus.Claimable;
         else zoneStatus = ZoneStatus.Occupied;
       }
@@ -112,14 +132,14 @@ export const toLiveZone = async (
           // Number(zoneOwner.balance) + Number(lastAuction.highestBid);
           if (zoneOwner.lastTaxTime >= now) zoneStatus = ZoneStatus.Occupied;
           else {
-            const [, taxesDue] = await zoneContract.calcHarbergerTax(
-              lastAuction.endTime,
+            const myTaxesDue = calcHarbergerTax(
+              zoneOwner.lastTaxTime,
               now,
               convert.ethToWeiBN(zoneOwner.balance)
             );
 
             // zone owner needs to pay harberger taxes, but dows not have enough balance
-            if (taxesDue.gte(convert.ethToWei(zoneOwner.balance)))
+            if (myTaxesDue.gte(convert.ethToWei(zoneOwner.balance)))
               zoneStatus = ZoneStatus.Claimable;
             else zoneStatus = ZoneStatus.Occupied;
           }
@@ -134,13 +154,13 @@ export const toLiveZone = async (
           zoneOwner.auctionId = lastAuction.id;
           if (zoneOwner.lastTaxTime >= now) zoneStatus = ZoneStatus.Occupied;
           else {
-            const [, taxesDue] = await zoneContract.calcHarbergerTax(
-              lastAuction.endTime,
+            const myTaxesDue = calcHarbergerTax(
+              zoneOwner.lastTaxTime,
               now,
               convert.ethToWeiBN(zoneOwner.balance)
             );
             // zone owner needs to pay harberger taxes, but dows not have enough balance
-            if (taxesDue.gte(convert.ethToWei(zoneOwner.balance)))
+            if (myTaxesDue.gte(convert.ethToWei(zoneOwner.balance)))
               zoneStatus = ZoneStatus.Claimable;
             else zoneStatus = ZoneStatus.Occupied;
           }
@@ -174,12 +194,12 @@ export const toLiveZoneRaw = async (
       // there is NO active auction, check zoneowner tax payments
       if (zoneOwner.lastTaxTime >= now) zoneStatus = ZoneStatus.Occupied;
       else {
-        const [, taxesDue] = await zoneContract.calcHarbergerTax(
+        const myTaxesDue = calcHarbergerTax(
           zoneOwner.lastTaxTime,
           now,
-          convert.ethToWei(zoneOwner.balance)
+          convert.ethToWeiBN(zoneOwner.balance)
         );
-        if (taxesDue.gte(convert.ethToWei(zoneOwner.balance)))
+        if (myTaxesDue.gte(convert.ethToWei(zoneOwner.balance)))
           zoneStatus = ZoneStatus.Claimable;
         else zoneStatus = ZoneStatus.Occupied;
       }
@@ -202,35 +222,31 @@ export const toLiveZoneRaw = async (
           // Number(zoneOwner.balance) + Number(lastAuction.highestBid);
           if (zoneOwner.lastTaxTime >= now) zoneStatus = ZoneStatus.Occupied;
           else {
-            const [, taxesDue] = await zoneContract.calcHarbergerTax(
-              lastAuction.endTime,
+            const myTaxesDue = calcHarbergerTax(
+              zoneOwner.lastTaxTime,
               now,
               convert.ethToWeiBN(zoneOwner.balance)
             );
 
             // zone owner needs to pay harberger taxes, but dows not have enough balance
-            if (taxesDue.gte(convert.ethToWei(zoneOwner.balance)))
+            // if (taxesDue.gte(convert.ethToWei(zoneOwner.balance)))
+            if (myTaxesDue.gte(convert.ethToWei(zoneOwner.balance)))
               zoneStatus = ZoneStatus.Claimable;
             else zoneStatus = ZoneStatus.Occupied;
           }
           // zone owner can pay for his taxes
         } else {
           // winner is NOT the current zone owner
-          // zoneOwner.address = lastAuction.highestBidder;
           zoneOwner.startTime = lastAuction.endTime;
-          // zoneOwner.staked = lastAuction.highestBid;
-          // zoneOwner.balance = lastAuction.highestBid;
-          // zoneOwner.lastTaxTime = now;
-          // zoneOwner.auctionId = lastAuction.id;
           if (zoneOwner.lastTaxTime >= now) zoneStatus = ZoneStatus.Occupied;
           else {
-            const [, taxesDue] = await zoneContract.calcHarbergerTax(
-              lastAuction.endTime,
+            const myTaxesDue = calcHarbergerTax(
+              zoneOwner.lastTaxTime,
               now,
               convert.ethToWeiBN(zoneOwner.balance)
             );
             // zone owner needs to pay harberger taxes, but dows not have enough balance
-            if (taxesDue.gte(convert.ethToWei(zoneOwner.balance)))
+            if (myTaxesDue.gte(convert.ethToWei(zoneOwner.balance)))
               zoneStatus = ZoneStatus.Claimable;
             else zoneStatus = ZoneStatus.Occupied;
           }
@@ -262,12 +278,12 @@ export const toLiveZoneNoBidYet = async (
     // there is NO active auction, check zoneowner tax payments
     if (zoneOwner.lastTaxTime >= now) zoneStatus = ZoneStatus.Occupied;
     else {
-      const [, taxesDue] = await zoneContract.calcHarbergerTax(
+      const myTaxesDue = calcHarbergerTax(
         zoneOwner.lastTaxTime,
         now,
         convert.ethToWeiBN(zoneOwner.balance)
       );
-      if (taxesDue.gte(convert.ethToWei(zoneOwner.balance)))
+      if (myTaxesDue.gte(convert.ethToWei(zoneOwner.balance)))
         zoneStatus = ZoneStatus.Claimable;
       else zoneStatus = ZoneStatus.Occupied;
     }
@@ -287,13 +303,11 @@ export const toLiveZoneNoBidYet = async (
 
 export const getZoneByGeohash = async (
   geohash6: string,
+  zoneFactoryContract: ethers.Contract,
   provider: ethers.providers.Provider
 ): Promise<IZone> => {
   validate.geohash(geohash6, 6);
-  const zoneFactoryContract = await contract.get(
-    provider,
-    DetherContract.ZoneFactory
-  );
+
   const zoneExists = await zoneFactoryContract.zoneExists(
     convert.asciiToHex(geohash6).substring(0, 14)
   );
@@ -377,24 +391,23 @@ export const getZoneByAddress = async (
 
 export const getZonesStatus = async (
   geohash6List: string[],
+  zoneFactoryContract: ethers.Contract,
   provider: ethers.providers.Provider
 ): Promise<any[]> =>
   Promise.all(
     geohash6List.map(
-      (geohash6: string): Promise<IZone> => getZoneByGeohash(geohash6, provider)
+      (geohash6: string): Promise<IZone> =>
+        getZoneByGeohash(geohash6, zoneFactoryContract, provider)
     )
   );
 
 export const isZoneOpened = async (
   geohash6: string,
   country: string,
-  provider: ethers.providers.Provider
+  geoRegistryContract: ethers.Contract
 ): Promise<Boolean> => {
   validate.geohash(geohash6, 6);
-  const geoRegistryContract = await contract.get(
-    provider,
-    DetherContract.GeoRegistry
-  );
+
   const countryOpen = await geoRegistryContract.zoneIsEnabled(
     convert.asciiToHex(country).substring(0, 6)
   );
@@ -414,14 +427,11 @@ export const isZoneOpened = async (
 
 export const isZoneOwner = async (
   address: string,
+  zoneFactoryContract: ethers.Contract,
   provider: ethers.providers.Provider
 ): Promise<any> => {
   validate.ethAddress(address);
   try {
-    const zoneFactoryContract = await contract.get(
-      provider,
-      DetherContract.ZoneFactory
-    );
     const zoneAddr = await zoneFactoryContract.ownerToZone(address);
     const zoneGeohash = convert
       .hexToAscii(await zoneFactoryContract.zoneToGeohash(zoneAddr))
@@ -437,14 +447,10 @@ export const isZoneOwner = async (
 
 export const getOpenBid = async (
   address: string,
-  provider: ethers.providers.Provider
+  zoneFactoryContract: ethers.Contract
 ): Promise<any> => {
   validate.ethAddress(address);
   try {
-    const zoneFactoryContract = await contract.get(
-      provider,
-      DetherContract.ZoneFactory
-    );
     const zoneBid = await zoneFactoryContract.activeBidderToZone(address);
     if (zoneBid != "0x0000000000000000000000000000000000000000") return zoneBid;
     else return "no";
@@ -453,7 +459,7 @@ export const getOpenBid = async (
   }
 };
 
-// TO NOT USE TO KNOW IF CAN WITHDRAW FROM THE AUCTION
+// DO NOT USE TO KNOW IF CAN WITHDRAW FROM THE AUCTION
 export const isBidderOnthisAuction = async (
   zoneAddress: string,
   ethAddress: string,
@@ -478,28 +484,33 @@ export const create = async (
   country: string,
   geohash6: string,
   amount: number,
+  zoneFactoryContract: ethers.Contract,
+  detherTokenContract: ethers.Contract,
   wallet: ethers.Wallet,
   txOptions: ITxOptions
 ): Promise<ethers.ContractTransaction> => {
   validate.countryCode(country);
   validate.geohash(geohash6, 6);
   validate.minStake(amount);
-  const zoneFactoryContract = await contract.get(
-    wallet.provider,
-    DetherContract.ZoneFactory
-  );
+
   const zoneExists = await zoneFactoryContract.zoneExists(
     convert.asciiToHex(geohash6).substring(0, 14)
   );
   if (zoneExists) {
-    return claimFree(geohash6, wallet, txOptions);
+    return claimFree(
+      geohash6,
+      wallet,
+      zoneFactoryContract,
+      detherTokenContract,
+      txOptions
+    );
   }
-  const detherTokenContract = await contract.get(
+  /*const detherTokenContract = await contract.get(
     wallet.provider,
     DetherContract.DetherToken,
     undefined,
     [constants.ERC223_TRANSFER_ABI]
-  );
+  );*/
 
   if (!txOptions.gasLimit) txOptions.gasLimit = 450000;
   return detherTokenContract
@@ -517,19 +528,11 @@ export const create = async (
 export const claimFree = async (
   geohash6: string,
   wallet: ethers.Wallet,
+  zoneFactoryContract: ethers.Contract,
+  detherTokenContract: ethers.Contract,
   txOptions: ITxOptions
 ): Promise<ethers.ContractTransaction> => {
   validate.geohash(geohash6, 6);
-  const detherTokenContract = await contract.get(
-    wallet.provider,
-    DetherContract.DetherToken,
-    undefined,
-    [constants.ERC223_TRANSFER_ABI]
-  );
-  const zoneFactoryContract = await contract.get(
-    wallet.provider,
-    DetherContract.ZoneFactory
-  );
   const zoneAddress = await zoneFactoryContract.geohashToZone(
     convert.asciiToHex(geohash6).substring(0, 14)
   );
@@ -548,21 +551,13 @@ export const claimFree = async (
 export const bid = async (
   geohash6: string,
   bidAmount: number,
+  zoneFactoryContract: ethers.Contract,
+  detherTokenContract: ethers.Contract,
   wallet: ethers.Wallet,
   txOptions: ITxOptions
 ): Promise<ethers.ContractTransaction> => {
   validate.geohash(geohash6, 6);
   try {
-    const detherTokenContract = await contract.get(
-      wallet.provider,
-      DetherContract.DetherToken,
-      undefined,
-      [constants.ERC223_TRANSFER_ABI]
-    );
-    const zoneFactoryContract = await contract.get(
-      wallet.provider,
-      DetherContract.ZoneFactory
-    );
     const zoneAddress = await zoneFactoryContract.geohashToZone(
       convert.asciiToHex(geohash6).substring(0, 14)
     );
@@ -578,21 +573,13 @@ export const bid = async (
 export const topUp = async (
   geohash6: string,
   topUpAmount: string,
+  zoneFactoryContract: ethers.Contract,
+  detherTokenContract: ethers.Contract,
   wallet: ethers.Wallet,
   txOptions: ITxOptions
 ): Promise<ethers.ContractTransaction> => {
   validate.geohash(geohash6, 6);
 
-  const detherTokenContract = await contract.get(
-    wallet.provider,
-    DetherContract.DetherToken,
-    undefined,
-    [constants.ERC223_TRANSFER_ABI]
-  );
-  const zoneFactoryContract = await contract.get(
-    wallet.provider,
-    DetherContract.ZoneFactory
-  );
   const zoneAddress = await zoneFactoryContract.geohashToZone(
     convert.asciiToHex(geohash6).substring(0, 14)
   );
@@ -603,14 +590,11 @@ export const topUp = async (
 
 export const release = async (
   geohash6: string,
+  zoneFactoryContract: ethers.Contract,
   wallet: ethers.Wallet,
   txOptions: ITxOptions
 ): Promise<ethers.ContractTransaction> => {
   validate.geohash(geohash6, 6);
-  const zoneFactoryContract = await contract.get(
-    wallet.provider,
-    DetherContract.ZoneFactory
-  );
   const zoneAddress = await zoneFactoryContract.geohashToZone(
     convert.asciiToHex(geohash6).substring(0, 14)
   );
@@ -626,15 +610,12 @@ export const release = async (
 export const withdrawFromAuction = async (
   geohash6: string,
   auctionId: number,
+  zoneFactoryContract: ethers.Contract,
   wallet: ethers.Wallet,
   txOptions: ITxOptions
 ): Promise<ethers.ContractTransaction> => {
   validate.geohash(geohash6, 6);
 
-  const zoneFactoryContract = await contract.get(
-    wallet.provider,
-    DetherContract.ZoneFactory
-  );
   const zoneAddress = await zoneFactoryContract.geohashToZone(
     convert.asciiToHex(geohash6).substring(0, 14)
   );
@@ -696,17 +677,7 @@ export const withdrawAuctionsRaw = async (
     DetherContract.Zone,
     zoneAddress
   );
-  // check if previous owner has balance to withdraw
-  // useless now as we got with withdrawFromAuctions
-  // const previousOwnerBalance = await zoneContract.withdrawableDth(
-  //   wallet.address
-  // );
-  // const balance = Number(convert.weiToEth(previousOwnerBalance.toString()));
-  // console.log("previousOwnerBalance is", balance);
 
-  // if (balance > 0) {
-  //   return zoneContract.connect(wallet).withdrawDth(txOptions);
-  // }
   const numberOfAuctions = await zoneContract.currentAuctionId();
   // TO DO :
   // CHECK IF WE CAN HAVE DTH IN MULTIPLE AUCTION OR ITS IMPOSSIBLE NOW
@@ -741,15 +712,12 @@ export const withdrawAuctionsRaw = async (
 export const withdrawFromAuctions = async (
   geohash6: string,
   auctionIds: number[],
+  zoneFactoryContract: ethers.Contract,
   wallet: ethers.Wallet,
   txOptions: ITxOptions
 ): Promise<ethers.ContractTransaction> => {
   validate.geohash(geohash6, 6);
 
-  const zoneFactoryContract = await contract.get(
-    wallet.provider,
-    DetherContract.ZoneFactory
-  );
   const zoneAddress = await zoneFactoryContract.geohashToZone(
     convert.asciiToHex(geohash6).substring(0, 14)
   );
@@ -783,15 +751,12 @@ export const withdrawFromAuctionsAddress = async (
 
 export const withdrawDth = async (
   geohash6: string,
+  zoneFactoryContract: ethers.Contract,
   wallet: ethers.Wallet,
   txOptions: ITxOptions
 ): Promise<ethers.ContractTransaction> => {
   validate.geohash(geohash6, 6);
 
-  const zoneFactoryContract = await contract.get(
-    wallet.provider,
-    DetherContract.ZoneFactory
-  );
   const zoneAddress = await zoneFactoryContract.geohashToZone(
     convert.asciiToHex(geohash6).substring(0, 14)
   );
@@ -815,28 +780,6 @@ export const withdrawDthAddress = async (
     zoneAddress
   );
   return zoneContract.connect(wallet).withdrawDth(txOptions);
-};
-
-export const withdrawEth = async (
-  geohash6: string,
-  wallet: ethers.Wallet,
-  txOptions: ITxOptions
-): Promise<ethers.ContractTransaction> => {
-  validate.geohash(geohash6, 6);
-
-  const zoneFactoryContract = await contract.get(
-    wallet.provider,
-    DetherContract.ZoneFactory
-  );
-  const zoneAddress = await zoneFactoryContract.geohashToZone(
-    convert.asciiToHex(geohash6).substring(0, 14)
-  );
-  const zoneContract = await contract.get(
-    wallet.provider,
-    DetherContract.Zone,
-    zoneAddress
-  );
-  return zoneContract.connect(wallet).withdrawEth(txOptions);
 };
 
 export const processState = async (

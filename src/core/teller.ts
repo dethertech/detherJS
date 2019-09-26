@@ -71,15 +71,12 @@ export const settingsToBytes = (
 
 export const getTeller = async (
   address: string,
-  provider: ethers.providers.Provider
+  provider: ethers.providers.Provider,
+  zoneFactoryContract: ethers.Contract
 ): Promise<any> => {
   validate.ethAddress(address);
   let zoneAddress, tellerAddress, tellerInstance;
   try {
-    const zoneFactoryContract = await contract.get(
-      provider,
-      DetherContract.ZoneFactory
-    );
     zoneAddress = await zoneFactoryContract.ownerToZone(address);
     // if (zoneAddr)
     const zoneInstance = await contract.get(
@@ -109,15 +106,12 @@ export const getTeller = async (
 
 export const getTellerInZone = async (
   geohash6: string,
-  provider: ethers.providers.Provider
+  provider: ethers.providers.Provider,
+  zoneFactoryContract: ethers.Contract
 ): Promise<any> => {
   validate.geohash(geohash6, 6);
   let zoneAddress, tellerAddress, tellerInstance;
   try {
-    const zoneFactoryContract = await contract.get(
-      provider,
-      DetherContract.ZoneFactory
-    );
     zoneAddress = await zoneFactoryContract.geohashToZone(
       convert.asciiToHex(geohash6).substring(0, 14)
     );
@@ -145,26 +139,24 @@ export const getTellerInZone = async (
 
 export const getTellersInZones = async (
   geohash6List: string[],
-  provider: ethers.providers.Provider
+  provider: ethers.providers.Provider,
+  zoneFactoryContract: ethers.Contract
 ): Promise<any[]> =>
   Promise.all(
     geohash6List.map(
       (geohash6: string): Promise<ITeller> =>
-        getTellerInZone(geohash6, provider)
+        getTellerInZone(geohash6, provider, zoneFactoryContract)
     )
   );
 
 export const isTeller = async (
   address: string,
-  provider: ethers.providers.Provider
+  provider: ethers.providers.Provider,
+  zoneFactoryContract: ethers.Contract
 ): Promise<any> => {
   validate.ethAddress(address);
   let zoneAddress, tellerAddress, tellerInstance;
   try {
-    const zoneFactoryContract = await contract.get(
-      provider,
-      DetherContract.ZoneFactory
-    );
     zoneAddress = await zoneFactoryContract.ownerToZone(address);
     // if (zoneAddr)
     const zoneInstance = await contract.get(
@@ -200,6 +192,7 @@ export const isTeller = async (
 export const addTeller = async (
   tellerData: ITellerArgs,
   wallet: ethers.Wallet,
+  zoneFactoryContract: ethers.Contract,
   txOptions: ITxOptions
 ): Promise<ethers.ContractTransaction> => {
   validate.geohash(tellerData.position, 12);
@@ -218,10 +211,10 @@ export const addTeller = async (
   );
 
   const geohash6 = tellerData.position.slice(0, 6);
-  const zoneFactoryContract = await contract.get(
+  /*  const zoneFactoryContract = await contract.get(
     wallet.provider,
     DetherContract.ZoneFactory
-  );
+  );*/
   const zoneAddress = await zoneFactoryContract.geohashToZone(
     util.stringToBytes(geohash6, 6)
   );
@@ -262,6 +255,7 @@ export const addTeller = async (
 export const updateTeller = async (
   tellerData: ITellerArgs,
   wallet: ethers.Wallet,
+  zoneFactoryContract: ethers.Contract,
   txOptions: ITxOptions
 ): Promise<ethers.ContractTransaction> => {
   // console.log('teller update teller', tellerData);
@@ -278,10 +272,7 @@ export const updateTeller = async (
   );
 
   const geohash6 = tellerData.position.slice(0, 6);
-  const zoneFactoryContract = await contract.get(
-    wallet.provider,
-    DetherContract.ZoneFactory
-  );
+
   const zoneAddress = await zoneFactoryContract.geohashToZone(
     util.stringToBytes(geohash6, 6)
   );
@@ -318,14 +309,11 @@ export const updateTeller = async (
 export const removeTeller = async (
   zoneGeohash: string,
   wallet: ethers.Wallet,
+  zoneFactoryContract: ethers.Contract,
   txOptions: ITxOptions
 ): Promise<ethers.ContractTransaction> => {
   validate.geohash(zoneGeohash, 6);
 
-  const zoneFactoryContract = await contract.get(
-    wallet.provider,
-    DetherContract.ZoneFactory
-  );
   const zoneAddress = await zoneFactoryContract.geohashToZone(
     convert.asciiToHex(zoneGeohash).substring(0, 14)
   );
@@ -384,14 +372,11 @@ export const addComment = async (
   zoneGeohash: string,
   ipfsHash: string,
   wallet: ethers.Wallet,
+  zoneFactoryContract: ethers.Contract,
   txOptions: ITxOptions
 ): Promise<ethers.ContractTransaction> => {
   validate.geohash(zoneGeohash, 6);
 
-  const zoneFactoryContract = await contract.get(
-    wallet.provider,
-    DetherContract.ZoneFactory
-  );
   const zoneAddress = await zoneFactoryContract.geohashToZone(
     convert.asciiToHex(zoneGeohash).substring(0, 14)
   );

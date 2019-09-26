@@ -1,18 +1,15 @@
-import { ethers } from 'ethers';
+import { ethers } from "ethers";
 
-import * as constants from '../constants';
+import * as constants from "../constants";
 
-import * as convert from '../helpers/convert';
-import * as util from '../helpers/util';
-import * as validate from '../helpers/validate';
-import * as contract from '../helpers/contracts';
+import * as convert from "../helpers/convert";
+import * as util from "../helpers/util";
+import * as validate from "../helpers/validate";
+import * as contract from "../helpers/contracts";
 
-import {
-  DetherContract,
-  IShop, IShopArgs, ITxOptions,
-} from '../types';
+import { DetherContract, IShop, IShopArgs, ITxOptions } from "../types";
 
-const SHOP_ADD_FN = '30';
+const SHOP_ADD_FN = "30";
 
 // -------------------- //
 //       Formatters     //
@@ -20,14 +17,28 @@ const SHOP_ADD_FN = '30';
 
 export const shopArrToObj = (shopArr: any[]): IShop => ({
   position: convert.hexToAscii(shopArr[0]),
-  zoneGeohash: convert.hexToAscii(`0x${convert.remove0x(shopArr[0]).slice(0, 12)}`),
-  category: shopArr[1] !== constants.BYTES16_ZERO ? convert.hexToAscii(shopArr[1]) : undefined,
-  name: shopArr[2] !== constants.BYTES16_ZERO ? convert.hexToAscii(shopArr[2]) : undefined,
-  description: shopArr[3] !== constants.BYTES32_ZERO ? convert.hexToAscii(shopArr[3]) : undefined,
-  opening: shopArr[4] !== constants.BYTES16_ZERO ? convert.hexToAscii(shopArr[4]) : undefined,
+  zoneGeohash: convert.hexToAscii(
+    `0x${convert.remove0x(shopArr[0]).slice(0, 12)}`
+  ),
+  category:
+    shopArr[1] !== constants.BYTES16_ZERO
+      ? convert.hexToAscii(shopArr[1])
+      : undefined,
+  name:
+    shopArr[2] !== constants.BYTES16_ZERO
+      ? convert.hexToAscii(shopArr[2])
+      : undefined,
+  description:
+    shopArr[3] !== constants.BYTES32_ZERO
+      ? convert.hexToAscii(shopArr[3])
+      : undefined,
+  opening:
+    shopArr[4] !== constants.BYTES16_ZERO
+      ? convert.hexToAscii(shopArr[4])
+      : undefined,
   staked: shopArr[5].toString(),
   hasDispute: shopArr[6],
-  disputeID: shopArr[6] ? shopArr[7].toString() : undefined,
+  disputeID: shopArr[6] ? shopArr[7].toString() : undefined
 });
 
 // to send as erc233 call data, which calls shop.tokenFallback
@@ -36,11 +47,19 @@ export const createShopBytes = (shopData: IShopArgs): string => {
     SHOP_ADD_FN,
     util.toNBytes(shopData.country, 2),
     util.toNBytes(shopData.position, 12),
-    shopData.category ? util.toNBytes(shopData.category, 16) : util.remove0x(constants.BYTES16_ZERO),
-    shopData.name ? util.toNBytes(shopData.name, 16) : util.remove0x(constants.BYTES16_ZERO),
-    shopData.description ? util.toNBytes(shopData.description, 32) : util.remove0x(constants.BYTES32_ZERO),
-    shopData.opening ? util.toNBytes(shopData.opening, 16) : util.remove0x(constants.BYTES16_ZERO),
-  ].join('');
+    shopData.category
+      ? util.toNBytes(shopData.category, 16)
+      : util.remove0x(constants.BYTES16_ZERO),
+    shopData.name
+      ? util.toNBytes(shopData.name, 16)
+      : util.remove0x(constants.BYTES16_ZERO),
+    shopData.description
+      ? util.toNBytes(shopData.description, 32)
+      : util.remove0x(constants.BYTES32_ZERO),
+    shopData.opening
+      ? util.toNBytes(shopData.opening, 16)
+      : util.remove0x(constants.BYTES16_ZERO)
+  ].join("");
 
   return `0x${data}`;
 };
@@ -49,73 +68,120 @@ export const createShopBytes = (shopData: IShopArgs): string => {
 //        Getters       //
 // -------------------- //
 
-export const existsByAddress = async (shopAddress: string, provider: ethers.providers.Provider): Promise<boolean> => {
+export const existsByAddress = async (
+  shopAddress: string,
+  shopInstance: ethers.Contract
+): Promise<boolean> => {
   validate.ethAddress(shopAddress);
 
-  const shopInstance: ethers.Contract = await contract.get(provider, DetherContract.Shops);
   const shopExists: boolean = await shopInstance.shopByAddrExists(shopAddress);
   return shopExists;
 };
 
-export const getShopByAddress = async (shopAddress: string, provider: ethers.providers.Provider): Promise<IShop> => {
+export const getShopByAddress = async (
+  shopAddress: string,
+  shopInstance: ethers.Contract
+): Promise<IShop> => {
   validate.ethAddress(shopAddress);
 
-  const shopInstance: ethers.Contract = await contract.get(provider, DetherContract.Shops);
-  const shop: IShop = shopArrToObj(await shopInstance.getShopByAddr(shopAddress));
+  const shop: IShop = shopArrToObj(
+    await shopInstance.getShopByAddr(shopAddress)
+  );
   return shop;
 };
 
-export const getShopByPosition = async (geohash12: string, provider: ethers.providers.Provider): Promise<IShop> => {
+export const getShopByPosition = async (
+  geohash12: string,
+  shopInstance: ethers.Contract
+): Promise<IShop> => {
   validate.geohash(geohash12, 12);
 
-  const shopInstance = await contract.get(provider, DetherContract.Shops);
-  const shop = shopArrToObj(await shopInstance.getShopByPos(convert.asciiToHex(geohash12).substring(0, 26)));
+  const shop = shopArrToObj(
+    await shopInstance.getShopByPos(
+      convert.asciiToHex(geohash12).substring(0, 26)
+    )
+  );
   return shop;
 };
 
-export const getShopsInZone = async (geohash6: string, provider: ethers.providers.Provider): Promise<IShop[]> => {
+export const getShopsInZone = async (
+  geohash6: string,
+  shopInstance: ethers.Contract
+): Promise<IShop[]> => {
   validate.geohash(geohash6, 6);
 
-  const shopInstance: ethers.Contract = await contract.get(provider, DetherContract.Shops);
-  const shopAddressesInZone: string[] = await shopInstance.getShopAddressesInZone(util.stringToBytes(geohash6.slice(0, 6), 6));
-  return Promise.all(shopAddressesInZone.map((shopAddress: string): Promise<IShop> => getShopByAddress(shopAddress, provider)));
+  const shopAddressesInZone: string[] = await shopInstance.getShopAddressesInZone(
+    util.stringToBytes(geohash6.slice(0, 6), 6)
+  );
+  return Promise.all(
+    shopAddressesInZone.map(
+      (shopAddress: string): Promise<IShop> =>
+        getShopByAddress(shopAddress, shopInstance)
+    )
+  );
 };
 
-export const getShopsInZones = async (geohash6List: string[], provider: ethers.providers.Provider): Promise<IShop[][]> => (
-  Promise.all(geohash6List.map((geohash6: string): Promise<IShop[]> => getShopsInZone(geohash6, provider)))
-);
+export const getShopsInZones = async (
+  geohash6List: string[],
+  shopInstance: ethers.Contract
+): Promise<IShop[][]> =>
+  Promise.all(
+    geohash6List.map(
+      (geohash6: string): Promise<IShop[]> =>
+        getShopsInZone(geohash6, shopInstance)
+    )
+  );
 
 // untested
-export const getLicencePrice = async (geohash6: string, provider: ethers.providers.Provider): Promise<any> => {
+export const getLicencePrice = async (
+  geohash6: string,
+  shopInstance: ethers.Contract
+): Promise<any> => {
   validate.geohash(geohash6, 6);
-  const shopInstance: ethers.Contract = await contract.get(provider, DetherContract.Shops);
   const price = await shopInstance.zoneLicencePrice(geohash6);
   return price;
-}
+};
 
 // -------------------- //
 //        Setters       //
 // -------------------- //
 
 // ERC223
-export const addShop = async (shopData: IShopArgs, wallet: ethers.Wallet, txOptions: ITxOptions): Promise<ethers.ContractTransaction> => {
+export const addShop = async (
+  shopData: IShopArgs,
+  shopContract: ethers.Contract,
+  detherTokenContract: ethers.Contract,
+  wallet: ethers.Wallet,
+  txOptions: ITxOptions
+): Promise<ethers.ContractTransaction> => {
   validate.countryCode(shopData.country);
   validate.geohash(shopData.position, 12);
   // other 4 args are optional strings: category, name, description, opening
-  const shopContract = await contract.get(wallet.provider, DetherContract.Shops);
-  const detherTokenContract = await contract.get(wallet.provider, DetherContract.DetherToken, undefined, [constants.ERC223_TRANSFER_ABI]);
-  let licensePrice = await shopContract.zoneLicencePrice(util.stringToBytes(shopData.position.slice(0, 6), 6));
+
+  let licensePrice = await shopContract.zoneLicencePrice(
+    util.stringToBytes(shopData.position.slice(0, 6), 6)
+  );
   if (licensePrice.toNumber() === 0) {
-    licensePrice = ethers.utils.parseEther('42');
+    licensePrice = ethers.utils.parseEther("42");
   }
-  return detherTokenContract.connect(wallet).transfer(shopContract.address, licensePrice, createShopBytes(shopData), txOptions); // erc223 call
+  return detherTokenContract
+    .connect(wallet)
+    .transfer(
+      shopContract.address,
+      licensePrice,
+      createShopBytes(shopData),
+      txOptions
+    ); // erc223 call
 };
 
 // currently 1 address can only own 1 shop
-export const removeShop = async (wallet: ethers.Wallet, txOptions: ITxOptions): Promise<ethers.ContractTransaction> => {
-  const shopContract = await contract.get(wallet.provider, DetherContract.Shops);
+export const removeShop = async (
+  shopContract: ethers.Contract,
+  wallet: ethers.Wallet,
+  txOptions: ITxOptions
+): Promise<ethers.ContractTransaction> => {
   const shopExists = await shopContract.shopByAddrExists(wallet.address);
-  if (!shopExists) throw new Error('wallet address not registered as shop');
-  const shopInstance = shopContract.connect(wallet, txOptions);
-  return shopInstance.removeShop();
+  if (!shopExists) throw new Error("wallet address not registered as shop");
+
+  return shopContract.connect(wallet).removeShop(txOptions);
 };
