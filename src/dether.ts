@@ -283,6 +283,16 @@ export default class DetherJS {
     );
   }
 
+  async signMessage(
+    password: string,
+    message: string,
+  ): Promise<string> {
+    this.hasProvider();
+    this.hasWallet();
+    const userWallet = await this.loadWallet(password);
+    return userWallet.signMessage(message);
+  }
+
   async approveToken(
     password: string,
     token: Token,
