@@ -63,10 +63,13 @@ export default class DetherJS {
       ? await providers.connectMetamask()
       : await providers.connectEthers(connectOptions);
     this.network = await this.provider.getNetwork();
+    console.log("init detherjs");
     this.shopsContract = await contract.get(
       this.provider,
       DetherContract.Shops
     );
+    console.log("init detherjs shopsContract", this.shopsContract);
+
     this.zoneFactoryContract = await contract.get(
       this.provider,
       DetherContract.ZoneFactory
@@ -420,11 +423,13 @@ export default class DetherJS {
 
   async getShopsInZone(geohash6: string): Promise<IShop[]> {
     this.hasProvider();
+
     return shop.getShopsInZone(geohash6, this.shopsContract);
   }
 
   async getShopsInZones(geohash6List: string[]): Promise<IShop[][]> {
     this.hasProvider();
+    console.log("detherjs", this.shopsContract);
     return shop.getShopsInZones(geohash6List, this.provider);
   }
 

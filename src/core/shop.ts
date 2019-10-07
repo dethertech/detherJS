@@ -109,7 +109,7 @@ export const getShopsInZone = async (
   shopInstance: ethers.Contract
 ): Promise<IShop[]> => {
   validate.geohash(geohash6, 6);
-
+  console.log("shopInstance", shopInstance);
   const shopAddressesInZone: string[] = await shopInstance.getShopAddressesInZone(
     util.stringToBytes(geohash6.slice(0, 6), 6)
   );
