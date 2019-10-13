@@ -1,6 +1,6 @@
 {
   "name": "detherjs",
-  "version": "5.2.13",
+  "version": "5.2.15",
   "main": "lib/dether.js",
   "scripts": {
     "babel-node": "babel-node --presets=latest",

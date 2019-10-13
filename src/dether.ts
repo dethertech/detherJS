@@ -63,12 +63,10 @@ export default class DetherJS {
       ? await providers.connectMetamask()
       : await providers.connectEthers(connectOptions);
     this.network = await this.provider.getNetwork();
-    console.log("init detherjs");
     this.shopsContract = await contract.get(
       this.provider,
       DetherContract.Shops
     );
-    console.log("init detherjs shopsContract", this.shopsContract);
 
     this.zoneFactoryContract = await contract.get(
       this.provider,
@@ -286,10 +284,7 @@ export default class DetherJS {
     );
   }
 
-  async signMessage(
-    password: string,
-    message: string,
-  ): Promise<string> {
+  async signMessage(password: string, message: string): Promise<string> {
     this.hasProvider();
     this.hasWallet();
     const userWallet = await this.loadWallet(password);

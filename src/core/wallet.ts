@@ -114,19 +114,31 @@ export const getAvailableToken = async (
 
 const _getTokenInfo = async (
   token: any,
-  networkName: string
+  provider: ethers.providers.Provider
 ): Promise<object> => {
   try {
-    const jsonData = await axios.get(token.urlInfo);
-    if (jsonData.status === 200 && networkName === "homestead") {
-      // let typeofJson = typeof jsonData.data;
-      if (isObject(jsonData.data)) {
-        return jsonData.data;
-      }
-    } else if (jsonData.status === 200 && networkName === "kovan") {
-      jsonData.data.address = constants.TICKER["kovan"][jsonData.data.symbol];
-      return jsonData.data;
+    // get name
+    let erc20instance;
+    let newTokenObj: ITicker = {};
+    try {
+      erc20instance = await contract.getErc20Address(
+        provider,
+        token.tokenAddress
+      );
+      const symbol = await erc20instance.symbol();
+      const name = await erc20instance.name();
+      newTokenObj.address = token.tokenAddress;
+      newTokenObj.logoUrl = token.logoUrl;
+      newTokenObj.websiteUrl = token.websiteUrl;
+      newTokenObj.community = "on";
+      newTokenObj.name = name;
+      newTokenObj.symbol = symbol;
+      return newTokenObj;
+    } catch (e) {
+      console.log("error detherJS getter token info instanciation", e);
+      return;
     }
+    return token;
   } catch (e) {
     console.log("error getTokenInfo with this url as params", e, token);
   }
@@ -141,15 +153,16 @@ export const getAvailableTokenDecimals = async (
   // mainnet address to logo
   if (forLogo) return constants.TICKER["homestead"];
   else {
-    const network = await provider.getNetwork();
+    // const network = await provider.getNetwork();
     const tokenRegistryInstance: ethers.Contract = await contract.get(
       provider,
       DetherContract.TokenRegistry
     );
     const availableToken = await tokenRegistryInstance.getTokenList();
+
     return Promise.all(
       availableToken.map(
-        (token: Object): Promise<any> => _getTokenInfo(token, network.name)
+        (token: Object): Promise<any> => _getTokenInfo(token, provider)
       )
     );
   }
