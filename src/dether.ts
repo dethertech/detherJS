@@ -153,6 +153,10 @@ export default class DetherJS {
   // -------------------- //
   //        Wallet        //
   // -------------------- //
+  async getERC20Info(address: string): Promise<ITicker> {
+    this.hasProvider();
+    return wallet.getERC20Info(address, this.provider);
+  }
 
   async getAllBalance(
     address: string,

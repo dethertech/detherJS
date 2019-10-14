@@ -65,6 +65,25 @@ const getBalance = async (
   return result;
 };
 
+export const getERC20Info = async (
+  address: string,
+  provider: ethers.providers.Provider
+): Promise<ITicker> => {
+  let erc20instance;
+  try {
+    const tokenInfo: ITicker = {};
+    const erc20instance = await contract.getErc20Address(provider, address);
+    const name = await erc20instance.name();
+    const symbol = await erc20instance.symbol();
+    tokenInfo.address = address;
+    tokenInfo.name = name;
+    tokenInfo.symbol = symbol;
+    return tokenInfo;
+  } catch (e) {
+    throw new Error(`Unable to get info from this address => ${e}`);
+  }
+};
+
 export const getAllBalance = async (
   address: string,
   tickers: ITicker[],
