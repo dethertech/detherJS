@@ -97,7 +97,7 @@ export const CONTRACT_ADDRESSES: any = {
     Zone: "0xAFC085b6651EA78A12b1eE2c45c1C20d61097168", //
     Shops: "0x09474a91745db50d0343e742DaEf91876DA7AC3c", //
     CertifierRegistry: "0x7E2050E45433005EaD5Af5b4A9bb678603da04DC", //
-    TokenRegistry: "0xF642da1C542075f5B8c8c51A64EcAB2437ceC88A",
+    TokenRegistry: "0x2d46f2742ceDF4D425C4A45f3649E877bA8a1105",
     TaxCollector: "0xDD4Bb064d43E119323B74bc84D26CC1CEB712eA9", //
     // external
     // Mkr/Oasis is not on ropsten
@@ -133,7 +133,7 @@ export const CONTRACT_ADDRESSES: any = {
     Zone: "0xA1663482320767D612c024923dc7C82Eb6e3f92F", //
     Shops: "0x9aF46E1015235901832F9D46D042b68f32b1F458", //
     CertifierRegistry: "0xd8dCc8a6260A7EadC092B888A19d37EDe29107d7", //
-    TokenRegistry: "0xc3C87eFA1d7e97956e0BA90277925d6Fe427CD9C",
+    TokenRegistry: "0x8fc724457b8a3f156E93E058fc984c1c8c3BBdBa",
     TaxCollector: "0xb52221f5b11bc6b069151108336fcf6c6c91CF89", //
     // external
     kyberNetworkProxy: "0x818E6FECD516Ecc3849DAf6845e3EC868087B755",
