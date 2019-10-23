@@ -223,6 +223,7 @@ export interface IShop {
   staked: string;
   hasDispute: boolean;
   disputeID: number;
+  zonePrice?: string;
 }
 
 export enum ShopDisputeStatus {

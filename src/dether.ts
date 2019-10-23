@@ -439,7 +439,7 @@ export default class DetherJS {
   async getShopsInZones(geohash6List: string[]): Promise<IShop[][]> {
     this.hasProvider();
     console.log("detherjs", this.shopsContract);
-    return shop.getShopsInZones(geohash6List, this.provider);
+    return shop.getShopsInZones(geohash6List, this.shopsContract);
   }
 
   async getLicencePriceInZone(geohash6: string): Promise<string> {
@@ -473,6 +473,23 @@ export default class DetherJS {
     this.hasWallet();
     const wallet = await this.loadWallet(password);
     return shop.removeShop(this.shopsContract, wallet, txOptions);
+  }
+
+  async topUpShop(
+    password: string,
+    topUpAmount: string,
+    txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS
+  ): Promise<ethers.ContractTransaction> {
+    this.hasProvider();
+    this.hasWallet();
+    const wallet = await this.loadWallet(password);
+    return shop.topUpShop(
+      topUpAmount,
+      this.shopsContract,
+      this.dthContract,
+      wallet,
+      txOptions
+    );
   }
 
   // -------------------- //

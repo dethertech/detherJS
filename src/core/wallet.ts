@@ -48,7 +48,6 @@ const getBalance = async (
   }
   try {
     decimals = await erc20instance.decimals();
-    console.log("decimals", ticker, decimals);
   } catch (e) {
     console.log("error getBalance decimal", ticker, e);
     decimals = 18;
@@ -59,7 +58,6 @@ const getBalance = async (
       await erc20instance.balanceOf(address),
       decimals
     );
-    console.log("result ticker", ticker, result[`${Object.keys(ticker)[0]}`]);
   } catch (e) {
     console.log("error detherJS getBalance", e);
     return;

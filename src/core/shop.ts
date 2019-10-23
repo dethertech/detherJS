@@ -36,7 +36,7 @@ export const shopArrToObj = (shopArr: any[]): IShop => ({
     shopArr[4] !== constants.BYTES16_ZERO
       ? convert.hexToAscii(shopArr[4])
       : undefined,
-  staked: shopArr[5].toString(),
+  staked: ethers.utils.formatEther(shopArr[5].toString()),
   hasDispute: shopArr[6],
   disputeID: shopArr[6] ? shopArr[7].toString() : undefined
 });
@@ -64,6 +64,11 @@ export const createShopBytes = (shopData: IShopArgs): string => {
   return `0x${data}`;
 };
 
+// to send as erc233 call data, which calls shop.tokenFallback
+export const createShopTopUpBytes = (): string => {
+  return `0x31${util.toNBytes("0", 94)}`;
+};
+
 // -------------------- //
 //        Getters       //
 // -------------------- //
@@ -78,6 +83,28 @@ export const existsByAddress = async (
   return shopExists;
 };
 
+// untested
+export const getLicencePrice = async (
+  geohash6: string,
+  shopInstance: ethers.Contract
+): Promise<any> => {
+  validate.geohash(geohash6, 6);
+  try {
+    let priceRaw = await shopInstance.zoneLicencePrice(
+      `0x${util.toNBytes(geohash6, 6)}`
+    );
+    let price;
+    if (Number(ethers.utils.formatEther(priceRaw)) <= 42) {
+      price = "42";
+    } else {
+      price = ethers.utils.formatEther(priceRaw);
+    }
+    return price;
+  } catch (e) {
+    console.log("erreur getLicencePrice()", e);
+  }
+};
+
 export const getShopByAddress = async (
   shopAddress: string,
   shopInstance: ethers.Contract
@@ -87,6 +114,11 @@ export const getShopByAddress = async (
   const shop: IShop = shopArrToObj(
     await shopInstance.getShopByAddr(shopAddress)
   );
+  if (shop.zoneGeohash) {
+    const licencePrice = await getLicencePrice(shop.zoneGeohash, shopInstance);
+    shop.zonePrice = licencePrice;
+  }
+
   return shop;
 };
 
@@ -132,16 +164,6 @@ export const getShopsInZones = async (
     )
   );
 
-// untested
-export const getLicencePrice = async (
-  geohash6: string,
-  shopInstance: ethers.Contract
-): Promise<any> => {
-  validate.geohash(geohash6, 6);
-  const price = await shopInstance.zoneLicencePrice(geohash6);
-  return price;
-};
-
 // -------------------- //
 //        Setters       //
 // -------------------- //
@@ -164,6 +186,7 @@ export const addShop = async (
   if (licensePrice.toNumber() === 0) {
     licensePrice = ethers.utils.parseEther("42");
   }
+
   return detherTokenContract
     .connect(wallet)
     .transfer(
@@ -184,4 +207,19 @@ export const removeShop = async (
   if (!shopExists) throw new Error("wallet address not registered as shop");
 
   return shopContract.connect(wallet).removeShop(txOptions);
+};
+
+export const topUpShop = async (
+  topUpAmount: string,
+  shopContract: ethers.Contract,
+  detherTokenContract: ethers.Contract,
+  wallet: ethers.Wallet,
+  txOptions: ITxOptions
+): Promise<ethers.ContractTransaction> => {
+  return detherTokenContract.connect(wallet).transfer(
+    shopContract.address,
+    ethers.utils.parseEther(topUpAmount),
+    `0x31${util.toNBytes("0", 94)}`, // shop's tokenFallback need 95 bytes as data
+    txOptions
+  ); // erc223 call
 };
