@@ -223,3 +223,19 @@ export const topUpShop = async (
     txOptions
   ); // erc223 call
 };
+
+export const setShopLicencePrice = async (
+  geohash6: string,
+  newPrice: string,
+  shopContract: ethers.Contract,
+  wallet: ethers.Wallet,
+  txOptions: ITxOptions
+): Promise<ethers.ContractTransaction> => {
+  return shopContract
+    .connect(wallet)
+    .setZoneLicensePrice(
+      `0x${util.toNBytes(geohash6, 6)}`,
+      ethers.utils.parseEther(newPrice),
+      txOptions
+    );
+};

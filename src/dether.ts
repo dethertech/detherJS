@@ -475,6 +475,24 @@ export default class DetherJS {
     return shop.removeShop(this.shopsContract, wallet, txOptions);
   }
 
+  async setShopLicencePrice(
+    password: string,
+    geohash6: string,
+    newPrice: string,
+    txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS
+  ): Promise<ethers.ContractTransaction> {
+    this.hasProvider();
+    this.hasWallet();
+    const wallet = await this.loadWallet(password);
+    return shop.setShopLicencePrice(
+      geohash6,
+      newPrice,
+      this.shopsContract,
+      wallet,
+      txOptions
+    );
+  }
+
   async topUpShop(
     password: string,
     topUpAmount: string,
