@@ -239,3 +239,16 @@ export const setShopLicencePrice = async (
       txOptions
     );
 };
+
+export const collectShopTaxes = async (
+  geohash6: string,
+  start: number,
+  end: number,
+  shopContract: ethers.Contract,
+  wallet: ethers.Wallet,
+  txOptions: ITxOptions
+): Promise<ethers.ContractTransaction> => {
+  return shopContract
+    .connect(wallet)
+    .collectTax(`0x${util.toNBytes(geohash6, 6)}`, start, end, txOptions);
+};
