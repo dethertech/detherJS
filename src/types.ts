@@ -224,6 +224,8 @@ export interface IShop {
   hasDispute: boolean;
   disputeID: number;
   zonePrice?: string;
+  lastTaxTime?: number;
+  selfZonePrice?: string;
 }
 
 export enum ShopDisputeStatus {
@@ -254,6 +256,7 @@ export interface IShopArgs {
   name?: string;
   description?: string;
   opening?: string;
+  staking?: string;
 }
 
 export enum Exchange {

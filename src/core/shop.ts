@@ -38,7 +38,9 @@ export const shopArrToObj = (shopArr: any[]): IShop => ({
       : undefined,
   staked: ethers.utils.formatEther(shopArr[5].toString()),
   hasDispute: shopArr[6],
-  disputeID: shopArr[6] ? shopArr[7].toString() : undefined
+  disputeID: shopArr[6] ? shopArr[7].toString() : undefined,
+  lastTaxTime: Number(shopArr[8]),
+  selfZonePrice: ethers.utils.formatEther(shopArr[9])
 });
 
 // to send as erc233 call data, which calls shop.tokenFallback
@@ -114,6 +116,7 @@ export const getShopByAddress = async (
   const shop: IShop = shopArrToObj(
     await shopInstance.getShopByAddr(shopAddress)
   );
+  console.log("detherJS SHOP =>", shop);
   if (shop.zoneGeohash) {
     const licencePrice = await getLicencePrice(shop.zoneGeohash, shopInstance);
     shop.zonePrice = licencePrice;
@@ -141,7 +144,6 @@ export const getShopsInZone = async (
   shopInstance: ethers.Contract
 ): Promise<IShop[]> => {
   validate.geohash(geohash6, 6);
-  console.log("shopInstance", shopInstance);
   const shopAddressesInZone: string[] = await shopInstance.getShopAddressesInZone(
     util.stringToBytes(geohash6.slice(0, 6), 6)
   );
@@ -180,18 +182,11 @@ export const addShop = async (
   validate.geohash(shopData.position, 12);
   // other 4 args are optional strings: category, name, description, opening
 
-  let licensePrice = await shopContract.zoneLicencePrice(
-    util.stringToBytes(shopData.position.slice(0, 6), 6)
-  );
-  if (licensePrice.toNumber() === 0) {
-    licensePrice = ethers.utils.parseEther("42");
-  }
-
   return detherTokenContract
     .connect(wallet)
     .transfer(
       shopContract.address,
-      licensePrice,
+      ethers.utils.parseEther(shopData.staking),
       createShopBytes(shopData),
       txOptions
     ); // erc223 call
