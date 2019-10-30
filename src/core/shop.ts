@@ -116,7 +116,7 @@ export const getShopByAddress = async (
   const shop: IShop = shopArrToObj(
     await shopInstance.getShopByAddr(shopAddress)
   );
-  console.log("detherJS SHOP =>", shop);
+  shop.address = shopAddress;
   if (shop.zoneGeohash) {
     const licencePrice = await getLicencePrice(shop.zoneGeohash, shopInstance);
     shop.zonePrice = licencePrice;
@@ -246,4 +246,20 @@ export const collectShopTaxes = async (
   return shopContract
     .connect(wallet)
     .collectTax(`0x${util.toNBytes(geohash6, 6)}`, start, end, txOptions);
+};
+
+export const deleteUserShop = async (
+  geohash6: string,
+  shopAddress: string,
+  shopContract: ethers.Contract,
+  wallet: ethers.Wallet,
+  txOptions: ITxOptions
+): Promise<ethers.ContractTransaction> => {
+  return shopContract
+    .connect(wallet)
+    .removeShopFromZoneOwner(
+      shopAddress,
+      `0x${util.toNBytes(geohash6, 6)}`,
+      txOptions
+    );
 };

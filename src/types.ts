@@ -226,6 +226,7 @@ export interface IShop {
   zonePrice?: string;
   lastTaxTime?: number;
   selfZonePrice?: string;
+  address?: string;
 }
 
 export enum ShopDisputeStatus {

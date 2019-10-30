@@ -530,6 +530,24 @@ export default class DetherJS {
     );
   }
 
+  async deleteUserShop(
+    password: string,
+    geohash6: string,
+    shopAddress: string,
+    txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS
+  ): Promise<ethers.ContractTransaction> {
+    this.hasProvider();
+    this.hasWallet();
+    const wallet = await this.loadWallet(password);
+    return shop.deleteUserShop(
+      geohash6,
+      shopAddress,
+      this.shopsContract,
+      wallet,
+      txOptions
+    );
+  }
+
   // -------------------- //
   //     Shop Dispute     //
   // -------------------- //
