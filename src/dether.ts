@@ -338,6 +338,7 @@ export default class DetherJS {
 
   async getTellersInZones(geohash6List: string[]): Promise<any[]> {
     this.hasProvider();
+
     return teller.getTellersInZones(
       geohash6List,
       this.provider,
@@ -438,7 +439,6 @@ export default class DetherJS {
 
   async getShopsInZones(geohash6List: string[]): Promise<IShop[][]> {
     this.hasProvider();
-    console.log("detherjs", this.shopsContract);
     return shop.getShopsInZones(geohash6List, this.shopsContract);
   }
 

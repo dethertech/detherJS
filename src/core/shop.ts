@@ -15,33 +15,80 @@ const SHOP_ADD_FN = "30";
 //       Formatters     //
 // -------------------- //
 
-export const shopArrToObj = (shopArr: any[]): IShop => ({
-  position: convert.hexToAscii(shopArr[0]),
-  zoneGeohash: convert.hexToAscii(
-    `0x${convert.remove0x(shopArr[0]).slice(0, 12)}`
-  ),
-  category:
-    shopArr[1] !== constants.BYTES16_ZERO
-      ? convert.hexToAscii(shopArr[1])
-      : undefined,
-  name:
-    shopArr[2] !== constants.BYTES16_ZERO
-      ? convert.hexToAscii(shopArr[2])
-      : undefined,
-  description:
-    shopArr[3] !== constants.BYTES32_ZERO
-      ? convert.hexToAscii(shopArr[3])
-      : undefined,
-  opening:
-    shopArr[4] !== constants.BYTES16_ZERO
-      ? convert.hexToAscii(shopArr[4])
-      : undefined,
-  staked: ethers.utils.formatEther(shopArr[5].toString()),
-  hasDispute: shopArr[6],
-  disputeID: shopArr[6] ? shopArr[7].toString() : undefined,
-  lastTaxTime: Number(shopArr[8]),
-  selfZonePrice: ethers.utils.formatEther(shopArr[9])
-});
+export const shopArrToObj = (shopArr: any[]): IShop => {
+  const shopObj: IShop = {
+    position: "",
+    zoneGeohash: "",
+    category: "",
+    name: "",
+    description: "",
+    opening: "",
+    hasDispute: false,
+    disputeID: undefined,
+    staked: ""
+  };
+
+  try {
+    shopObj.position = convert.hexToAscii(shopArr[0]);
+  } catch (e) {
+    shopObj.position = "ujxs37uuuuuu";
+  }
+  try {
+    shopObj.zoneGeohash = convert.hexToAscii(
+      `0x${convert.remove0x(shopArr[0]).slice(0, 12)}`
+    );
+  } catch (e) {
+    shopObj.zoneGeohash = "ujxs37";
+  }
+  try {
+    shopObj.category =
+      shopArr[1] !== constants.BYTES16_ZERO
+        ? convert.hexToAscii(shopArr[1])
+        : undefined;
+  } catch (e) {
+    console.log("error shopArrToObj category ", e, shopArr[1]);
+    shopObj.category = "--";
+  }
+
+  try {
+    shopObj.name =
+      shopArr[2] !== constants.BYTES16_ZERO
+        ? convert.hexToAscii(shopArr[2])
+        : "--";
+  } catch (error) {
+    console.log("error shopArrToObj name ", error, shopArr[2]);
+    shopObj.name = "--";
+  }
+
+  try {
+    shopObj.description =
+      shopArr[3] !== constants.BYTES32_ZERO && convert.hexToAscii(shopArr[3])
+        ? convert.hexToAscii(shopArr[3])
+        : "--";
+  } catch (error) {
+    console.log("error shopArrToObj description ", error, shopArr[3]);
+    shopObj.description = "--";
+  }
+
+  try {
+    shopObj.opening =
+      shopArr[4] !== constants.BYTES16_ZERO
+        ? convert.hexToAscii(shopArr[4])
+        : "WWWWWWWWWWWWWW";
+  } catch (e) {
+    shopObj.opening = "--";
+  }
+  try {
+    shopObj.staked = ethers.utils.formatEther(shopArr[5].toString());
+    shopObj.hasDispute = shopArr[6];
+    shopObj.disputeID = shopArr[6] ? shopArr[7].toString() : undefined;
+    shopObj.lastTaxTime = Number(shopArr[8]);
+    shopObj.selfZonePrice = ethers.utils.formatEther(shopArr[9]);
+  } catch (e) {
+    console.log("error get shop ", e);
+  }
+  return shopObj;
+};
 
 // to send as erc233 call data, which calls shop.tokenFallback
 export const createShopBytes = (shopData: IShopArgs): string => {
@@ -90,6 +137,7 @@ export const getLicencePrice = async (
   geohash6: string,
   shopInstance: ethers.Contract
 ): Promise<any> => {
+  console.log("getLicencePrice geohash6", geohash6);
   validate.geohash(geohash6, 6);
   try {
     let priceRaw = await shopInstance.zoneLicencePrice(
@@ -101,6 +149,7 @@ export const getLicencePrice = async (
     } else {
       price = ethers.utils.formatEther(priceRaw);
     }
+    console.log("getLicencePrice price ", price);
     return price;
   } catch (e) {
     console.log("erreur getLicencePrice()", e);
@@ -112,16 +161,17 @@ export const getShopByAddress = async (
   shopInstance: ethers.Contract
 ): Promise<IShop> => {
   validate.ethAddress(shopAddress);
-
+  console.log("dether.js getShopByAddress", shopAddress);
   const shop: IShop = shopArrToObj(
     await shopInstance.getShopByAddr(shopAddress)
   );
+
   shop.address = shopAddress;
   if (shop.zoneGeohash) {
     const licencePrice = await getLicencePrice(shop.zoneGeohash, shopInstance);
     shop.zonePrice = licencePrice;
   }
-
+  console.log("dether.js getShopByAddress 3", shop);
   return shop;
 };
 
@@ -147,6 +197,7 @@ export const getShopsInZone = async (
   const shopAddressesInZone: string[] = await shopInstance.getShopAddressesInZone(
     util.stringToBytes(geohash6.slice(0, 6), 6)
   );
+  console.log("detherJS getShopsInZone 2", shopAddressesInZone);
   return Promise.all(
     shopAddressesInZone.map(
       (shopAddress: string): Promise<IShop> =>
