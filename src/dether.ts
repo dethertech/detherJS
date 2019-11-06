@@ -610,6 +610,11 @@ export default class DetherJS {
   //         Zone         //
   // -------------------- //
 
+  async isZoneOwned(geohash6: string): Promise<Boolean> {
+    this.hasProvider();
+    return zone.isZoneOwned(geohash6, this.zoneFactoryContract, this.provider);
+  }
+
   async getZoneByGeohash(geohash6: string): Promise<IZone> {
     this.hasProvider();
     return zone.getZoneByGeohash(

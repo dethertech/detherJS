@@ -301,6 +301,38 @@ export const toLiveZoneNoBidYet = async (
 //        Getters       //
 // -------------------- //
 
+export const isZoneOwned = async (
+  geohash6: string,
+  zoneFactoryContract: ethers.Contract,
+  provider: ethers.providers.Provider
+): Promise<Boolean> => {
+  validate.geohash(geohash6, 6);
+  const zoneExists = await zoneFactoryContract.zoneExists(
+    convert.asciiToHex(geohash6).substring(0, 14)
+  );
+  if (!zoneExists) return false;
+  // there is a zone contract
+  // check if someone is owner now
+  const zoneAddress = await zoneFactoryContract.geohashToZone(
+    convert.asciiToHex(geohash6).substring(0, 14)
+  );
+  const zoneContract = await contract.get(
+    provider,
+    DetherContract.Zone,
+    zoneAddress
+  );
+  const zoneOwner: IZoneOwner = zoneOwnerArrToObj(
+    await zoneContract.getZoneOwner()
+  );
+  if (
+    zoneOwner &&
+    zoneOwner.address != "0x0000000000000000000000000000000000000000"
+  ) {
+    return true;
+  }
+  return false;
+};
+
 export const getZoneByGeohash = async (
   geohash6: string,
   zoneFactoryContract: ethers.Contract,
