@@ -31,6 +31,9 @@ const getBalance = async (
 ): Promise<IBalances> => {
   validate.ethAddress(address);
   const result: IBalances = {};
+  if (Object.keys(ticker)[0] === "BTC") {
+    return;
+  }
   if (Object.keys(ticker)[0] === Token.ETH) {
     result.ETH = ethers.utils.formatEther(await provider.getBalance(address));
     return result;
