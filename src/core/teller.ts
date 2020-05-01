@@ -11,7 +11,7 @@ import {
   ITeller,
   ITellerArgs,
   IDate,
-  ITxOptions
+  ITxOptions,
 } from "../types";
 
 const EMPTY_MESSENGER_FIELD = "0x00000000000000000000000000000000";
@@ -49,7 +49,7 @@ export const tellerArrToObj = (
     tellerContractAddress: tellerContractAddr,
     sellUp: description.length == 3 ? description[0] : "?",
     buyUp: description.length == 3 ? description[1] : "?",
-    ticker: description.length == 3 ? description[2] : ""
+    ticker: description.length == 3 ? description[2] : "",
   };
 };
 
