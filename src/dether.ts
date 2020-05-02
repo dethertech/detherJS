@@ -7,39 +7,23 @@ import * as contract from "./helpers/contracts";
 
 import * as teller from "./core/teller";
 import * as shop from "./core/shop";
-import * as shopDispute from "./core/shopDispute";
 import * as wallet from "./core/wallet";
 import * as util from "./core/util";
-import * as user from "./core/user";
 import * as zone from "./core/zone";
-import * as certifier from "./core/certifier";
 
 import {
-  Unit,
   Token,
   TransactionStatus,
-  Tier,
   DetherContract,
   IEthersOptions,
-  ITeller,
   IBalances,
   ITellerArgs,
   IShop,
   IShopArgs,
-  IShopDispute,
   ITxOptions,
   IZone,
   ITicker,
-  IExchange,
-  ITickerDecimal
 } from "./types";
-
-// import * as zoneAuction from './core/zoneAuction';
-
-// TO DO :
-// teller shop management (set licence price, collect taxes, get available taxes)
-// shop licence price moving (get licence price, estimate taxes, is owned or not)
-// getShopInZones
 
 export default class DetherJS {
   usingMetamask: boolean;
@@ -91,20 +75,20 @@ export default class DetherJS {
       contractAddresses[DetherContract.DetherToken];
     constants.CONTRACT_ADDRESSES.custom.GeoRegistry =
       contractAddresses[DetherContract.GeoRegistry];
-    constants.CONTRACT_ADDRESSES.custom.Users =
-      contractAddresses[DetherContract.Users];
     constants.CONTRACT_ADDRESSES.custom.ZoneFactory =
       contractAddresses[DetherContract.ZoneFactory];
     constants.CONTRACT_ADDRESSES.custom.Zone =
       contractAddresses[DetherContract.Zone];
     constants.CONTRACT_ADDRESSES.custom.Shops =
       contractAddresses[DetherContract.Shops];
-    constants.CONTRACT_ADDRESSES.custom.ShopDispute =
-      contractAddresses[DetherContract.ShopDispute];
     constants.CONTRACT_ADDRESSES.custom.TaxCollector =
       contractAddresses[DetherContract.TaxCollector];
-    constants.CONTRACT_ADDRESSES.custom.CertifierRegistry =
-      contractAddresses[DetherContract.CertifierRegistry];
+  }
+  async initProvider(connectOptions?: IEthersOptions): Promise<void> {
+    this.provider = this.usingMetamask
+      ? await providers.connectMetamask()
+      : await providers.connectEthers(connectOptions);
+    this.network = await this.provider.getNetwork();
   }
 
   loadUser(encryptedWallet: string) {
@@ -549,60 +533,6 @@ export default class DetherJS {
   }
 
   // -------------------- //
-  //     Shop Dispute     //
-  // -------------------- //
-
-  async getShopDispute(shopAddress: string): Promise<IShopDispute> {
-    this.hasProvider();
-    return shopDispute.getDispute(shopAddress, this.provider);
-  }
-
-  async getShopDisputeCreateCost(): Promise<string> {
-    this.hasProvider();
-    return shopDispute.getDisputeCreateCost(this.provider);
-  }
-
-  async getShopDisputeAppealCost(shopAddress: string): Promise<string> {
-    this.hasProvider();
-    return shopDispute.getDisputeAppealCost(shopAddress, this.provider);
-  }
-
-  async createShopDispute(
-    password: string,
-    shopAddress: string,
-    evidenceHash: string,
-    txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS
-  ): Promise<ethers.ContractTransaction> {
-    this.hasProvider();
-    this.hasWallet();
-    const wallet = await this.loadWallet(password);
-    return shopDispute.createDispute(
-      shopAddress,
-      evidenceHash,
-      wallet,
-      txOptions
-    );
-  }
-
-  // NOTE: disputeID is created by kleros and should be unique?!
-  async appealShopDispute(
-    password: string,
-    shopAddress: string,
-    evidenceHash: string,
-    txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS
-  ): Promise<ethers.ContractTransaction> {
-    this.hasProvider();
-    this.hasWallet();
-    const wallet = await this.loadWallet(password);
-    return shopDispute.appealDispute(
-      shopAddress,
-      evidenceHash,
-      wallet,
-      txOptions
-    );
-  }
-
-  // -------------------- //
   //         User         //
   // -------------------- //
 
@@ -873,105 +803,6 @@ export default class DetherJS {
     this.hasProvider();
     return zone.getOpenBid(address, this.zoneFactoryContract);
   }
-
-  // -------------------- //
-  //        Certifier     //
-  // -------------------- //
-
-  async createCertifier(
-    password: string,
-    urlCert: string,
-    txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS
-  ): Promise<ethers.ContractTransaction> {
-    this.hasProvider();
-    this.hasWallet();
-    const wallet = await this.loadWallet(password);
-    return certifier.createCertifier(urlCert, wallet, txOptions);
-  }
-
-  async modifyUrlCertifier(
-    password: string,
-    urlCert: string,
-    certifierId: string,
-    txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS
-  ): Promise<ethers.ContractTransaction> {
-    this.hasProvider();
-    this.hasWallet();
-    const wallet = await this.loadWallet(password);
-    return certifier.modifyUrlCertifier(
-      urlCert,
-      certifierId,
-      wallet,
-      txOptions
-    );
-  }
-
-  async addCertificationType(
-    password: string,
-    certifierId: string,
-    refcerts: number,
-    descriptionRef: string,
-    txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS
-  ): Promise<ethers.ContractTransaction> {
-    this.hasProvider();
-    this.hasWallet();
-    const wallet = await this.loadWallet(password);
-    return certifier.addCertificationType(
-      certifierId,
-      refcerts,
-      descriptionRef,
-      wallet,
-      txOptions
-    );
-  }
-
-  async addDelegate(
-    password: string,
-    certifierId: string,
-    delegate: string,
-    txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS
-  ): Promise<ethers.ContractTransaction> {
-    this.hasProvider();
-    this.hasWallet();
-    const wallet = await this.loadWallet(password);
-    return certifier.addDelegate(certifierId, delegate, wallet, txOptions);
-  }
-
-  async certify(
-    password: string,
-    certifierId: string,
-    who: string,
-    type: number,
-    txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS
-  ): Promise<ethers.ContractTransaction> {
-    this.hasProvider();
-    this.hasWallet();
-    const wallet = await this.loadWallet(password);
-    return certifier.certify(certifierId, who, type, wallet, txOptions);
-  }
-
-  async removeDelegate(
-    password: string,
-    certifierId: string,
-    delegate: string,
-    txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS
-  ): Promise<ethers.ContractTransaction> {
-    this.hasProvider();
-    this.hasWallet();
-    const wallet = await this.loadWallet(password);
-    return certifier.removeDelegate(certifierId, delegate, wallet, txOptions);
-  }
-
-  async isDelegate(certifierId: string, who: string): Promise<Boolean> {
-    this.hasProvider();
-    return certifier.isDelegate(certifierId, who, this.provider);
-  }
-
-  async getCerts(who: string): Promise<any> {
-    this.hasProvider();
-    return certifier.getCerts(who, this.provider);
-  }
-
   // -------------------- //
   //        Util        //
   // -------------------- //

@@ -59,7 +59,7 @@ export interface ITellerArgs {
 
 export enum ZoneAuctionState {
   started = "started",
-  ended = "ended"
+  ended = "ended",
 }
 
 export interface IZoneAuction {
@@ -91,7 +91,7 @@ export interface IZone {
 export enum ZoneStatus {
   Inexistent = "Inexistent",
   Claimable = "Claimable",
-  Occupied = "Occupied"
+  Occupied = "Occupied",
 }
 
 export enum ExternalContract {
@@ -101,7 +101,7 @@ export enum ExternalContract {
   kyberNetworkProxy = "kyberNetworkProxy",
   uniswapExchange = "uniswapExchange",
   uniswapFactory = "uniswapFactory",
-  appealableArbitrator = "appealableArbitrator"
+  appealableArbitrator = "appealableArbitrator",
 }
 
 export interface IBalances {
@@ -142,7 +142,7 @@ export interface IDate {
 export enum Unit {
   eth = "eth",
   usd = "usd",
-  wei = "wei"
+  wei = "wei",
 }
 
 export enum DetherContract {
@@ -160,20 +160,20 @@ export enum DetherContract {
   Teller = "Teller",
   ShopDispute = "ShopDispute",
   TokenRegistry = "TokenRegistry",
-  TaxCollector = "TaxCollector"
+  TaxCollector = "TaxCollector",
 }
 
 export enum TransactionStatus {
   pending = "pending",
   error = "error",
   success = "success",
-  unknown = "unknown"
+  unknown = "unknown",
 }
 
 export enum Tier {
   sms = "sms",
   kyc = "kyc",
-  uncertified = "uncertified"
+  uncertified = "uncertified",
 }
 
 export interface IWeb3 {
@@ -202,7 +202,7 @@ export enum Token {
   FLIXX = "FLIXX",
   PNK = "PNK",
   CAN = "CAN",
-  KNC = "KNC"
+  KNC = "KNC",
 }
 
 export enum Network {
@@ -210,7 +210,7 @@ export enum Network {
   mainnet = "mainnet",
   rinkeby = "rinkeby",
   ropsten = "ropsten",
-  kovan = "kovan"
+  kovan = "kovan",
 }
 
 export interface IShop {
@@ -232,13 +232,13 @@ export interface IShop {
 export enum ShopDisputeStatus {
   Waiting = "Waiting",
   Appealable = "Appealable",
-  Solved = "Solved"
+  Solved = "Solved",
 }
 
 export enum ShopDisputeRuling {
   NoRuling = "NoRuling",
   ShopWins = "ShopWins",
-  ChallengerWins = "ChallengerWins"
+  ChallengerWins = "ChallengerWins",
 }
 
 export interface IShopDispute {
@@ -253,16 +253,16 @@ export interface IShopDispute {
 export interface IShopArgs {
   country: string; // TODO: create enum
   position: string;
+  staking: string; // zone price (default is 42)
   category?: string;
   name?: string;
   description?: string;
   opening?: string;
-  staking?: string;
 }
 
 export enum Exchange {
   kyber = "kyber",
-  uniswap = "uniswap"
+  uniswap = "uniswap",
 }
 
 export interface IExchangePair {
@@ -286,7 +286,7 @@ export interface IExchangeEstimation {
 }
 
 export enum DisputeType {
-  firstOne = 0
+  firstOne = 0,
 }
 
 export interface ITxOptions {
