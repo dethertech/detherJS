@@ -25,7 +25,7 @@ export const shopArrToObj = (shopArr: any[]): IShop => {
     opening: "",
     hasDispute: false,
     disputeID: undefined,
-    staked: ""
+    staked: "",
   };
 
   try {
@@ -107,7 +107,7 @@ export const createShopBytes = (shopData: IShopArgs): string => {
       : util.remove0x(constants.BYTES32_ZERO),
     shopData.opening
       ? util.toNBytes(shopData.opening, 16)
-      : util.remove0x(constants.BYTES16_ZERO)
+      : util.remove0x(constants.BYTES16_ZERO),
   ].join("");
 
   return `0x${data}`;
@@ -137,7 +137,6 @@ export const getLicencePrice = async (
   geohash6: string,
   shopInstance: ethers.Contract
 ): Promise<any> => {
-  console.log("getLicencePrice geohash6", geohash6);
   validate.geohash(geohash6, 6);
   try {
     let priceRaw = await shopInstance.zoneLicencePrice(
@@ -149,7 +148,6 @@ export const getLicencePrice = async (
     } else {
       price = ethers.utils.formatEther(priceRaw);
     }
-    console.log("getLicencePrice price ", price);
     return price;
   } catch (e) {
     console.log("erreur getLicencePrice()", e);
@@ -161,7 +159,6 @@ export const getShopByAddress = async (
   shopInstance: ethers.Contract
 ): Promise<IShop> => {
   validate.ethAddress(shopAddress);
-  console.log("dether.js getShopByAddress", shopAddress);
   const shop: IShop = shopArrToObj(
     await shopInstance.getShopByAddr(shopAddress)
   );
@@ -171,10 +168,10 @@ export const getShopByAddress = async (
     const licencePrice = await getLicencePrice(shop.zoneGeohash, shopInstance);
     shop.zonePrice = licencePrice;
   }
-  console.log("dether.js getShopByAddress 3", shop);
   return shop;
 };
 
+// Do not return neither address or shopZonePrice
 export const getShopByPosition = async (
   geohash12: string,
   shopInstance: ethers.Contract
@@ -197,7 +194,7 @@ export const getShopsInZone = async (
   const shopAddressesInZone: string[] = await shopInstance.getShopAddressesInZone(
     util.stringToBytes(geohash6.slice(0, 6), 6)
   );
-  console.log("detherJS getShopsInZone 2", shopAddressesInZone);
+
   return Promise.all(
     shopAddressesInZone.map(
       (shopAddress: string): Promise<IShop> =>
@@ -231,8 +228,8 @@ export const addShop = async (
 ): Promise<ethers.ContractTransaction> => {
   validate.countryCode(shopData.country);
   validate.geohash(shopData.position, 12);
+  validate.zonePrice(shopData.staking);
   // other 4 args are optional strings: category, name, description, opening
-
   return detherTokenContract
     .connect(wallet)
     .transfer(
@@ -251,7 +248,6 @@ export const removeShop = async (
 ): Promise<ethers.ContractTransaction> => {
   const shopExists = await shopContract.shopByAddrExists(wallet.address);
   if (!shopExists) throw new Error("wallet address not registered as shop");
-
   return shopContract.connect(wallet).removeShop(txOptions);
 };
 
