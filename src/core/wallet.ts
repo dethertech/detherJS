@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module detherJS
+ */
+
 import { ethers } from "ethers";
 import axios from "axios";
 
@@ -16,7 +21,7 @@ import {
   ITicker,
   ExternalContract,
   ITickerDecimal,
-  DetherContract
+  DetherContract,
 } from "../types";
 import { isObject } from "util";
 
@@ -98,7 +103,7 @@ export const getAllBalance = async (
         getBalance(address, ticker, provider)
     )
   );
-  const cleanBalances = await myBalances.filter(function(el) {
+  const cleanBalances = await myBalances.filter(function (el) {
     return el != null;
   });
   return cleanBalances;
@@ -249,7 +254,7 @@ export const getUniswapLiquidity = async (
     );
     const balances = {
       ETH: ethBalance,
-      TOKEN: tokenBalance
+      TOKEN: tokenBalance,
     };
     return balances;
   } catch (e) {
@@ -332,7 +337,7 @@ export const sendCrypto = async (
     return wallet.sendTransaction({
       to: toAddress,
       value: convert.ethToWeiBN(Number(amount)),
-      ...txOptions
+      ...txOptions,
     });
   } else {
     const erc20instance = await contract.getErc20Address(
@@ -363,12 +368,11 @@ export const approveToken = async (
   );
   const erc20instance = await contract.getErc20Address(wallet.provider, token);
 
-  return erc20instance.connect(wallet).approve(
-    exchangeAddress,
-    ethers.utils
-      .bigNumberify(2)
-      .pow(256)
-      .sub(1),
-    txOptions
-  );
+  return erc20instance
+    .connect(wallet)
+    .approve(
+      exchangeAddress,
+      ethers.utils.bigNumberify(2).pow(256).sub(1),
+      txOptions
+    );
 };

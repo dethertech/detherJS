@@ -13,7 +13,7 @@ import {
   IZoneAuction,
   IZoneOwner,
   ITxOptions,
-  IZone
+  IZone,
 } from "../types";
 
 // -------------------- //
@@ -27,7 +27,7 @@ export const zoneOwnerArrToObj = (onchainZoneOwner: any[]): IZoneOwner => ({
   balance: convert.weiToEthNumber(onchainZoneOwner[3].toString()),
   lastTaxTime: onchainZoneOwner[4].toNumber(),
   auctionId:
-    onchainZoneOwner[5].toNumber() > 0 ? onchainZoneOwner[5] : undefined
+    onchainZoneOwner[5].toNumber() > 0 ? onchainZoneOwner[5] : undefined,
 });
 
 // const hasEnded = util.timestampNow() >= onchainZoneAuction[3].toNumber();
@@ -43,7 +43,7 @@ export const zoneAuctionArrToObj = (
     onchainZoneAuction[4] !== constants.ADDRESS_ZERO
       ? onchainZoneAuction[4]
       : undefined,
-  highestBid: convert.weiToEthNumber(onchainZoneAuction[5].toString())
+  highestBid: convert.weiToEthNumber(onchainZoneAuction[5].toString()),
 });
 
 const createZoneBytes = (country: string, geohash6: string): string => {
@@ -173,7 +173,7 @@ export const toLiveZone = async (
     status: zoneStatus,
     address: zoneAddress,
     owner: zoneOwner.address !== constants.ADDRESS_ZERO ? zoneOwner : undefined,
-    auction: lastAuction.id !== 0 ? lastAuction : undefined
+    auction: lastAuction.id !== 0 ? lastAuction : undefined,
   };
 };
 
@@ -259,7 +259,7 @@ export const toLiveZoneRaw = async (
     status: zoneStatus,
     address: zoneAddress,
     owner: zoneOwner.address !== constants.ADDRESS_ZERO ? zoneOwner : undefined,
-    auction: lastAuction.id !== 0 ? lastAuction : undefined
+    auction: lastAuction.id !== 0 ? lastAuction : undefined,
   };
 };
 
@@ -293,7 +293,7 @@ export const toLiveZoneNoBidYet = async (
     status: zoneStatus,
     address: zoneAddress,
     owner: zoneOwner.address !== constants.ADDRESS_ZERO ? zoneOwner : undefined,
-    auction: undefined
+    auction: undefined,
   };
 };
 
@@ -470,7 +470,7 @@ export const isZoneOwner = async (
       .slice(0, 6);
     return {
       zoneAddr,
-      zoneGeohash
+      zoneGeohash,
     };
   } catch (e) {
     return false;
@@ -697,7 +697,7 @@ const checkIfWithdrawable = async (
 };
 
 // TO DO:
-// improve this function to only withdraw from know auction, to avoid doing useles call to previous zone auction
+// improve this function to only withdraw from known auction, to avoid doing useles call to previous zone auction
 export const withdrawAuctionsRaw = async (
   zoneAddress: string,
   wallet: ethers.Wallet,

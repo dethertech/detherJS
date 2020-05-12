@@ -5,9 +5,11 @@
   "scripts": {
     "babel-node": "babel-node --presets=latest",
     "test": "mocha --require ts-node/register --timeout 0 test/**/*.spec.ts ",
-    "example1": "npm run babel-node -- examples/one.js",
-    "example2": "npm run babel-node -- examples/two.js",
-    "build": "tsc -p tsconfig.build.json"
+    "example1": "npm run babel-node -- examples/getTellersAndShops.js",
+    "example2": "npm run babel-node -- examples/addTellersAndShops.js",
+    "build": "tsc -p tsconfig.build.json",
+    "docs": "typedoc --out docs src/dether.ts",
+    "docs-md": "typedoc --plugin typedoc-plugin-markdown --out docs-md src/dether.ts"
   },
   "repository": {
     "type": "git",
@@ -47,7 +49,7 @@
     "ts-node": "^7.0.1",
     "tslint": "^5.11.0",
     "tslint-config-airbnb": "^5.11.0",
-    "typescript": "^3.0.3",
+    "typedoc": "^0.17.6",
     "web3": "^1.0.0-beta.37"
   },
   "dependencies": {
@@ -56,6 +58,8 @@
     "bs58": "^4.0.1",
     "buffer": "^5.2.1",
     "ethers": "^4.0.44",
-    "node-fetch": "^2.6.0"
+    "node-fetch": "^2.6.0",
+    "typedoc-plugin-markdown": "^2.2.17",
+    "typescript": "^3.8.3"
   }
 }

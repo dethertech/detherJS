@@ -82,3 +82,8 @@ typings/
 .dynamodb/
 
 .DS_Store*
+
+data/
+docs/
+docs-md/
+jsdoc.conf.json
