@@ -25,6 +25,10 @@ import {
   ITicker,
 } from "./types";
 
+/**
+ * This is the main detherJS object
+ *
+ */
 export default class DetherJS {
   usingMetamask: boolean;
   encryptedWallet: string;

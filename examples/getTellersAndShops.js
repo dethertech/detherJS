@@ -1,7 +1,11 @@
 const ethers = require("ethers");
 const Geohash = require("latlon-geohash");
-
 import DetherJS from "../lib/dether";
+
+require("dotenv").config();
+
+const INFURA_KEY = process.env.INFURA_KEY;
+const rpcURL = `https://kovan.infura.io/v3/${INFURA_KEY}`;
 
 const geoHashes6 = [
   "xn0m7h",
@@ -11,9 +15,9 @@ const geoHashes6 = [
   "xn0m74",
   "xn0m6f",
   "xn0m6g",
-  "xn0m6u"
+  "xn0m6u",
 ];
-const rpcURL = "https://kovan.infura.io";
+
 const provider = new ethers.providers.JsonRpcProvider(rpcURL);
 
 const isZoneTeller = async () => {
@@ -62,6 +66,13 @@ const getShops = async () => {
   console.log("shops", shops);
 };
 
+const getZoneByGeohash = async () => {
+  const detherJs = new DetherJS(false);
+  await detherJs.init({ rpcURL });
+  const zone = await detherJs.getZoneByGeohash(geoHashes6[0], provider);
+  console.log("Zone", zone);
+};
+
 const getArrayOfGeohash = async () => {
   const detherJs = new DetherJS(false);
   await detherJs.init({ rpcURL });
@@ -76,8 +87,9 @@ const getArrayOfGeohash = async () => {
 };
 // getTellers();
 // getShops();
+getZoneByGeohash();
 // getTeller();
 // getArrayOfGeohash();
 // getZones();
 // isZoneTeller();
-getWithdrawable();
+// getWithdrawable();
