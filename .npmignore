@@ -6,3 +6,4 @@ tsconfig.json
 tslint.json
 tsconfig.build.json
 /data/
+/trees_countries/
