@@ -18,17 +18,17 @@ export const TICKER: any = {
     POLY: "0xB06d72a24df50D4E2cAC133B320c5E7DE3ef94cB",
     GNT: "0xef7fff64389b814a946f3e92105513705ca6b990",
     DGD: "0xeee3870657e4716670f185df08652dd848fe8f7e",
-    USDC: "0x381a4c615df73c912f98c7b528fc415186cb69ea"
+    USDC: "0x381a4c615df73c912f98c7b528fc415186cb69ea",
   },
   ropsten: {
     DTH: "0xdb06f28e163684de611f21f76203e42ab4ae5b55",
     DAI: "0xaD6D458402F60fD3Bd25163575031ACDce07538D",
     OMG: "0x4BFBa4a8F28755Cb2061c413459EE562c6B9c51b",
-    WETH: "0x0000000000000000000000000000000000000000" // WETH
+    WETH: "0x0000000000000000000000000000000000000000", // WETH
   },
   rinkeby: {
     DTH: "0xaaa5dd9beff81bb47ccdde852504fb94fa18415c",
-    WETH: "0xc778417e063141139fce010982780140aa0cd5ab" // WETH
+    WETH: "0xc778417e063141139fce010982780140aa0cd5ab", // WETH
   },
   homestead: {
     DTH: "0x5adc961d6ac3f7062d2ea45fefb8d8167d44b190",
@@ -47,11 +47,11 @@ export const TICKER: any = {
     FLIXX: "0xf04a8ac553fcedb5ba99a64799155826c136b0be",
     PNK: "0x93ed3fbe21207ec2e8f2d3c3de6e058cb73bc04d",
     CAN: "0x1d462414fe14cf489c7a21cac78509f4bf8cd7c0",
-    KNC: "0xdd974d5c2e2928dea5f71b9825b8b646686bd200"
+    KNC: "0xdd974d5c2e2928dea5f71b9825b8b646686bd200",
   },
   custom: {
-    DTH: ""
-  }
+    DTH: "",
+  },
 };
 
 export const EXCHANGE_PAIRS: IExchangePair[] = [
@@ -64,7 +64,7 @@ export const EXCHANGE_PAIRS: IExchangePair[] = [
   { tokens: [Token.ETH, Token.VEN], exchange: Exchange.kyber },
   { tokens: [Token.ETH, Token.AE], exchange: Exchange.kyber },
   { tokens: [Token.ETH, Token.REP], exchange: Exchange.kyber },
-  { tokens: [Token.ETH, Token.KNC], exchange: Exchange.kyber }
+  { tokens: [Token.ETH, Token.KNC], exchange: Exchange.kyber },
 ];
 
 // source: https://github.com/OasisDEX/oasis-direct/blob/master/src/settings.json
@@ -86,7 +86,7 @@ export const CONTRACT_ADDRESSES: any = {
     // Mkr/Oasis is not on ropsten
     // AirSwap is not on ropsten
     kyberNetworkProxy: "0x818E6FECD516Ecc3849DAf6845e3EC868087B755",
-    uniswapExchange: ""
+    uniswapExchange: "",
   },
   kovan: {
     // dether
@@ -104,7 +104,7 @@ export const CONTRACT_ADDRESSES: any = {
     // AirSwap is not on ropsten
     kyberNetworkProxy: "0x7e6b8b9510D71BF8EF0f893902EbB9C865eEF4Df",
     uniswapFactory: "0xD3E51Ef092B2845f10401a0159B2B96e8B6c3D30",
-    uniswapExchange: ""
+    uniswapExchange: "",
   },
   rinkeby: {
     // dether
@@ -122,7 +122,7 @@ export const CONTRACT_ADDRESSES: any = {
     // external
     // Mkr/Oasis is not on rinkeby
     airswapExchange: "0x07fc7c43d8168a2730344e5cf958aaecc3b42b41",
-    uniswapExchange: ""
+    uniswapExchange: "",
   },
   homestead: {
     // dether
@@ -138,7 +138,8 @@ export const CONTRACT_ADDRESSES: any = {
     // external
     kyberNetworkProxy: "0x818E6FECD516Ecc3849DAf6845e3EC868087B755",
     uniswapFactory: "0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95",
-    uniswapExchange: ""
+    uniswapExchange: "",
+    uniswapV2Router02: "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
   },
   custom: {
     // dether
@@ -155,15 +156,15 @@ export const CONTRACT_ADDRESSES: any = {
     TokenRegistry: "",
     // external
     kyberNetworkProxy: "",
-    uniswapExchange: ""
-  }
+    uniswapExchange: "",
+  },
 };
 
 export const MIN_ZONE_STAKE = 100;
 
 export const DEFAULT_TX_OPTIONS = {
   gasPrice: 20000000000,
-  gasLimit: 7000000
+  gasLimit: 7000000,
 };
 
 export const ERC223_TRANSFER_ABI =

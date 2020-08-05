@@ -6,7 +6,7 @@ require("dotenv").config();
 
 const INFURA_KEY = process.env.INFURA_KEY;
 const rpcURL = `https://kovan.infura.io/v3/${INFURA_KEY}`;
-
+console.log("INFURA_KEY", INFURA_KEY);
 const geoHashes6 = [
   "xn0m7h",
   "xn0m7k",
@@ -85,10 +85,10 @@ const getArrayOfGeohash = async () => {
   const tellers = await detherJs.getTellersInZones(geoHashes6, provider);
   console.log("Tellers present in these 9 zones", tellers);
 };
-// getTellers();
+getTellers();
 // getShops();
-getZoneByGeohash();
-// getTeller();
+// getZoneByGeohash();
+//getTeller();
 // getArrayOfGeohash();
 // getZones();
 // isZoneTeller();

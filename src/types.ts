@@ -101,6 +101,7 @@ export enum ExternalContract {
   kyberNetworkProxy = "kyberNetworkProxy",
   uniswapExchange = "uniswapExchange",
   uniswapFactory = "uniswapFactory",
+  uniswapV2Router02 = "uniswapV2Router02",
   appealableArbitrator = "appealableArbitrator",
 }
 
@@ -294,4 +295,5 @@ export interface ITxOptions {
   gasLimit?: number;
   nonce?: number;
   value?: any;
+  to?: any;
 }

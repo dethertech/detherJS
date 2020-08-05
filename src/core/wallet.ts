@@ -5,7 +5,14 @@
 
 import { ethers } from "ethers";
 import axios from "axios";
-
+import {
+  ChainId,
+  Fetcher,
+  Route,
+  WETH,
+  Token as UToken,
+  TokenAmount,
+} from "@uniswap/sdk";
 import * as constants from "../constants";
 
 import * as validate from "../helpers/validate";
@@ -202,11 +209,18 @@ export const hasApproval = async (
   provider: ethers.providers.Provider
 ): Promise<boolean> => {
   const erc20instance = await contract.getErc20Address(provider, sellToken);
-  const exchangeAddress = await contract.getUniswapExchangeAddress(
-    provider,
-    sellToken
+  // const exchangeAddress = await contract.getUniswapExchangeAddress(
+  //   provider,
+  //   sellToken
+  // );
+  const uniswapV2Router02Address = await contract.getContractAddress(
+    ExternalContract.uniswapV2Router02,
+    "homestead"
   );
-  const approve = await erc20instance.allowance(owner, exchangeAddress);
+  const approve = await erc20instance.allowance(
+    owner,
+    uniswapV2Router02Address
+  );
 
   if (Number(approve) > Number(amount)) {
     return true;
@@ -231,34 +245,23 @@ export const getUniswapLiquidity = async (
   provider: ethers.providers.Provider
 ): Promise<any> => {
   try {
-    // get concerned exchange
-    const exchangeAddress = await contract.getUniswapExchangeAddress(
-      provider,
-      tokenAddress
-    );
-
-    // get ETH balance
-    const ethBalance = ethers.utils.formatEther(
-      await provider.getBalance(exchangeAddress)
-    );
-
-    // get token balance
     const erc20instance = await contract.getErc20Address(
       provider,
       tokenAddress
     );
     const decimals = await erc20instance.decimals();
-    const tokenBalance = ethers.utils.formatUnits(
-      await erc20instance.balanceOf(exchangeAddress),
-      decimals
-    );
+    const tokenToGet = new UToken(ChainId.MAINNET, tokenAddress, decimals);
+    const pair = await Fetcher.fetchPairData(tokenToGet, WETH[1]);
+
+    const res0 = (await pair.reserveOf(tokenToGet)) as TokenAmount;
+    const res1 = (await pair.reserveOf(WETH[1])) as TokenAmount;
     const balances = {
-      ETH: ethBalance,
-      TOKEN: tokenBalance,
+      ETH: res1.toFixed(6),
+      TOKEN: res0.toFixed(6),
     };
     return balances;
   } catch (e) {
-    console.log("error get uniswap liquidity");
+    console.log("error get uniswap liquidity", tokenAddress, e);
     return 0;
   }
 };
@@ -334,11 +337,9 @@ export const sendCrypto = async (
 ): Promise<ethers.ContractTransaction> => {
   let tsx;
   if (token === "ETH") {
-    return wallet.sendTransaction({
-      to: toAddress,
-      value: convert.ethToWeiBN(Number(amount)),
-      ...txOptions,
-    });
+    txOptions.to = toAddress;
+    txOptions.value = convert.ethToWeiBN(Number(amount));
+    return wallet.sendTransaction(txOptions);
   } else {
     const erc20instance = await contract.getErc20Address(
       wallet.provider,
@@ -362,17 +363,16 @@ export const approveToken = async (
   wallet: ethers.Wallet,
   txOptions: ITxOptions
 ): Promise<ethers.ContractTransaction> => {
-  const exchangeAddress = await contract.getUniswapExchangeAddress(
-    wallet.provider,
-    token
+  const uniswapV2Router02Address = await contract.getContractAddress(
+    ExternalContract.uniswapV2Router02,
+    "homestead"
   );
   const erc20instance = await contract.getErc20Address(wallet.provider, token);
 
-  return erc20instance
-    .connect(wallet)
-    .approve(
-      exchangeAddress,
-      ethers.utils.bigNumberify(2).pow(256).sub(1),
-      txOptions
-    );
+  return erc20instance.connect(wallet).approve(
+    // exchangeAddress,
+    uniswapV2Router02Address,
+    ethers.utils.bigNumberify(2).pow(256).sub(1),
+    txOptions
+  );
 };

@@ -360,10 +360,11 @@ export const addFunds = async (
   );
   const ethAmountBN = ethers.utils.parseUnits(ethAmount, "wei");
   // TODO: check that wallet address has enough eth balance + is a teller
-
-  return tellerContract
-    .connect(wallet)
-    .addFunds({ ...txOptions, value: ethAmountBN });
+  txOptions.value = ethAmountBN;
+  return tellerContract.connect(wallet).addFunds(txOptions);
+  // return tellerContract
+  //   .connect(wallet)
+  //   .addFunds({ ...txOptions, value: ethAmountBN });
 };
 
 // --- Comments
