@@ -47,9 +47,10 @@ export default class DetherJS {
   }
 
   async init(connectOptions?: IEthersOptions): Promise<void> {
-    this.provider = this.usingMetamask
-      ? await providers.connectMetamask()
-      : await providers.connectEthers(connectOptions);
+    // this.provider = this.usingMetamask
+    //   ? await providers.connectMetamask()
+    //   : await providers.connectEthers(connectOptions);
+    this.provider =  await providers.connectEthers(connectOptions);
     this.network = await this.provider.getNetwork();
     this.shopsContract = await contract.get(
       this.provider,
@@ -89,38 +90,44 @@ export default class DetherJS {
       contractAddresses[DetherContract.TaxCollector];
   }
   async initProvider(connectOptions?: IEthersOptions): Promise<void> {
-    this.provider = this.usingMetamask
-      ? await providers.connectMetamask()
-      : await providers.connectEthers(connectOptions);
+    // this.provider = this.usingMetamask
+    //   ? await providers.connectMetamask()
+    //   : await providers.connectEthers(connectOptions);
+    this.provider = await providers.connectEthers(connectOptions);
     this.network = await this.provider.getNetwork();
   }
 
   loadUser(encryptedWallet: string) {
     // no need for init() to first have been called
-    if (this.usingMetamask)
-      throw new Error("cannot add encrypted wallet when using metamask");
+    // if (this.usingMetamask)
+    //   throw new Error("cannot add encrypted wallet when using metamask");
 
     this.encryptedWallet = encryptedWallet;
   }
 
   private async loadWallet(password?: string): Promise<ethers.Wallet> {
-    if (this.usingMetamask) {
-      // source: https://docs.ethers.io/ethers.js/html/cookbook-providers.html?highlight=metamask
-      //         https://docs.ethers.io/ethers.js/html/cookbook-providers.html?highlight=getsigner
-      const signer = this.provider.getSigner();
-      return signer;
-    }
+
+    // if (this.usingMetamask) {
+    //   // source: https://docs.ethers.io/ethers.js/html/cookbook-providers.html?highlight=metamask
+    //   //         https://docs.ethers.io/ethers.js/html/cookbook-providers.html?highlight=getsigner
+    //   const signer = this.provider.getSigner();
+    //   return signer;
+    // }
+
 
     if (!this.encryptedWallet) throw new Error("did find no encrypted wallet");
     if (!password) throw new Error("need to pass in password as arg 1");
+    console.log('load wallet Pre')
     const disconnectedWallet = await ethers.Wallet.fromEncryptedJson(
       this.encryptedWallet,
       password
     );
+
     const connectedWallet: ethers.Wallet = new ethers.Wallet(
       disconnectedWallet.privateKey,
       this.provider
     );
+    console.log('load wallet Post')
     return connectedWallet;
   }
 
@@ -265,7 +272,9 @@ export default class DetherJS {
   ): Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
+    console.log('DETHERJS SENDCRYPTO 1')
     const userWallet = await this.loadWallet(password);
+    console.log('DETHERJS SENDCRYPTO 2')
     return wallet.sendCrypto(
       amount,
       toAddress,

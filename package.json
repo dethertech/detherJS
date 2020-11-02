@@ -1,6 +1,6 @@
 {
   "name": "detherjs",
-  "version": "5.3.1",
+  "version": "5.3.3",
   "main": "lib/dether.js",
   "scripts": {
     "babel-node": "babel-node --presets=latest",
@@ -30,7 +30,7 @@
     "@types/ethereumjs-util": "^5.2.0",
     "@types/mocha": "^5.2.5",
     "@types/utf8": "^2.1.6",
-    "@types/web3": "^1.0.14",
+    "@types/web3": "^1.2.2",
     "axios": "^0.19.0",
     "babel-cli": "^6.26.0",
     "babel-preset-latest": "^6.24.1",
@@ -50,15 +50,18 @@
     "tslint": "^5.11.0",
     "tslint-config-airbnb": "^5.11.0",
     "typedoc": "^0.17.6",
-    "web3": "^1.0.0-beta.37"
+    "web3": "1.0.0-beta.37"
   },
   "dependencies": {
+    "@ethersproject/contracts": "^5.0.5",
+    "@ethersproject/providers": "^5.0.14",
+    "@ethersproject/solidity": "^5.0.5",
     "@types/node-fetch": "^2.3.7",
     "@uniswap/sdk": "^3.0.2",
     "bignumber.js": "^8.0.2",
     "bs58": "^4.0.1",
     "buffer": "^5.2.1",
-    "ethers": "^4.0.44",
+    "ethers": "4.0.44",
     "node-fetch": "^2.6.0",
     "typedoc-plugin-markdown": "^2.2.17",
     "typescript": "^3.8.3"

@@ -1,4 +1,4 @@
-import Web3 from 'web3';
+// import Web3 from 'web3';
 import { ethers } from 'ethers';
 
 import {
@@ -6,29 +6,29 @@ import {
   IEthersOptions,
 } from '../types';
 
-export const connectMetamask = async () : Promise<any> => {
-  // get metamask, new "privacy" way, and original "injection" way
-  const web3metamask: any = await new Promise((resolve, reject) => {
-    // Wait for loading completion to avoid race conditions with web3 injection timing.
-    window.addEventListener('load', async () => { // Modern dapp browsers...
-      if (window.ethereum) {
-        const web3: any = new Web3(window.ethereum);
-        try { // Request account access if needed
-          await window.ethereum.enable(); // Acccounts now exposed
-          resolve(web3);
-        } catch (error) {
-          reject(error);
-        }
-      } else if (window.web3) { // Legacy dapp browsers...Use Mist/MetaMask's provider.
-        const web3 = window.web3;
-        console.log('Injected web3 detected.');
-        resolve(web3);
-      }
-    });
-  });
+// export const connectMetamask = async () : Promise<any> => {
+//   // get metamask, new "privacy" way, and original "injection" way
+//   const web3metamask: any = await new Promise((resolve, reject) => {
+//     // Wait for loading completion to avoid race conditions with web3 injection timing.
+//     window.addEventListener('load', async () => { // Modern dapp browsers...
+//       if (window.ethereum) {
+//         const web3: any = new Web3(window.ethereum);
+//         try { // Request account access if needed
+//           await window.ethereum.enable(); // Acccounts now exposed
+//           resolve(web3);
+//         } catch (error) {
+//           reject(error);
+//         }
+//       } else if (window.web3) { // Legacy dapp browsers...Use Mist/MetaMask's provider.
+//         const web3 = window.web3;
+//         console.log('Injected web3 detected.');
+//         resolve(web3);
+//       }
+//     });
+//   });
 
-  return new ethers.providers.Web3Provider(web3metamask.currentProvider);
-};
+//   return new ethers.providers.Web3Provider(web3metamask.currentProvider);
+// };
 
 export const connectEthers = async (opts: IEthersOptions) : Promise<any> => {
   if (!opts.network && !opts.rpcURL) {
