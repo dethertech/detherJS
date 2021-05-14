@@ -26,7 +26,6 @@ export default class ExchangeUniswap extends ExchangeBase {
     sellAmount: string,
     provider: ethers.providers.Provider
   ): Promise<string> {
-    console.log("sellToken", this.sellToken, "buyToken", this.buyToken);
 
     let decimals1 = 18;
     let decimals2 = 18;

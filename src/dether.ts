@@ -33,6 +33,7 @@ export default class DetherJS {
   usingMetamask: boolean;
   encryptedWallet: string;
   provider: any;
+  bscProvider: any;
   network: any;
   zoneFactoryContract: ethers.Contract;
   geoRegistryContract: ethers.Contract;
@@ -43,14 +44,16 @@ export default class DetherJS {
     this.usingMetamask = useMetamask;
     this.encryptedWallet = null;
     this.provider = null;
+    this.bscProvider = null;
     this.network = null;
   }
 
-  async init(connectOptions?: IEthersOptions): Promise<void> {
+  async init(connectOptions?: IEthersOptions, bscConnectOptions?: IEthersOptions): Promise<void> {
     // this.provider = this.usingMetamask
     //   ? await providers.connectMetamask()
     //   : await providers.connectEthers(connectOptions);
     this.provider =  await providers.connectEthers(connectOptions);
+    this.bscProvider = await providers.connectEthers(bscConnectOptions);
     this.network = await this.provider.getNetwork();
     this.shopsContract = await contract.get(
       this.provider,
@@ -105,7 +108,7 @@ export default class DetherJS {
     this.encryptedWallet = encryptedWallet;
   }
 
-  private async loadWallet(password?: string): Promise<ethers.Wallet> {
+  private async loadWallet(password?: string, network?: any): Promise<ethers.Wallet> {
 
     // if (this.usingMetamask) {
     //   // source: https://docs.ethers.io/ethers.js/html/cookbook-providers.html?highlight=metamask
@@ -125,7 +128,7 @@ export default class DetherJS {
 
     const connectedWallet: ethers.Wallet = new ethers.Wallet(
       disconnectedWallet.privateKey,
-      this.provider
+      network === 'BSC' ? this.bscProvider : this.provider
     );
     console.log('load wallet Post')
     return connectedWallet;
@@ -148,9 +151,9 @@ export default class DetherJS {
   // -------------------- //
   //        Wallet        //
   // -------------------- //
-  async getERC20Info(address: string): Promise<ITicker> {
+  async getERC20Info(address: string, network: any): Promise<ITicker> {
     this.hasProvider();
-    return wallet.getERC20Info(address, this.provider);
+    return wallet.getERC20Info(address, network, this.provider, this.bscProvider);
   }
 
   async getAllBalance(
@@ -158,20 +161,34 @@ export default class DetherJS {
     tickers: ITicker[]
   ): Promise<IBalances[]> {
     this.hasProvider();
-    return wallet.getAllBalance(address, tickers, this.provider);
+    return wallet.getAllBalance(address, tickers, this.provider, this.bscProvider);
   }
 
   async getExchangeEstimation(
     sellToken: Token,
     buyToken: Token,
-    sellAmount: string
+    sellAmount: string,
   ): Promise<string> {
     this.hasProvider();
     return wallet.getExchangeEstimation(
       sellToken,
       buyToken,
       sellAmount,
-      this.provider
+      this.provider,
+    );
+  }
+
+  async getExchangeEstimationBsc(
+    sellToken: Token,
+    buyToken: Token,
+    sellAmount: string,
+  ): Promise<string> {
+    this.hasProvider();
+    return wallet.getExchangeEstimationBsc(
+      sellToken,
+      buyToken,
+      sellAmount,
+      this.bscProvider,
     );
   }
 
@@ -272,9 +289,14 @@ export default class DetherJS {
   ): Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
-    console.log('DETHERJS SENDCRYPTO 1')
-    const userWallet = await this.loadWallet(password);
-    console.log('DETHERJS SENDCRYPTO 2')
+    const re: any = /B&/
+    const isBsc: boolean = re.test(token)
+    let userWallet;
+    if (isBsc) {
+      userWallet = await this.loadWallet(password, 'BSC');
+    } else {
+      userWallet = await this.loadWallet(password);
+    }
     return wallet.sendCrypto(
       amount,
       toAddress,

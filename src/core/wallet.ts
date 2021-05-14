@@ -39,22 +39,31 @@ import { isObject } from "util";
 const getBalance = async (
   address: string,
   ticker: ITicker,
-  provider: ethers.providers.Provider
+  provider: ethers.providers.Provider,
+  bscProvider: ethers.providers.Provider,
 ): Promise<IBalances> => {
   validate.ethAddress(address);
   const result: IBalances = {};
+  const re: any = /B&/
+  const isBsc: boolean = re.test(Object.keys(ticker)[0])
+  if (Object.keys(ticker)[0] === "KSM" || Object.keys(ticker)[0] === "DOT" ) {
+    return
+  }
   if (Object.keys(ticker)[0] === "BTC") {
     return;
   }
-  if (Object.keys(ticker)[0] === Token.ETH) {
+  if (Object.keys(ticker)[0] === Token.ETH && !isBsc) {
     result.ETH = ethers.utils.formatEther(await provider.getBalance(address));
     return result;
+  } else if (Object.keys(ticker)[0] === 'B&BNB' && isBsc) {
+    result['B&BNB'] = ethers.utils.formatEther(await bscProvider.getBalance(address))
+    return result
   }
   let decimals;
   let erc20instance;
   try {
     erc20instance = await contract.getErc20Address(
-      provider,
+      isBsc? bscProvider : provider,
       ticker[Object.keys(ticker)[0]]
     );
   } catch (e) {
@@ -64,7 +73,6 @@ const getBalance = async (
   try {
     decimals = await erc20instance.decimals();
   } catch (e) {
-    console.log("error getBalance decimal", ticker, e);
     decimals = 18;
     return;
   }
@@ -82,12 +90,14 @@ const getBalance = async (
 
 export const getERC20Info = async (
   address: string,
-  provider: ethers.providers.Provider
+  network: any,
+  provider: ethers.providers.Provider,
+  bscProvider: ethers.providers.Provider
 ): Promise<ITicker> => {
   let erc20instance;
   try {
     const tokenInfo: ITicker = {};
-    const erc20instance = await contract.getErc20Address(provider, address);
+    const erc20instance = network === 'ETH' ? await contract.getErc20Address(provider, address) : await contract.getErc20Address(bscProvider, address);
     const name = await erc20instance.name();
     const symbol = await erc20instance.symbol();
     tokenInfo.address = address;
@@ -102,12 +112,13 @@ export const getERC20Info = async (
 export const getAllBalance = async (
   address: string,
   tickers: ITicker[],
-  provider: ethers.providers.Provider
+  provider: ethers.providers.Provider,
+  bscProvider: ethers.providers.Provider,
 ): Promise<IBalances[]> => {
   const myBalances = await Promise.all(
     tickers.map(
       (ticker: ITicker): Promise<IBalances> =>
-        getBalance(address, ticker, provider)
+        getBalance(address, ticker, provider, bscProvider)
     )
   );
   const cleanBalances = await myBalances.filter(function (el) {
@@ -125,6 +136,22 @@ export const getExchangeEstimation = async (
   // validate.sellAmount(sellAmount);
 
   const exchange: IExchange = exchanges.load(sellToken, buyToken);
+  const buyAmountEstimation: string = await exchange.estimate(
+    sellAmount,
+    provider
+  );
+  return buyAmountEstimation.toString();
+};
+
+export const getExchangeEstimationBsc = async (
+  sellToken: string,
+  buyToken: string,
+  sellAmount: string,
+  provider: ethers.providers.Provider
+): Promise<string> => {
+  // validate.sellAmount(sellAmount);
+
+  const exchange: IExchange = exchanges.load(sellToken, buyToken, true);
   const buyAmountEstimation: string = await exchange.estimate(
     sellAmount,
     provider
@@ -336,10 +363,13 @@ export const sendCrypto = async (
   txOptions: ITxOptions
 ): Promise<ethers.ContractTransaction> => {
   let tsx;
-  if (token === "ETH") {
+  const re: any = /B&/
+  const isBsc: boolean = re.test(token)
+  if ((token === "ETH" && !isBsc) || (token === "B&BNB" && isBsc )) {
     txOptions.to = toAddress;
     txOptions.value = convert.ethToWeiBN(Number(amount));
     return wallet.sendTransaction(txOptions);
+  // } else if ((token === "ETH" && !isBsc) || (token === "B&BNB" && isBsc )) {
   } else {
     const erc20instance = await contract.getErc20Address(
       wallet.provider,

@@ -102,6 +102,8 @@ export enum ExternalContract {
   uniswapExchange = "uniswapExchange",
   uniswapFactory = "uniswapFactory",
   uniswapV2Router02 = "uniswapV2Router02",
+  pancakeFactoryV2 = "pancakeFactoryV2",
+  pancakePair = "pancakePair",
   appealableArbitrator = "appealableArbitrator",
 }
 
@@ -204,6 +206,7 @@ export enum Token {
   PNK = "PNK",
   CAN = "CAN",
   KNC = "KNC",
+  'B&BNB' = "B&BNB",
 }
 
 export enum Network {
@@ -264,6 +267,7 @@ export interface IShopArgs {
 export enum Exchange {
   kyber = "kyber",
   uniswap = "uniswap",
+  pancakeSwap = "pancakeSwap",
 }
 
 export interface IExchangePair {

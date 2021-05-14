@@ -30,6 +30,8 @@ const ABI: any = {
   [ExternalContract.uniswapExchange]: require("../../abi/external/uniswapExchange.json"),
   [ExternalContract.uniswapFactory]: require("../../abi/external/uniswapFactory.json"),
   [ExternalContract.uniswapV2Router02]: require("../../abi/external/uniswapV2Router02.json"),
+  [ExternalContract.pancakeFactoryV2]: require("../../abi/external/pancakeFactoryV2.json"),
+  [ExternalContract.pancakePair]: require("../../abi/external/pancakePair.json"),
 };
 
 export const getAbi = async (

@@ -1,8 +1,16 @@
 import { Token, Exchange, IExchangePair } from "./types";
 
+// BSC ADDRESS
+export const PANCAKE_SWAP_ADDRESS: string = "0x10ed43c718714eb63d5aa57b78b54704e256024e";
+export const PANCAKE_SWAP_ROUTER: string = "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73";
+export const WBNB_BSC: string = "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c";
+export const BUSD_BSC: string = "0xe9e7cea3dedca5984780bafc599bd69add087d56";
+export const PANCAKE_FACTORY_ADDRESS: string = "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73";
+
 export const CRYPTOCOMPARE_URL: string = "https://min-api.cryptocompare.com/";
 
 export const GAS_PRICE: number = 25000000000;
+
 
 export const COORD_PRECISION: number = 5;
 
