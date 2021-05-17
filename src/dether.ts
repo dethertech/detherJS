@@ -201,6 +201,15 @@ export default class DetherJS {
     return wallet.hasApproval(owner, sellToken, amount, this.provider);
   }
 
+  async hasApprovalBsc(
+    owner: string,
+    sellToken: Token,
+    amount: string
+  ): Promise<boolean> {
+    this.hasProvider();
+    return wallet.hasApprovalBsc(owner, sellToken, amount, this.bscProvider);
+  }
+
   // sellAmount and buyAmount in string WEI
   async execExchange(
     password: string,
@@ -222,6 +231,29 @@ export default class DetherJS {
       txOptions
     );
   }
+
+  async execExchangeBsc(
+    password: string,
+    sellToken: Token,
+    buyToken: Token,
+    sellAmount: string,
+    buyAmount: string,
+    txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS
+  ): Promise<ethers.ContractTransaction> {
+    this.hasProvider();
+    this.hasWallet();
+    const userWallet = await this.loadWallet(password, 'BSC');
+    return wallet.execTradeBsc(
+      sellToken,
+      buyToken,
+      sellAmount,
+      buyAmount,
+      userWallet,
+      txOptions
+    );
+  }
+
+
 
   // sellAmount and buyAmount in string WEI
   // return a signed tx to broadcast later
@@ -323,6 +355,17 @@ export default class DetherJS {
     this.hasWallet();
     const userWallet = await this.loadWallet(password);
     return wallet.approveToken(token, userWallet, txOptions);
+  }
+
+  async approveTokenBsc(
+    password: string,
+    token: Token,
+    txOptions: ITxOptions = constants.DEFAULT_TX_OPTIONS
+  ): Promise<ethers.ContractTransaction> {
+    this.hasProvider();
+    this.hasWallet();
+    const userWallet = await this.loadWallet(password, 'BSC');
+    return wallet.approveTokenBsc(token, userWallet, txOptions);
   }
 
   async getTokenLiquidity(

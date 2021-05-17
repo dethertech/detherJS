@@ -208,7 +208,7 @@ export default class ExchangeUniswap extends ExchangeBase {
         txOptions.gasLimit = 350000;
         // token to token trade
         // find the path
-        tradeTx = await uniswapV2Router02.swapExactTokensForTokens(
+        tradeTx = await uniswapV2Router02.connect(wallet).swapExactTokensForTokens(
           sellAmountWei.toString(),
           String(amountOutMin),
           path,

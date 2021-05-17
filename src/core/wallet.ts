@@ -255,6 +255,32 @@ export const hasApproval = async (
   return false;
 };
 
+export const hasApprovalBsc = async (
+  owner: string,
+  sellToken: Token,
+  amount: string,
+  provider: ethers.providers.Provider
+): Promise<boolean> => {
+  const erc20instance = await contract.getErc20Address(provider, sellToken);
+  // const exchangeAddress = await contract.getUniswapExchangeAddress(
+  //   provider,
+  //   sellToken
+  // );
+  // const uniswapV2Router02Address = await contract.getContractAddress(
+  //   ExternalContract.uniswapV2Router02,
+  //   "homestead"
+  // );
+  const approve = await erc20instance.allowance(
+    owner,
+    constants.PANCAKE_SWAP_ROUTER
+  );
+
+  if (Number(approve) > Number(amount)) {
+    return true;
+  }
+  return false;
+};
+
 export const isExchangeAvailable = async (
   token: string,
   provider: ethers.providers.Provider
@@ -313,6 +339,27 @@ export const execTrade = async (
   );
   return tradeTx;
 };
+
+
+export const execTradeBsc = async (
+  sellToken: string,
+  buyToken: string,
+  sellAmount: string,
+  buyAmount: string,
+  wallet: ethers.Wallet,
+  txOptions: ITxOptions
+): Promise<ethers.ContractTransaction> => {
+  const exchange: IExchange = exchanges.load(sellToken, buyToken, true);
+  const tradeTx = await exchange.trade(
+    sellAmount,
+    buyAmount,
+    wallet,
+    txOptions
+  );
+  return tradeTx;
+};
+
+
 
 export const execTradeFromSell = async (
   buyToken: string,
@@ -402,6 +449,24 @@ export const approveToken = async (
   return erc20instance.connect(wallet).approve(
     // exchangeAddress,
     uniswapV2Router02Address,
+    ethers.utils.bigNumberify(2).pow(256).sub(1),
+    txOptions
+  );
+};
+
+export const approveTokenBsc = async (
+  token: string,
+  wallet: ethers.Wallet,
+  txOptions: ITxOptions
+): Promise<ethers.ContractTransaction> => {
+  // const uniswapV2Router02Address = await contract.getContractAddress(
+  //   ExternalContract.uniswapV2Router02,
+  //   "homestead"
+  // );
+  const erc20instance = await contract.getErc20Address(wallet.provider, token);
+
+  return erc20instance.connect(wallet).approve(
+    constants.PANCAKE_SWAP_ROUTER,
     ethers.utils.bigNumberify(2).pow(256).sub(1),
     txOptions
   );

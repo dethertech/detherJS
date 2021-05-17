@@ -104,6 +104,8 @@ export enum ExternalContract {
   uniswapV2Router02 = "uniswapV2Router02",
   pancakeFactoryV2 = "pancakeFactoryV2",
   pancakePair = "pancakePair",
+  pancakeRouter = "pancakeRouter",
+
   appealableArbitrator = "appealableArbitrator",
 }
 
