@@ -1,0 +1,636 @@
+{
+    "contractName": "ProtocolController",
+    "abi": [
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_dth",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "_voting",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "_geoRegistry",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "tokenFrom",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "taxes",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "from",
+            "type": "address"
+          }
+        ],
+        "name": "ReceivedTaxes",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "bytes2",
+            "name": "countryCode",
+            "type": "bytes2"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "floorStakePrice",
+            "type": "uint256"
+          }
+        ],
+        "name": "UpdatedCountryFloorStakePrice",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "bidPeriod",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "cooldownPeriod",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "entryFee",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "zoneTax",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "minRaise",
+            "type": "uint256"
+          }
+        ],
+        "name": "UpdatedGlobalParams",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "recipient",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "id",
+            "type": "string"
+          }
+        ],
+        "name": "WithdrawDth",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "recipient",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
+        "name": "WithdrawDthTransferFailed",
+        "type": "event"
+      },
+      {
+        "inputs": [],
+        "name": "MAX_BID_PERIOD",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true
+      },
+      {
+        "inputs": [],
+        "name": "MAX_COOLDOWN_PERIOD",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true
+      },
+      {
+        "inputs": [],
+        "name": "MAX_ENTRY_FEE",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true
+      },
+      {
+        "inputs": [],
+        "name": "MAX_MIN_RAISE",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true
+      },
+      {
+        "inputs": [],
+        "name": "MAX_ZONE_TAX",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true
+      },
+      {
+        "inputs": [],
+        "name": "MIN_BID_PERIOD",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true
+      },
+      {
+        "inputs": [],
+        "name": "MIN_COOLDOWN_PERIOD",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true
+      },
+      {
+        "inputs": [],
+        "name": "MIN_FLOOR_STAKE_PRICE",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true
+      },
+      {
+        "inputs": [],
+        "name": "MIN_ZONE_TAX",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true
+      },
+      {
+        "inputs": [],
+        "name": "dth",
+        "outputs": [
+          {
+            "internalType": "contract IAnyswapV3ERC20",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true
+      },
+      {
+        "inputs": [],
+        "name": "dthBalance",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes2",
+            "name": "",
+            "type": "bytes2"
+          }
+        ],
+        "name": "floorStakesPrices",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true
+      },
+      {
+        "inputs": [],
+        "name": "geoRegistry",
+        "outputs": [
+          {
+            "internalType": "contract IGeoRegistry",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true
+      },
+      {
+        "inputs": [],
+        "name": "globalParams",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "bidPeriod",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "cooldownPeriod",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "entryFee",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "zoneTax",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "minRaise",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true
+      },
+      {
+        "inputs": [],
+        "name": "voting",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true
+      },
+      {
+        "inputs": [],
+        "name": "getGlobalParams",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "bidPeriod",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "cooldownPeriod",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "entryFee",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "zoneTax",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "minRaise",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct IProtocolController.GlobalParams",
+            "name": "params",
+            "type": "tuple"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes2",
+            "name": "_countryCode",
+            "type": "bytes2"
+          }
+        ],
+        "name": "getCountryFloorPrice",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "countryFloorPrice",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes2",
+            "name": "_countryCode",
+            "type": "bytes2"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_floorStakePrice",
+            "type": "uint256"
+          }
+        ],
+        "name": "validateCountryFloorPrice",
+        "outputs": [],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes2",
+            "name": "_countryCode",
+            "type": "bytes2"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_floorStakePrice",
+            "type": "uint256"
+          }
+        ],
+        "name": "updateCountryFloorPrice",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "bidPeriod",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "cooldownPeriod",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "entryFee",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "zoneTax",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "minRaise",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct IProtocolController.GlobalParams",
+            "name": "newParams",
+            "type": "tuple"
+          }
+        ],
+        "name": "validateGlobalParams",
+        "outputs": [],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true
+      },
+      {
+        "inputs": [
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "bidPeriod",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "cooldownPeriod",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "entryFee",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "zoneTax",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "minRaise",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct IProtocolController.GlobalParams",
+            "name": "newParams",
+            "type": "tuple"
+          }
+        ],
+        "name": "updateGlobalParams",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_recipient",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_amount",
+            "type": "uint256"
+          }
+        ],
+        "name": "validateWithdrawDth",
+        "outputs": [],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_recipient",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "_id",
+            "type": "string"
+          }
+        ],
+        "name": "withdrawDth",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_from",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_value",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes",
+            "name": "_data",
+            "type": "bytes"
+          }
+        ],
+        "name": "onTokenTransfer",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      }
+    ]}
