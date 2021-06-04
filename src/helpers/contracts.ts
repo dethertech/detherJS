@@ -7,6 +7,10 @@ const ABI: any = {
   // dether
   [DetherContract.DetherToken]: require("../../abi/dether/DetherToken.json")
     .abi,
+    [DetherContract.ProtocolController]: require("../../abi/dether/ProtocolController.json")
+    .abi,
+    [DetherContract.AnyswapV4ERC20]: require("../../abi/dether/AnyswapV4ERC20.json")
+    .abi,
   [DetherContract.GeoRegistry]: require("../../abi/dether/GeoRegistry.json")
     .abi,
   [DetherContract.Users]: require("../../abi/dether/Users.json").abi,

@@ -232,7 +232,7 @@ export const addShop = async (
   // other 4 args are optional strings: category, name, description, opening
   return detherTokenContract
     .connect(wallet)
-    .transfer(
+    .transferAndCall(
       shopContract.address,
       ethers.utils.parseEther(shopData.staking),
       createShopBytes(shopData),
@@ -258,7 +258,7 @@ export const topUpShop = async (
   wallet: ethers.Wallet,
   txOptions: ITxOptions
 ): Promise<ethers.ContractTransaction> => {
-  return detherTokenContract.connect(wallet).transfer(
+  return detherTokenContract.connect(wallet).transferAndCall(
     shopContract.address,
     ethers.utils.parseEther(topUpAmount),
     `0x31${util.toNBytes("0", 94)}`, // shop's tokenFallback need 95 bytes as data

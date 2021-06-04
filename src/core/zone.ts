@@ -301,6 +301,14 @@ export const toLiveZoneNoBidYet = async (
 //        Getters       //
 // -------------------- //
 
+export const getCountryFloorPrice = async (country: string,  protocolControllerContract: ethers.Contract,
+  provider: ethers.providers.Provider): Promise<number> =>  {
+    validate.countryCode(country)
+    const countryPrice = await protocolControllerContract.floorStakesPrices(`0x${util.toNBytes(country, 2)}`)
+    console.log('countryPrice', countryPrice, convert.weiToEthNumber(countryPrice.toString()))
+    return convert.weiToEthNumber(countryPrice.toString())
+}
+
 export const isZoneOwned = async (
   geohash6: string,
   zoneFactoryContract: ethers.Contract,
@@ -362,6 +370,8 @@ export const getZoneByGeohash = async (
 
   const auctionID = await zoneContract.currentAuctionId();
 
+  // get zone price
+  
   if (auctionID > 0) {
     const lastAuction: IZoneAuction = zoneAuctionArrToObj(
       await zoneContract.getLastAuction()
@@ -521,10 +531,10 @@ export const create = async (
   wallet: ethers.Wallet,
   txOptions: ITxOptions
 ): Promise<ethers.ContractTransaction> => {
+  console.log('detherjs create')
   validate.countryCode(country);
   validate.geohash(geohash6, 6);
   validate.minStake(amount);
-
   const zoneExists = await zoneFactoryContract.zoneExists(
     convert.asciiToHex(geohash6).substring(0, 14)
   );
@@ -543,13 +553,15 @@ export const create = async (
     undefined,
     [constants.ERC223_TRANSFER_ABI]
   );*/
-
+  console.log('detherjs create params',zoneFactoryContract.address, amount, country, geohash6,  createZoneBytes(country, geohash6), txOptions )
+  
   if (!txOptions.gasLimit) txOptions.gasLimit = 450000;
   return detherTokenContract
     .connect(wallet)
-    .functions.transfer(
+    .transferAndCall(
       zoneFactoryContract.address,
-      convert.ethToWei(amount),
+      ethers.utils.parseEther(amount.toString()),
+      // convert.ethToWei(amount),
       createZoneBytes(country, geohash6),
       txOptions
     ); // erc223 call
@@ -571,7 +583,7 @@ export const claimFree = async (
 
   return detherTokenContract
     .connect(wallet)
-    .transfer(
+    .transferAndCall(
       zoneAddress,
       convert.ethToWei(constants.MIN_ZONE_STAKE),
       "0x41",
@@ -595,7 +607,7 @@ export const bid = async (
     );
     return detherTokenContract
       .connect(wallet)
-      .transfer(zoneAddress, convert.ethToWei(bidAmount), "0x42", txOptions); // erc223 call
+      .transferAndCall(zoneAddress, convert.ethToWei(bidAmount), "0x42", txOptions); // erc223 call
   } catch (e) {
     console.log("impossible to bid here", e);
   }
@@ -617,7 +629,7 @@ export const topUp = async (
   );
   return detherTokenContract
     .connect(wallet)
-    .transfer(zoneAddress, topUpAmount, "0x43", txOptions); // erc223 call
+    .transferAndCall(zoneAddress, topUpAmount, "0x43", txOptions); // erc223 call
 };
 
 export const release = async (

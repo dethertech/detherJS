@@ -10,7 +10,7 @@ import * as shop from "./core/shop";
 import * as wallet from "./core/wallet";
 import * as util from "./core/util";
 import * as zone from "./core/zone";
-
+import { CONTRACT_ADDRESSES } from "./constants";
 import {
   Token,
   TransactionStatus,
@@ -39,6 +39,7 @@ export default class DetherJS {
   geoRegistryContract: ethers.Contract;
   shopsContract: ethers.Contract;
   dthContract: ethers.Contract;
+  protocolControllerContract: ethers.Contract;
 
   constructor(useMetamask: boolean) {
     this.usingMetamask = useMetamask;
@@ -55,24 +56,34 @@ export default class DetherJS {
     this.provider =  await providers.connectEthers(connectOptions);
     this.bscProvider = await providers.connectEthers(bscConnectOptions);
     this.network = await this.provider.getNetwork();
+
+    this.protocolControllerContract = await contract.get(
+      this.bscProvider,
+      DetherContract.ProtocolController,
+      CONTRACT_ADDRESSES['bsc'][DetherContract.ProtocolController]
+    );
+
     this.shopsContract = await contract.get(
-      this.provider,
-      DetherContract.Shops
+      this.bscProvider,
+      DetherContract.Shops,
+      CONTRACT_ADDRESSES['bsc'][DetherContract.Shops]
     );
 
     this.zoneFactoryContract = await contract.get(
-      this.provider,
-      DetherContract.ZoneFactory
+      this.bscProvider,
+      DetherContract.ZoneFactory,
+      CONTRACT_ADDRESSES['bsc'][DetherContract.ZoneFactory]
     );
     this.geoRegistryContract = await contract.get(
-      this.provider,
-      DetherContract.GeoRegistry
+      this.bscProvider,
+      DetherContract.GeoRegistry,
+      CONTRACT_ADDRESSES['bsc'][DetherContract.GeoRegistry]
     );
     this.dthContract = await contract.get(
-      this.provider,
-      DetherContract.DetherToken,
-      undefined,
-      [constants.ERC223_TRANSFER_ABI]
+      this.bscProvider,
+      DetherContract.AnyswapV4ERC20,
+      CONTRACT_ADDRESSES['bsc'][DetherContract.AnyswapV4ERC20],
+      // [constants.ERC223_TRANSFER_ABI]
     );
   }
 
@@ -381,19 +392,19 @@ export default class DetherJS {
 
   async isTeller(address: string): Promise<any> {
     this.hasProvider();
-    return teller.isTeller(address, this.provider, this.zoneFactoryContract);
+    return teller.isTeller(address, this.bscProvider, this.zoneFactoryContract);
   }
 
   async getTeller(address: string): Promise<any> {
     this.hasProvider();
-    return teller.getTeller(address, this.provider, this.zoneFactoryContract);
+    return teller.getTeller(address, this.bscProvider, this.zoneFactoryContract);
   }
 
   async getTellerInZone(geohash6: string): Promise<any> {
     this.hasProvider();
     return teller.getTellerInZone(
       geohash6,
-      this.provider,
+      this.bscProvider,
       this.zoneFactoryContract
     );
   }
@@ -403,7 +414,7 @@ export default class DetherJS {
 
     return teller.getTellersInZones(
       geohash6List,
-      this.provider,
+      this.bscProvider,
       this.zoneFactoryContract
     );
   }
@@ -415,7 +426,7 @@ export default class DetherJS {
   ): Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
-    const wallet = await this.loadWallet(password);
+    const wallet = await this.loadWallet(password, 'BSC');
     return teller.addTeller(
       tellerData,
       wallet,
@@ -431,7 +442,7 @@ export default class DetherJS {
   ): Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
-    const wallet = await this.loadWallet(password);
+    const wallet = await this.loadWallet(password, 'BSC');
     return teller.removeTeller(
       zoneGeohash,
       wallet,
@@ -447,7 +458,7 @@ export default class DetherJS {
   ): Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
-    const wallet = await this.loadWallet(password);
+    const wallet = await this.loadWallet(password, 'BSC');
     return teller.updateTeller(
       tellerData,
       wallet,
@@ -464,7 +475,7 @@ export default class DetherJS {
   ): Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
-    const wallet = await this.loadWallet(password);
+    const wallet = await this.loadWallet(password, 'BSC');
     return teller.addComment(
       zoneGeohash,
       ipfsHash,
@@ -516,7 +527,7 @@ export default class DetherJS {
   ): Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
-    const wallet = await this.loadWallet(password);
+    const wallet = await this.loadWallet(password, 'BSC');
     return shop.addShop(
       shopData,
       this.shopsContract,
@@ -545,7 +556,7 @@ export default class DetherJS {
   ): Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
-    const wallet = await this.loadWallet(password);
+    const wallet = await this.loadWallet(password, 'BSC');
     return shop.setShopLicencePrice(
       geohash6,
       newPrice,
@@ -581,7 +592,7 @@ export default class DetherJS {
   ): Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
-    const wallet = await this.loadWallet(password);
+    const wallet = await this.loadWallet(password, 'BSC');
     return shop.collectShopTaxes(
       geohash6,
       start,
@@ -600,7 +611,7 @@ export default class DetherJS {
   ): Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
-    const wallet = await this.loadWallet(password);
+    const wallet = await this.loadWallet(password, 'BSC');
     return shop.deleteUserShop(
       geohash6,
       shopAddress,
@@ -618,9 +629,14 @@ export default class DetherJS {
   //         Zone         //
   // -------------------- //
 
+  async getCountryFloorPrice(country: string): Promise<number> {
+    this.hasProvider();
+    return zone.getCountryFloorPrice(country, this.protocolControllerContract, this.bscProvider)
+  }
+
   async isZoneOwned(geohash6: string): Promise<Boolean> {
     this.hasProvider();
-    return zone.isZoneOwned(geohash6, this.zoneFactoryContract, this.provider);
+    return zone.isZoneOwned(geohash6, this.zoneFactoryContract, this.bscProvider);
   }
 
   async getZoneByGeohash(geohash6: string): Promise<IZone> {
@@ -628,13 +644,13 @@ export default class DetherJS {
     return zone.getZoneByGeohash(
       geohash6,
       this.zoneFactoryContract,
-      this.provider
+      this.bscProvider
     );
   }
 
   async getZoneByAddress(address: string): Promise<IZone> {
     this.hasProvider();
-    return zone.getZoneByAddress(address, this.provider);
+    return zone.getZoneByAddress(address, this.bscProvider);
   }
 
   async getZonesStatus(geohash6List: string[]): Promise<any[]> {
@@ -642,7 +658,7 @@ export default class DetherJS {
     return zone.getZonesStatus(
       geohash6List,
       this.zoneFactoryContract,
-      this.provider
+      this.bscProvider
     );
   }
 
@@ -656,7 +672,7 @@ export default class DetherJS {
       zoneAddress,
       ethAddress,
       auctionID,
-      this.provider
+      this.bscProvider
     );
   }
 
@@ -669,7 +685,7 @@ export default class DetherJS {
   ): Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
-    const wallet = await this.loadWallet(password);
+    const wallet = await this.loadWallet(password, 'BSC');
     return zone.create(
       country,
       geohash6,
@@ -688,7 +704,7 @@ export default class DetherJS {
   ): Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
-    const wallet = await this.loadWallet(password);
+    const wallet = await this.loadWallet(password, 'BSC');
     return zone.claimFree(
       geohash6,
       wallet,
@@ -706,7 +722,7 @@ export default class DetherJS {
   ): Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
-    const wallet = await this.loadWallet(password);
+    const wallet = await this.loadWallet(password, 'BSC');
     return zone.bid(
       geohash6,
       bidAmount,
@@ -725,7 +741,7 @@ export default class DetherJS {
   ): Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
-    const wallet = await this.loadWallet(password);
+    const wallet = await this.loadWallet(password, 'BSC');
     return zone.topUp(
       geohash6,
       topUpAmount,
@@ -743,7 +759,7 @@ export default class DetherJS {
   ): Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
-    const wallet = await this.loadWallet(password);
+    const wallet = await this.loadWallet(password, 'BSC');
     return zone.release(geohash6, this.zoneFactoryContract, wallet, txOptions);
   }
 
@@ -755,7 +771,7 @@ export default class DetherJS {
   ): Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
-    const wallet = await this.loadWallet(password);
+    const wallet = await this.loadWallet(password, 'BSC');
     return zone.withdrawFromAuction(
       geohash6,
       auctionId,
@@ -773,7 +789,7 @@ export default class DetherJS {
   ): Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
-    const wallet = await this.loadWallet(password);
+    const wallet = await this.loadWallet(password, 'BSC');
     return zone.withdrawFromAuctions(
       geohash6,
       auctionIds,
@@ -807,7 +823,7 @@ export default class DetherJS {
   ): Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
-    const wallet = await this.loadWallet(password);
+    const wallet = await this.loadWallet(password, 'BSC');
     return zone.withdrawFromAuctionAddress(
       zoneAddress,
       auctionId,
@@ -824,7 +840,7 @@ export default class DetherJS {
     this.hasProvider();
     this.hasWallet();
     console.log("detherJS withdrawAuctionsRaw 1");
-    const wallet = await this.loadWallet(password);
+    const wallet = await this.loadWallet(password, 'BSC');
     return zone.withdrawAuctionsRaw(zoneAddress, wallet, txOptions);
   }
 
@@ -836,7 +852,7 @@ export default class DetherJS {
   ): Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
-    const wallet = await this.loadWallet(password);
+    const wallet = await this.loadWallet(password, 'BSC');
     return zone.withdrawFromAuctionsAddress(
       zoneAddress,
       auctionIds,
@@ -852,7 +868,7 @@ export default class DetherJS {
   ): Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
-    const wallet = await this.loadWallet(password);
+    const wallet = await this.loadWallet(password, 'BSC');
     return zone.withdrawDthAddress(zoneAddress, wallet, txOptions);
   }
 
@@ -863,7 +879,7 @@ export default class DetherJS {
   ): Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
-    const wallet = await this.loadWallet(password);
+    const wallet = await this.loadWallet(password, 'BSC');
     return zone.processState(zoneAddress, wallet, txOptions);
   }
 
@@ -874,7 +890,7 @@ export default class DetherJS {
 
   async isZoneOwner(address: string): Promise<any> {
     this.hasProvider();
-    return zone.isZoneOwner(address, this.zoneFactoryContract, this.provider);
+    return zone.isZoneOwner(address, this.zoneFactoryContract, this.bscProvider);
   }
 
   async getOpenBid(address: string): Promise<any> {
@@ -888,5 +904,9 @@ export default class DetherJS {
   async getTransactionStatus(txHash: string): Promise<TransactionStatus> {
     this.hasProvider();
     return util.getTransactionStatus(txHash, this.provider);
+  }
+  async getTransactionStatusBsc(txHash: string): Promise<TransactionStatus> {
+    this.hasProvider();
+    return util.getTransactionStatus(txHash, this.bscProvider);
   }
 }

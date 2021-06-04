@@ -148,6 +148,26 @@ export const CONTRACT_ADDRESSES: any = {
     uniswapExchange: "",
     uniswapV2Router02: "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
   },
+  bsc: {
+    // dether
+    ProtocolController: "0x825014EE3D99f5e34528E9aA51179ecD2f91C175",
+    DetherToken: "0xdc42728b0ea910349ed3c6e1c9dc06b5fb591f98",
+    AnyswapV4ERC20: "0xdc42728b0ea910349ed3c6e1c9dc06b5fb591f98",
+    GeoRegistry: "0x4cFf328AA985218856184bC92d469aA08387C0DC", //
+    Users: "0x90Fb7C42e450202508148faEd69A8E8cA0a0480B", //
+    ZoneFactory: "0x331985B024f4aa41A20282F292A7f7013B28BaF3", //
+    Zone: "0xFD0584eb20b49c3031a5B88aaAa99839078839C0", //
+    Shops: "0x21F30a04F146BEB05713a385992E98b6665226A3", //
+    CertifierRegistry: "0xF10836015cE94B220106631199AfbaD6Bd0409C7", //
+    Voting: "0x1F7fd7Db25294EC7CEEC190a7b002f31d74CA72C", //
+    // TokenRegistry: "0x8fc724457b8a3f156E93E058fc984c1c8c3BBdBa",
+    // TaxCollector: "0xb52221f5b11bc6b069151108336fcf6c6c91CF89", //
+    // external
+    kyberNetworkProxy: "0x818E6FECD516Ecc3849DAf6845e3EC868087B755",
+    uniswapFactory: "0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95",
+    uniswapExchange: "",
+    uniswapV2Router02: "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
+  },
   custom: {
     // dether
     DetherToken: "",

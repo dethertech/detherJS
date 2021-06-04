@@ -151,7 +151,9 @@ export enum Unit {
 }
 
 export enum DetherContract {
+  ProtocolController = "ProtocolController",
   DetherToken = "DetherToken",
+  AnyswapV4ERC20 = "AnyswapV4ERC20",
   Control = "Control",
   Users = "Users",
   GeoRegistry = "GeoRegistry",
