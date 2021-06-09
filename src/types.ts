@@ -229,8 +229,8 @@ export interface IShop {
   description: string;
   opening: string;
   staked: string;
-  hasDispute: boolean;
-  disputeID: number;
+  // hasDispute: boolean;
+  // disputeID: number;
   zonePrice?: string;
   lastTaxTime?: number;
   selfZonePrice?: string;

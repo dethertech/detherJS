@@ -544,7 +544,7 @@ export default class DetherJS {
   ): Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
-    const wallet = await this.loadWallet(password);
+    const wallet = await this.loadWallet(password, 'BSC');
     return shop.removeShop(this.shopsContract, wallet, txOptions);
   }
 
@@ -573,7 +573,7 @@ export default class DetherJS {
   ): Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
-    const wallet = await this.loadWallet(password);
+    const wallet = await this.loadWallet(password, 'BSC');
     return shop.topUpShop(
       topUpAmount,
       this.shopsContract,

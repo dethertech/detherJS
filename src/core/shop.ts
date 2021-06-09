@@ -15,7 +15,7 @@ const SHOP_ADD_FN = "30";
 //       Formatters     //
 // -------------------- //
 
-export const shopArrToObj = (shopArr: any[]): IShop => {
+export const shopArrToObj = (shopArr: any): IShop => {
   const shopObj: IShop = {
     position: "",
     zoneGeohash: "",
@@ -23,8 +23,8 @@ export const shopArrToObj = (shopArr: any[]): IShop => {
     name: "",
     description: "",
     opening: "",
-    hasDispute: false,
-    disputeID: undefined,
+    // hasDispute: false,
+    // disputeID: undefined,
     staked: "",
   };
 
@@ -80,10 +80,8 @@ export const shopArrToObj = (shopArr: any[]): IShop => {
   }
   try {
     shopObj.staked = ethers.utils.formatEther(shopArr[5].toString());
-    shopObj.hasDispute = shopArr[6];
-    shopObj.disputeID = shopArr[6] ? shopArr[7].toString() : undefined;
-    shopObj.lastTaxTime = Number(shopArr[8]);
-    shopObj.selfZonePrice = ethers.utils.formatEther(shopArr[9]);
+    shopObj.lastTaxTime = Number(shopArr[6]);
+    shopObj.selfZonePrice = ethers.utils.formatEther(shopArr[7]);
   } catch (e) {
     console.log("error get shop ", e);
   }
@@ -162,7 +160,6 @@ export const getShopByAddress = async (
   const shop: IShop = shopArrToObj(
     await shopInstance.getShopByAddr(shopAddress)
   );
-
   shop.address = shopAddress;
   if (shop.zoneGeohash) {
     const licencePrice = await getLicencePrice(shop.zoneGeohash, shopInstance);
