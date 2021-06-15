@@ -634,6 +634,11 @@ export default class DetherJS {
     return zone.getCountryFloorPrice(country, this.protocolControllerContract, this.bscProvider)
   }
 
+  async getGlobalParams(): Promise<any> {
+    this.hasProvider();
+    return zone.getGlobalParams(this.protocolControllerContract, this.bscProvider)
+  }
+
   async isZoneOwned(geohash6: string): Promise<Boolean> {
     this.hasProvider();
     return zone.isZoneOwned(geohash6, this.zoneFactoryContract, this.bscProvider);
@@ -839,7 +844,6 @@ export default class DetherJS {
   ): Promise<ethers.ContractTransaction> {
     this.hasProvider();
     this.hasWallet();
-    console.log("detherJS withdrawAuctionsRaw 1");
     const wallet = await this.loadWallet(password, 'BSC');
     return zone.withdrawAuctionsRaw(zoneAddress, wallet, txOptions);
   }

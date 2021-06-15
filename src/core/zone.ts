@@ -43,7 +43,7 @@ export const zoneAuctionArrToObj = (
     onchainZoneAuction[4] !== constants.ADDRESS_ZERO
       ? onchainZoneAuction[4]
       : undefined,
-  highestBid: convert.weiToEthNumber(onchainZoneAuction[5].toString()),
+  highestBid: convert.weiToEthNumber(onchainZoneAuction[5].toString())
 });
 
 const createZoneBytes = (country: string, geohash6: string): string => {
@@ -304,10 +304,15 @@ export const toLiveZoneNoBidYet = async (
 export const getCountryFloorPrice = async (country: string,  protocolControllerContract: ethers.Contract,
   provider: ethers.providers.Provider): Promise<number> =>  {
     validate.countryCode(country)
-    const countryPrice = await protocolControllerContract.floorStakesPrices(`0x${util.toNBytes(country, 2)}`)
-    console.log('countryPrice', countryPrice, convert.weiToEthNumber(countryPrice.toString()))
+    const countryPrice = await protocolControllerContract.getCountryFloorPrice(`0x${util.toNBytes(country, 2)}`)
     return convert.weiToEthNumber(countryPrice.toString())
 }
+
+export const getGlobalParams = async (protocolControllerContract: ethers.Contract,
+  provider: ethers.providers.Provider): Promise<any> =>  {
+    const globalParams = await protocolControllerContract.getGlobalParams()
+   return {bidPeriod: globalParams.bidPeriod.toNumber(), cooldownPeriod: globalParams.cooldownPeriod.toNumber(), minRaise: globalParams.minRaise.toNumber(), entryFee: globalParams.entryFee.toNumber(), zoneTax: globalParams.zoneTax.toNumber()/ 100}
+  }
 
 export const isZoneOwned = async (
   geohash6: string,
@@ -693,16 +698,13 @@ const checkIfWithdrawable = async (
   auctionID: number
 ): Promise<number> => {
   const result = await zoneContract.auctionBids(auctionID, ethAddress);
-  console.log(
-    "auctionID checkIfWithdrawable",
-    auctionID,
-    convert.weiToEthNumber(result)
-  );
   if (convert.weiToEthNumber(result) > 0) {
-    const auction: IZoneAuction = zoneAuctionArrToObj(
-      await zoneContract.getAuction(auctionID)
-    );
-    if (auction.highestBidder !== ethAddress) return auctionID;
+    // let auction = [];
+    // let highestBid: number;
+    // ({auction, highestBid} = await zoneContract.getAuction(1));
+    return auctionID
+    // if (formatedAuction.highestBidder !== ethAddress) return auctionID;
+    // else return 0
   } else {
     return 0;
   }
@@ -736,18 +738,14 @@ export const withdrawAuctionsRaw = async (
         checkIfWithdrawable(zoneContract, wallet.address, auctionId)
     )
   );
-  console.log("bidToWithdraws", bidToWithdraws);
   const filteredArrays = bidToWithdraws.filter((value, index) => {
     return value > 0;
   });
-  console.log("filteredArrays", filteredArrays);
   if (filteredArrays.length > 0) {
-    console.log("detherjs withdrawFromAuctions");
     return zoneContract
       .connect(wallet)
       .withdrawFromAuctions(filteredArrays, txOptions);
   } else {
-    console.log("detherjs withdrawDth only");
 
     return zoneContract.connect(wallet).withdrawDth(txOptions);
   }
