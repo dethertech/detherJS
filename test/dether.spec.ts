@@ -22,10 +22,10 @@ import ZoneFactoryJson from "../abi/dether/ZoneFactory.json";
 import ZoneJson from "../abi/dether/Zone.json";
 import ShopsJson from "../abi/dether/Shops.json";
 import TellerJson from "../abi/dether/Teller.json";
-import ShopDisputeJson from "../abi/dether/ShopDispute.json";
-import AppealableArbitratorJson from "../abi/dether/AppealableArbitrator.json";
+// import ShopDisputeJson from "../abi/dether/ShopDispute.json";
+// import AppealableArbitratorJson from "../abi/dether/AppealableArbitrator.json";
 import CertifierRegistryJson from "../abi/dether/CertifierRegistry.json";
-import TaxCollectorJson from "../abi/dether/TaxCollector.json";
+// import TaxCollectorJson from "../abi/dether/TaxCollector.json";
 
 import DetherJS from "../src/dether";
 
@@ -48,7 +48,7 @@ const contractJson: any = {
   //[DetherContract.ShopDispute]: ShopDisputeJson,
   [DetherContract.Teller]: TellerJson,
   [DetherContract.CertifierRegistry]: CertifierRegistryJson,
-  [DetherContract.TaxCollector]: TaxCollectorJson,
+  // [DetherContract.TaxCollector]: TaxCollectorJson,
   // [ExternalContract.appealableArbitrator]: AppealableArbitratorJson,
 };
 
@@ -277,12 +277,12 @@ describe("DetherJS", () => {
       deployedContracts.CertifierRegistry.address
     );
     await deployContract(accounts.deployer, DetherContract.Teller);
-    await deployContract(
-      accounts.deployer,
-      DetherContract.TaxCollector,
-      deployedContracts.DetherToken.address,
-      "0x0000000000000000000000000000000000000000"
-    );
+    // await deployContract(
+    //   accounts.deployer,
+    //   DetherContract.TaxCollector,
+    //   deployedContracts.DetherToken.address,
+    //   "0x0000000000000000000000000000000000000000"
+    // );
 
     await deployContract(
       // deploy ZoneFactory
@@ -293,7 +293,7 @@ describe("DetherJS", () => {
       deployedContracts.Users.address, // User
       deployedContracts.Zone.address,
       deployedContracts.Teller.address,
-      deployedContracts.TaxCollector.address
+      // deployedContracts.TaxCollector.address
     );
 
     await deployContract(
@@ -369,7 +369,7 @@ describe("DetherJS", () => {
       Shops: deployedContracts.Shops.address,
       // ShopDispute: deployedContracts.ShopDispute.address,
       // CertifierRegistry: deployedContracts.CertifierRegistry.address,
-      TaxCollector: deployedContracts.TaxCollector.address,
+      // TaxCollector: deployedContracts.TaxCollector.address,
     });
     await detherJs.init({ rpcURL: RPC_URL });
   });

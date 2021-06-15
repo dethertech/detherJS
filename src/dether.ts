@@ -100,8 +100,8 @@ export default class DetherJS {
       contractAddresses[DetherContract.Zone];
     constants.CONTRACT_ADDRESSES.custom.Shops =
       contractAddresses[DetherContract.Shops];
-    constants.CONTRACT_ADDRESSES.custom.TaxCollector =
-      contractAddresses[DetherContract.TaxCollector];
+    // constants.CONTRACT_ADDRESSES.custom.TaxCollector =
+    //   contractAddresses[DetherContract.TaxCollector];
   }
   async initProvider(connectOptions?: IEthersOptions): Promise<void> {
     // this.provider = this.usingMetamask

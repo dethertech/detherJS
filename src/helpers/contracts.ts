@@ -21,12 +21,12 @@ const ABI: any = {
   [DetherContract.Teller]: require("../../abi/dether/Teller.json").abi,
   [DetherContract.CertifierRegistry]: require("../../abi/dether/CertifierRegistry.json")
     .abi,
-  [DetherContract.ShopDispute]: require("../../abi/dether/ShopDispute.json")
-    .abi,
+  // [DetherContract.ShopDispute]: require("../../abi/dether/ShopDispute.json")
+    // .abi,
   [DetherContract.TokenRegistry]: require("../../abi/dether/TokenRegistry.json")
     .abi,
-  [DetherContract.TaxCollector]: require("../../abi/dether/TaxCollector.json")
-    .abi,
+  // [DetherContract.TaxCollector]: require("../../abi/dether/TaxCollector.json")
+  //   .abi,
 
   // external
   [ExternalContract.erc20]: require("../../abi/external/erc20.json"),

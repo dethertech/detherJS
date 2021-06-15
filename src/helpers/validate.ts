@@ -411,11 +411,11 @@ export const telegramUsername = (messenger: string | undefined) => {
     throw new Error("invalid characters in telegram username");
 };
 
-export const shopDisputeID = (disputeID: number) => {
-  if (!Number.isInteger(disputeID) || disputeID) {
-    throw new Error("invalid disputeID");
-  }
-};
+// export const shopDisputeID = (disputeID: number) => {
+//   if (!Number.isInteger(disputeID) || disputeID) {
+//     throw new Error("invalid disputeID");
+//   }
+// };
 
 export const tier = (tier: number) => {
   if (!Number.isInteger(tier)) {

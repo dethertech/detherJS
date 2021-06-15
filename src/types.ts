@@ -106,7 +106,7 @@ export enum ExternalContract {
   pancakePair = "pancakePair",
   pancakeRouter = "pancakeRouter",
 
-  appealableArbitrator = "appealableArbitrator",
+  // appealableArbitrator = "appealableArbitrator",
 }
 
 export interface IBalances {
@@ -165,7 +165,7 @@ export enum DetherContract {
   KycCertifier = "KycCertifier",
   CertifierRegistry = "CertifierRegistry",
   Teller = "Teller",
-  ShopDispute = "ShopDispute",
+  // ShopDispute = "ShopDispute",
   TokenRegistry = "TokenRegistry",
   TaxCollector = "TaxCollector",
 }
@@ -237,26 +237,26 @@ export interface IShop {
   address?: string;
 }
 
-export enum ShopDisputeStatus {
-  Waiting = "Waiting",
-  Appealable = "Appealable",
-  Solved = "Solved",
-}
+// export enum ShopDisputeStatus {
+//   Waiting = "Waiting",
+//   Appealable = "Appealable",
+//   Solved = "Solved",
+// }
 
-export enum ShopDisputeRuling {
-  NoRuling = "NoRuling",
-  ShopWins = "ShopWins",
-  ChallengerWins = "ChallengerWins",
-}
+// export enum ShopDisputeRuling {
+//   NoRuling = "NoRuling",
+//   ShopWins = "ShopWins",
+//   ChallengerWins = "ChallengerWins",
+// }
 
-export interface IShopDispute {
-  id: number;
-  shop: string;
-  challenger: string;
-  disputeType: number;
-  ruling: ShopDisputeRuling;
-  status: ShopDisputeStatus;
-}
+// export interface IShopDispute {
+//   id: number;
+//   shop: string;
+//   challenger: string;
+//   disputeType: number;
+//   ruling: ShopDisputeRuling;
+//   status: ShopDisputeStatus;
+// }
 
 export interface IShopArgs {
   country: string; // TODO: create enum
