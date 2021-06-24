@@ -2,312 +2,346 @@
     "contractName": "Teller",
     "abi": [
         {
-            "constant": true,
-            "inputs": [],
-            "name": "geo",
-            "outputs": [
-                {
-                    "name": "",
-                    "type": "address"
-                }
-            ],
-            "payable": false,
-            "stateMutability": "view",
-            "type": "function"
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "bytes",
+              "name": "position",
+              "type": "bytes"
+            }
+          ],
+          "name": "AddTeller",
+          "type": "event"
         },
         {
-            "constant": true,
-            "inputs": [],
-            "name": "zone",
-            "outputs": [
-                {
-                    "name": "",
-                    "type": "address"
-                }
-            ],
-            "payable": false,
-            "stateMutability": "view",
-            "type": "function"
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "bytes12",
+              "name": "position",
+              "type": "bytes12"
+            }
+          ],
+          "name": "RemoveTeller",
+          "type": "event"
         },
         {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": false,
-                    "name": "position",
-                    "type": "bytes"
-                }
-            ],
-            "name": "AddTeller",
-            "type": "event"
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "bytes",
+              "name": "position",
+              "type": "bytes"
+            }
+          ],
+          "name": "UpdateTeller",
+          "type": "event"
         },
         {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": false,
-                    "name": "position",
-                    "type": "bytes12"
-                }
-            ],
-            "name": "RemoveTeller",
-            "type": "event"
+          "inputs": [],
+          "name": "geo",
+          "outputs": [
+            {
+              "internalType": "contract IGeoRegistry",
+              "name": "",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "constant": true
         },
         {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": false,
-                    "name": "position",
-                    "type": "bytes"
-                }
-            ],
-            "name": "UpdateTeller",
-            "type": "event"
+          "inputs": [],
+          "name": "inited",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "constant": true
         },
         {
-            "constant": false,
-            "inputs": [
-                {
-                    "name": "_geo",
-                    "type": "address"
-                },
-                {
-                    "name": "_zone",
-                    "type": "address"
-                }
-            ],
-            "name": "init",
-            "outputs": [],
-            "payable": false,
-            "stateMutability": "nonpayable",
-            "type": "function"
+          "inputs": [],
+          "name": "zone",
+          "outputs": [
+            {
+              "internalType": "contract IZone",
+              "name": "",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "constant": true
         },
         {
-            "constant": true,
-            "inputs": [],
-            "name": "getComments",
-            "outputs": [
-                {
-                    "name": "",
-                    "type": "bytes32[]"
-                }
-            ],
-            "payable": false,
-            "stateMutability": "view",
-            "type": "function"
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_geo",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "_zone",
+              "type": "address"
+            }
+          ],
+          "name": "init",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
         },
         {
-            "constant": true,
-            "inputs": [
-                {
-                    "name": "_value",
-                    "type": "uint256"
-                }
-            ],
-            "name": "calcReferrerFee",
-            "outputs": [
-                {
-                    "name": "referrerAmount",
-                    "type": "uint256"
-                }
-            ],
-            "payable": false,
-            "stateMutability": "view",
-            "type": "function"
+          "inputs": [],
+          "name": "getComments",
+          "outputs": [
+            {
+              "internalType": "bytes32[]",
+              "name": "",
+              "type": "bytes32[]"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "constant": true
         },
         {
-            "constant": true,
-            "inputs": [],
-            "name": "getTeller",
-            "outputs": [
-                {
-                    "name": "addr",
-                    "type": "address"
-                },
-                {
-                    "name": "currencyId",
-                    "type": "uint8"
-                },
-                {
-                    "name": "messenger",
-                    "type": "bytes16"
-                },
-                {
-                    "name": "position",
-                    "type": "bytes12"
-                },
-                {
-                    "name": "settings",
-                    "type": "bytes1"
-                },
-                {
-                    "name": "buyRate",
-                    "type": "int16"
-                },
-                {
-                    "name": "sellRate",
-                    "type": "int16"
-                },
-                {
-                    "name": "referrer",
-                    "type": "address"
-                },
-                {
-                    "name": "description",
-                    "type": "bytes32"
-                }
-            ],
-            "payable": false,
-            "stateMutability": "view",
-            "type": "function"
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "_value",
+              "type": "uint256"
+            }
+          ],
+          "name": "calcReferrerFee",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "referrerAmount",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "constant": true
         },
         {
-            "constant": true,
-            "inputs": [],
-            "name": "getReferrer",
-            "outputs": [
-                {
-                    "name": "ref",
-                    "type": "address"
-                },
-                {
-                    "name": "refFee",
-                    "type": "uint256"
-                }
-            ],
-            "payable": false,
-            "stateMutability": "view",
-            "type": "function"
+          "inputs": [],
+          "name": "getTeller",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "addr",
+              "type": "address"
+            },
+            {
+              "internalType": "uint8",
+              "name": "currencyId",
+              "type": "uint8"
+            },
+            {
+              "internalType": "bytes16",
+              "name": "messenger",
+              "type": "bytes16"
+            },
+            {
+              "internalType": "bytes12",
+              "name": "position",
+              "type": "bytes12"
+            },
+            {
+              "internalType": "bytes1",
+              "name": "settings",
+              "type": "bytes1"
+            },
+            {
+              "internalType": "int16",
+              "name": "buyRate",
+              "type": "int16"
+            },
+            {
+              "internalType": "int16",
+              "name": "sellRate",
+              "type": "int16"
+            },
+            {
+              "internalType": "address",
+              "name": "referrer",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "description",
+              "type": "bytes32"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "constant": true
         },
         {
-            "constant": true,
-            "inputs": [],
-            "name": "hasTeller",
-            "outputs": [
-                {
-                    "name": "",
-                    "type": "bool"
-                }
-            ],
-            "payable": false,
-            "stateMutability": "view",
-            "type": "function"
+          "inputs": [],
+          "name": "getReferrer",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "ref",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "refFee",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "constant": true
         },
         {
-            "constant": false,
-            "inputs": [],
-            "name": "removeTellerByZone",
-            "outputs": [],
-            "payable": false,
-            "stateMutability": "nonpayable",
-            "type": "function"
+          "inputs": [],
+          "name": "hasTeller",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "constant": true
         },
         {
-            "constant": false,
-            "inputs": [],
-            "name": "removeTeller",
-            "outputs": [],
-            "payable": false,
-            "stateMutability": "nonpayable",
-            "type": "function"
+          "inputs": [],
+          "name": "removeTellerByZone",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
         },
         {
-            "constant": false,
-            "inputs": [
-                {
-                    "name": "_position",
-                    "type": "bytes"
-                },
-                {
-                    "name": "_currencyId",
-                    "type": "uint8"
-                },
-                {
-                    "name": "_messenger",
-                    "type": "bytes16"
-                },
-                {
-                    "name": "_sellRate",
-                    "type": "int16"
-                },
-                {
-                    "name": "_buyRate",
-                    "type": "int16"
-                },
-                {
-                    "name": "_settings",
-                    "type": "bytes1"
-                },
-                {
-                    "name": "_referrer",
-                    "type": "address"
-                },
-                {
-                    "name": "_refFee",
-                    "type": "uint256"
-                },
-                {
-                    "name": "_description",
-                    "type": "bytes32"
-                }
-            ],
-            "name": "addTeller",
-            "outputs": [],
-            "payable": false,
-            "stateMutability": "nonpayable",
-            "type": "function"
+          "inputs": [],
+          "name": "removeTeller",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
         },
         {
-            "constant": false,
-            "inputs": [
-                {
-                    "name": "_position",
-                    "type": "bytes"
-                },
-                {
-                    "name": "_currencyId",
-                    "type": "uint8"
-                },
-                {
-                    "name": "_messenger",
-                    "type": "bytes16"
-                },
-                {
-                    "name": "_sellRate",
-                    "type": "int16"
-                },
-                {
-                    "name": "_buyRate",
-                    "type": "int16"
-                },
-                {
-                    "name": "_settings",
-                    "type": "bytes1"
-                },
-                {
-                    "name": "_description",
-                    "type": "bytes32"
-                }
-            ],
-            "name": "updateTeller",
-            "outputs": [],
-            "payable": false,
-            "stateMutability": "nonpayable",
-            "type": "function"
+          "inputs": [
+            {
+              "internalType": "bytes",
+              "name": "_position",
+              "type": "bytes"
+            },
+            {
+              "internalType": "uint8",
+              "name": "_currencyId",
+              "type": "uint8"
+            },
+            {
+              "internalType": "bytes16",
+              "name": "_messenger",
+              "type": "bytes16"
+            },
+            {
+              "internalType": "int16",
+              "name": "_sellRate",
+              "type": "int16"
+            },
+            {
+              "internalType": "int16",
+              "name": "_buyRate",
+              "type": "int16"
+            },
+            {
+              "internalType": "bytes1",
+              "name": "_settings",
+              "type": "bytes1"
+            },
+            {
+              "internalType": "address",
+              "name": "_referrer",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_refFee",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "_description",
+              "type": "bytes32"
+            }
+          ],
+          "name": "addTeller",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
         },
         {
-            "constant": false,
-            "inputs": [
-                {
-                    "name": "_commentHash",
-                    "type": "bytes32"
-                }
-            ],
-            "name": "addComment",
-            "outputs": [],
-            "payable": false,
-            "stateMutability": "nonpayable",
-            "type": "function"
+          "inputs": [
+            {
+              "internalType": "bytes",
+              "name": "_position",
+              "type": "bytes"
+            },
+            {
+              "internalType": "uint8",
+              "name": "_currencyId",
+              "type": "uint8"
+            },
+            {
+              "internalType": "bytes16",
+              "name": "_messenger",
+              "type": "bytes16"
+            },
+            {
+              "internalType": "int16",
+              "name": "_sellRate",
+              "type": "int16"
+            },
+            {
+              "internalType": "int16",
+              "name": "_buyRate",
+              "type": "int16"
+            },
+            {
+              "internalType": "bytes1",
+              "name": "_settings",
+              "type": "bytes1"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "_description",
+              "type": "bytes32"
+            }
+          ],
+          "name": "updateTeller",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "_commentHash",
+              "type": "bytes32"
+            }
+          ],
+          "name": "addComment",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
         }
-    ]}
+      ]}
