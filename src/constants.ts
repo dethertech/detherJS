@@ -150,16 +150,16 @@ export const CONTRACT_ADDRESSES: any = {
   },
   bsc: {
     // dether
-    ProtocolController: "0x3B6367A3d4C261914b37E1E9F59A6893732c9c22",
+    ProtocolController: "0x3298764c7c34e9F966616F114e220cd8BFB5a073",
     DetherToken: "0xdc42728b0ea910349ed3c6e1c9dc06b5fb591f98",
     AnyswapV4ERC20: "0xdc42728b0ea910349ed3c6e1c9dc06b5fb591f98",
     GeoRegistry: "0x4cFf328AA985218856184bC92d469aA08387C0DC", //
-    Users: "0x90Fb7C42e450202508148faEd69A8E8cA0a0480B", //
-    ZoneFactory: "0x6d03463209287AC5D77fa7a2536D9Ba844664EaA", //
-    Zone: "0xd368c1623cE86b844588C8a10aEC02c3C034729f", //
-    Shops: "0xac2Dc57E34469f0c5a031f5b6248fEef1a15BfFf", //
-    CertifierRegistry: "0xA8Fc6d92da3260227888604b96cFe9863f870850", //
-    Voting: "0x4DB1B4512C8826D138226cEF856d421E5ccBF985", //
+    Users: "0xCc935DA1000295B7c1DA7Dc6f3dc444B1D96272c", //
+    ZoneFactory: "0x3ecf478976c784b2722Ab1C6BF4c089F3C72E666", //
+    Zone: "0xb231A015e3694009552E6Ba81f74a69758e1384e", //
+    Shops: "0xf657a584A813604b7bA8eBC2c6e5d0aa5c2Fa302", //
+    CertifierRegistry: "0x3F65AD7A560E4E44D6ddab986097C135dA27Bd58", //
+    Voting: "0xB8FC942425bfc51bc2A895031f6DEea9BcF38d82", //
     // TokenRegistry: "0x8fc724457b8a3f156E93E058fc984c1c8c3BBdBa",
     // TaxCollector: "0xb52221f5b11bc6b069151108336fcf6c6c91CF89", //
     // external
