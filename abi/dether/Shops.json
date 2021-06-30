@@ -1,0 +1,534 @@
+{
+  "contractName": "Shops",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_dth",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_geo",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_users",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_zoneFactory",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        }
+      ],
+      "name": "TaxTotalPaidTo",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "TAX",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function",
+      "constant": true
+    },
+    {
+      "inputs": [],
+      "name": "dth",
+      "outputs": [
+        {
+          "internalType": "contract IAnyswapV3ERC20",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function",
+      "constant": true
+    },
+    {
+      "inputs": [],
+      "name": "floorLicencePrice",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function",
+      "constant": true
+    },
+    {
+      "inputs": [],
+      "name": "geo",
+      "outputs": [
+        {
+          "internalType": "contract IGeoRegistry",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function",
+      "constant": true
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes12",
+          "name": "",
+          "type": "bytes12"
+        }
+      ],
+      "name": "positionToShopAddress",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function",
+      "constant": true
+    },
+    {
+      "inputs": [],
+      "name": "stakedDth",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function",
+      "constant": true
+    },
+    {
+      "inputs": [],
+      "name": "users",
+      "outputs": [
+        {
+          "internalType": "contract IUsers",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function",
+      "constant": true
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "withdrawableDth",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function",
+      "constant": true
+    },
+    {
+      "inputs": [],
+      "name": "zoneFactory",
+      "outputs": [
+        {
+          "internalType": "contract IZoneFactory",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function",
+      "constant": true
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes6",
+          "name": "",
+          "type": "bytes6"
+        }
+      ],
+      "name": "zoneLicencePrice",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function",
+      "constant": true
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes6",
+          "name": "",
+          "type": "bytes6"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "zoneToShopAddresses",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function",
+      "constant": true
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_addr",
+          "type": "address"
+        }
+      ],
+      "name": "getShopByAddr",
+      "outputs": [
+        {
+          "internalType": "bytes12",
+          "name": "position",
+          "type": "bytes12"
+        },
+        {
+          "internalType": "bytes16",
+          "name": "category",
+          "type": "bytes16"
+        },
+        {
+          "internalType": "bytes16",
+          "name": "name",
+          "type": "bytes16"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "description",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes16",
+          "name": "opening",
+          "type": "bytes16"
+        },
+        {
+          "internalType": "uint256",
+          "name": "staked",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "lastTaxTime",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "licencePrice",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function",
+      "constant": true
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes12",
+          "name": "_position",
+          "type": "bytes12"
+        }
+      ],
+      "name": "getShopByPos",
+      "outputs": [
+        {
+          "internalType": "bytes12",
+          "name": "",
+          "type": "bytes12"
+        },
+        {
+          "internalType": "bytes16",
+          "name": "",
+          "type": "bytes16"
+        },
+        {
+          "internalType": "bytes16",
+          "name": "",
+          "type": "bytes16"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes16",
+          "name": "",
+          "type": "bytes16"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function",
+      "constant": true
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes6",
+          "name": "_zoneGeohash",
+          "type": "bytes6"
+        }
+      ],
+      "name": "getShopAddressesInZone",
+      "outputs": [
+        {
+          "internalType": "address[]",
+          "name": "",
+          "type": "address[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function",
+      "constant": true
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_shopAddress",
+          "type": "address"
+        }
+      ],
+      "name": "shopByAddrExists",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function",
+      "constant": true
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_shopAddress",
+          "type": "address"
+        }
+      ],
+      "name": "getShopStaked",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function",
+      "constant": true
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes6",
+          "name": "_zoneGeohash",
+          "type": "bytes6"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_priceDTH",
+          "type": "uint256"
+        }
+      ],
+      "name": "setZoneLicensePrice",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_startTime",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_endTime",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_licencePrice",
+          "type": "uint256"
+        }
+      ],
+      "name": "calcShopTax",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "taxAmount",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function",
+      "constant": true
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes6",
+          "name": "_zoneGeohash",
+          "type": "bytes6"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_start",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_end",
+          "type": "uint256"
+        }
+      ],
+      "name": "collectTax",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_from",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_value",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "_data",
+          "type": "bytes"
+        }
+      ],
+      "name": "onTokenTransfer",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "removeShop",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_shopAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes6",
+          "name": "_zoneGeohash",
+          "type": "bytes6"
+        }
+      ],
+      "name": "removeShopFromZoneOwner",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "withdrawDth",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ]}
